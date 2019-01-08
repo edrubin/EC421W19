@@ -1,0 +1,89 @@
+---
+title: "Metrics Review"
+subtitle: "EC 421, Set 2"
+author: "Edward Rubin"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+# date: "08 January 2019"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, center, middle
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(pacman)
+p_load(leaflet, ggplot2, ggthemes, viridis, dplyr, magrittr)
+red_pink <- "#e64173"
+```
+
+# Prologue
+
+---
+
+# Last Time
+
+## Motivation
+
+In our last set of slides, we
+
+1. discussed the **motivation** for studying econometrics (metrics)
+
+1. **introduced .mono[R]**—why we use it, what it can do
+
+1. **started reviewing** material from your previous classes
+
+These notes continue the review, building the foundation for some new topics (soon).
+
+---
+layout: false
+class: inverse, center, middle
+# Review
+
+---
+layout: true
+# Review
+
+---
+
+## Models and notation
+
+We write our (simple) population model
+
+$$ y_i = \beta_0 + \beta_1 x_i + \varepsilon_i $$
+
+and our sample-based estimated regression model as
+
+$$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
+
+The regession model produces estimates for each observation:
+
+$$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+
+which gives us the _best-fit_ line through our dataset.
+
+---
+
+**Question:** What do we mean by *best-fit* line?
+
+**Answers:**
+
+- The line that minimizes the sum of squared error (SSE)...
+
+$$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
+
+<center>where</center>
+
+$$ e_i = y_i - \hat{y}_i $$
+
+
+- Ordinary least squares (OLS) minimizes SSE.
+- Based upon a set of (mostly palatable) assumptions, OLS provides
+  - the best linear unbiased estimator (BLUE),
+  - the minimum variance, unbiased estimator
+
+---
