@@ -1,6 +1,6 @@
 # EC 421, Winter 2019
 
-Welcome to Economics 421: Introduction to Econometrics (Winter 2019) at the University of Oregon (taught by [Edward Rubin](https://edrub.in)).
+Welcome to **Economics 421: Introduction to Econometrics** (Winter 2019) at the University of Oregon (taught by [Edward Rubin](https://edrub.in)).
 
 For information on the course specifics, please see the [syllabus](https://raw.githack.com/edrubin/EC421W19/master/Syllabus/syllabus.pdf).
 
