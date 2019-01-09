@@ -133,7 +133,7 @@ We want to test estimate/test the relationship `\(\text{GPA}=f(H, \text{SAT}, \t
 
 - __A:__
   - The relationship between the GPA and the explanatory variables is linear in parameters, and `\(\varepsilon\)` enters additively.
-  - The dependent variables are __exogenous__, _i.e._, `\(E[\varepsilon|X] = 0\)`.
+  - The explanatory variables are __exogenous__, _i.e._, `\(E[\varepsilon|X] = 0\)`.
   - You've also typically assumed: `\(E[\varepsilon_i] = 0\)`, `\(E[\varepsilon_i^2] = \sigma^2\)`, `\(E[\varepsilon_i \varepsilon_j] = 0\)` for `\(i \neq j\)`.
   - And (maybe) `\(\varepsilon_i\)` is distributed normally.
 
@@ -399,8 +399,8 @@ leaflet() %&gt;%
   addMarkers(lng = -123.075, lat = 44.045, popup = "The University of Oregon")
 ```
 
-<div id="htmlwidget-8837b30bf7d4ed5ef814" style="width:756px;height:432px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8837b30bf7d4ed5ef814">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addMarkers","args":[44.045,-123.075,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The University of Oregon",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[44.045,44.045],"lng":[-123.075,-123.075]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-c260cf2f10915b3b1a3c" style="width:756px;height:432px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c260cf2f10915b3b1a3c">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addMarkers","args":[44.045,-123.075,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"The University of Oregon",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[44.045,44.045],"lng":[-123.075,-123.075]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 class: inverse, center, middle

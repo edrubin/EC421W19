@@ -7,6 +7,7 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   xaringan::moon_reader:
     css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
     nature:
       highlightStyle: github
       highlightLines: true
@@ -14,11 +15,25 @@ output:
 ---
 class: inverse, center, middle
 
-```{r setup, include=FALSE}
+```{r Setup, include = F}
 options(htmltools.dir.version = FALSE)
 library(pacman)
-p_load(leaflet, ggplot2, ggthemes, viridis, dplyr, magrittr)
+p_load(leaflet, ggplot2, ggthemes, viridis, dplyr, magrittr, knitr)
+# Define pink color
 red_pink <- "#e64173"
+# Notes directory
+dir_slides <- "~/Dropbox/UO/Teaching/EC421W19/LectureNotes/02Review/"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  # dpi = 300,
+  # cache = T,
+  warning = F,
+  message = F
+)
 ```
 
 # Prologue
@@ -87,3 +102,11 @@ $$ e_i = y_i - \hat{y}_i $$
   - the minimum variance, unbiased estimator
 
 ---
+
+
+<!-- ---
+exclude: true
+
+```{R, generate pdfs, include = F}
+system("decktape remark 01_intro.html 01_intro.pdf --chrome-arg=--allow-file-access-from-files")
+``` -->

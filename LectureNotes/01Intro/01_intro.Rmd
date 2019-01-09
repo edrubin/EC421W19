@@ -135,7 +135,7 @@ We want to test estimate/test the relationship $\text{GPA}=f(H, \text{SAT}, \tex
 
 - __A:__
   - The relationship between the GPA and the explanatory variables is linear in parameters, and $\varepsilon$ enters additively.
-  - The dependent variables are __exogenous__, _i.e._, $E[\varepsilon|X] = 0$.
+  - The explanatory variables are __exogenous__, _i.e._, $E[\varepsilon|X] = 0$.
   - You've also typically assumed: $E[\varepsilon_i] = 0$, $E[\varepsilon_i^2] = \sigma^2$, $E[\varepsilon_i \varepsilon_j] = 0$ for $i \neq j$.
   - And (maybe) $\varepsilon_i$ is distributed normally.
 
