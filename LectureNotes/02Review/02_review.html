@@ -4,7 +4,7 @@
     <title>Metrics Review</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-01-08" />
+    <meta name="date" content="2019-01-09" />
     <link href="02_review_files/remark-css/default.css" rel="stylesheet" />
     <link href="02_review_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="02_review_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Metrics Review
 ## EC 421, Set 2
 ### Edward Rubin
-### 08 January 2019
+### 09 January 2019
 
 ---
 
@@ -43,6 +43,12 @@ In our last set of slides, we
 
 These notes continue the review, building the foundation for some new topics (soon).
 
+--
+
+## Follow Up
+
+.mono[R] is [available at all academic workstations at UO](https://library.uoregon.edu/library-technology-services/public-info/a-software).
+
 ---
 layout: false
 class: inverse, center, middle
@@ -50,7 +56,7 @@ class: inverse, center, middle
 
 ---
 layout: true
-# Review
+# Population *vs.* sample
 
 ---
 
@@ -58,25 +64,217 @@ layout: true
 
 We write our (simple) population model
 
-$$ y_i = \beta_0 + \beta_1 x_i + \varepsilon_i $$
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
 
 and our sample-based estimated regression model as
 
 $$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
 
-The regession model produces estimates for each observation:
+An estimated regession model produces estimates for each observation:
 
 $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
 
 which gives us the _best-fit_ line through our dataset.
 
 ---
+layout: true
+
+# Population *vs.* sample
+
+**Question:** Why are we so worked up about the distinction between *population* and *sample*?
+
+---
+
+--
+
+
+
+.pull-left[
+
+&lt;img src="02_review_files/figure-html/pop1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Population**]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="02_review_files/figure-html/scatter1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Population relationship**]
+
+$$ y_i = 2.5 + 0.6 x_i + u_i $$
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+&lt;img src="02_review_files/figure-html/sample1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Sample 1:** 30 random individuals]
+
+]
+
+--
+
+.pull-right[
+
+&lt;img src="02_review_files/figure-html/sample1 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = 1.36 + 0.76 x_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+&lt;img src="02_review_files/figure-html/sample2-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Sample 2:** 30 random individuals]
+
+]
+
+.pull-right[
+
+&lt;img src="02_review_files/figure-html/sample2 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = 3.53 + 0.34 x_i $$
+
+
+]
+---
+
+.pull-left[
+
+&lt;img src="02_review_files/figure-html/sample3-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Sample 3:** 30 random individuals]
+
+]
+
+.pull-right[
+
+&lt;img src="02_review_files/figure-html/sample3 scatter-1.svg" style="display: block; margin: auto;" /&gt;
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = 1.44 + 0.86 x_i $$
+
+]
+
+---
+layout: false
+class: inverse, center, middle
+
+Let's repeat this **10,000 times**.
+
+(This exercise is called a (Monte Carlo) simulation.)
+
+---
+layout: true
+# Population *vs.* sample
+
+---
+
+&lt;img src="02_review_files/figure-html/simulation scatter-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Population *vs.* sample
+
+**Question:** Why are we so worked up about the distinction between *population* and *sample*?
+
+---
+
+.pull-left[
+&lt;img src="02_review_files/figure-html/simulation scatter2-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+What do you notice?
+
+- On **average**, our regression lines match the population line very nicely.
+
+- However, **individual lines** (samples) can really miss the mark.
+
+- Differences between individual samples and the population lead to **uncertainty** for the econometrician.
+
+]
+
+--
+
+**Answer:** **Uncertainty matters.**
+
+`\(\hat{\beta}\)` itself is a random variable—dependent upon the random sample. When we take a sample and run a regression, we don't know if it's a 'good' sample ( `\(\hat{\beta}\)` is close to `\(\beta\)`) or a 'bad sample' (our sample differs greatly from the population).
+
+---
+layout: false
+# Population *vs.* sample
+
+## Uncertainty
+
+Keeping track of this uncertainty will be a key concept throughout our class.
+
+- Estimating standard errors for our estimates.
+
+- Testing hypotheses.
+
+- Correcting for heteroskedasticity and autocorrelation.
+
+--
+
+But first, let's remind ourselves of how we get these (uncertain) regression estimates.
+
+---
+# Linear regression
+
+## The estimator
+
+We can estimate a regression line in .mono[R] (`lm(y ~ x, my_data)`) and .mono[Stata] (`reg y x`). But where do these estimates come from?
+
+A few slides back:
+
+&gt; $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+&gt; which gives us the *best-fit* line through our dataset.
+
+But what do we mean by "best-fit line"?
+
+---
+layout: false
+
+# Being the "best"
 
 **Question:** What do we mean by *best-fit* line?
 
 **Answers:**
 
-- The line that minimizes the sum of squared error (SSE)...
+- In general: *Best-fit* means the line that minimizes the sum of squared errors (SSE):
 
 $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 
@@ -85,7 +283,7 @@ $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 $$ e_i = y_i - \hat{y}_i $$
 
 
-- Ordinary least squares (OLS) minimizes SSE.
+- As its name suggests, ordinary least squares (**OLS**) minimizes SSE.
 - Based upon a set of (mostly palatable) assumptions, OLS provides
   - the best linear unbiased estimator (BLUE),
   - the minimum variance, unbiased estimator

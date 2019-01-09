@@ -14,3 +14,16 @@
 }
 
 .remark-code-line-highlighted     { background-color: rgba(249, 39, 114, 0.75); }
+
+.remark-slide-content {
+  background-color: #ffffff;
+}
+
+.inverse {
+  background-color: #23373B;
+  text-shadow: none;
+}
+
+.title-slide {
+  background-color: #FAFAFA;
+}

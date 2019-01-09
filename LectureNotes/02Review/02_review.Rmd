@@ -18,7 +18,7 @@ class: inverse, center, middle
 ```{r Setup, include = F}
 options(htmltools.dir.version = FALSE)
 library(pacman)
-p_load(leaflet, ggplot2, ggthemes, viridis, dplyr, magrittr, knitr)
+p_load(broom, ggplot2, ggthemes, viridis, dplyr, magrittr, knitr, parallel)
 # Define pink color
 red_pink <- "#e64173"
 # Notes directory
@@ -33,6 +33,17 @@ opts_chunk$set(
   # cache = T,
   warning = F,
   message = F
+)
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
 )
 ```
 
@@ -54,6 +65,12 @@ In our last set of slides, we
 
 These notes continue the review, building the foundation for some new topics (soon).
 
+--
+
+## Follow Up
+
+.mono[R] is [available at all academic workstations at UO](https://library.uoregon.edu/library-technology-services/public-info/a-software).
+
 ---
 layout: false
 class: inverse, center, middle
@@ -61,7 +78,7 @@ class: inverse, center, middle
 
 ---
 layout: true
-# Review
+# Population *vs.* sample
 
 ---
 
@@ -69,25 +86,351 @@ layout: true
 
 We write our (simple) population model
 
-$$ y_i = \beta_0 + \beta_1 x_i + \varepsilon_i $$
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
 
 and our sample-based estimated regression model as
 
 $$ y_i = \hat{\beta}_0 + \hat{\beta}_1 x_i + e_i $$
 
-The regession model produces estimates for each observation:
+An estimated regession model produces estimates for each observation:
 
 $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
 
 which gives us the _best-fit_ line through our dataset.
 
 ---
+layout: true
+
+# Population *vs.* sample
+
+**Question:** Why are we so worked up about the distinction between *population* and *sample*?
+
+---
+
+--
+
+```{R, gen dataset, include = F, cache = T}
+# Set population and sample sizes
+n_p <- 100
+n_s <- 30
+# Set the seed
+set.seed(12468)
+# Generate data
+pop_df <- tibble(
+  i = 3,
+  x = rnorm(n_p, mean = 5, sd = 1.5),
+  e = rnorm(n_p, mean = 0, sd = 1),
+  y = i + 0.5 * x + e,
+  row = rep(1:sqrt(n_p), times = sqrt(n_p)),
+  col = rep(1:sqrt(n_p), each = sqrt(n_p)),
+  s1 = sample(x = c(rep(T, n_s), rep(F, n_p - n_s))),
+  s2 = sample(x = c(rep(T, n_s), rep(F, n_p - n_s))),
+  s3 = sample(x = c(rep(T, n_s), rep(F, n_p - n_s)))
+)
+# Regressions
+lm0 <- lm(y ~ x, data = pop_df)
+lm1 <- lm(y ~ x, data = filter(pop_df, s1 == T))
+lm2 <- lm(y ~ x, data = filter(pop_df, s2 == T))
+lm3 <- lm(y ~ x, data = filter(pop_df, s3 == T))
+# Simulation
+set.seed(12468)
+sim_df <- mclapply(mc.cores = 10, X = 1:1e4, FUN = function(x, size = n_s) {
+  lm(y ~ x, data = pop_df %>% sample_n(size = size)) %>% tidy()
+}) %>% do.call(rbind, .) %>% as_tibble()
+```
+
+.pull-left[
+
+```{R, pop1, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = row, y = col)) +
+geom_point(color = "darkslategray", size = 10) +
+theme_empty
+```
+
+.center[**Population**]
+
+]
+
+--
+
+.pull-right[
+
+```{R, scatter1, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = x, y = y)) +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 3
+) +
+geom_point(color = "darkslategray", size = 6) +
+theme_empty
+```
+
+.center[**Population relationship**]
+
+$$ y_i = 2.5 + 0.6 x_i + u_i $$
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+```{R, sample1, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = row, y = col, shape = s1)) +
+geom_point(color = "darkslategray", size = 10) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Sample 1:** 30 random individuals]
+
+]
+
+--
+
+.pull-right[
+
+```{R, sample1 scatter, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = x, y = y)) +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 3, alpha = 0.3
+) +
+geom_point(aes(shape = s1), color = "darkslategray", size = 6) +
+geom_abline(
+  intercept = lm1$coefficients[1], slope = lm1$coefficients[2],
+  size = 2, linetype = 2, color = "black"
+) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = `r round(lm1$coefficients[1], 2)` + `r round(lm1$coefficients[2], 2)` x_i $$
+
+
+]
+
+---
+
+.pull-left[
+
+```{R, sample2, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = row, y = col, shape = s2)) +
+geom_point(color = "darkslategray", size = 10) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Sample 2:** 30 random individuals]
+
+]
+
+.pull-right[
+
+```{R, sample2 scatter, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = x, y = y)) +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 3, alpha = 0.3
+) +
+geom_point(aes(shape = s2), color = "darkslategray", size = 6) +
+geom_abline(
+  intercept = lm1$coefficients[1], slope = lm1$coefficients[2],
+  size = 2, linetype = 2, color = "black", alpha = 0.3
+) +
+geom_abline(
+  intercept = lm2$coefficients[1], slope = lm2$coefficients[2],
+  size = 2, linetype = 2, color = "black"
+) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = `r round(lm2$coefficients[1], 2)` + `r round(lm2$coefficients[2], 2)` x_i $$
+
+
+]
+---
+
+.pull-left[
+
+```{R, sample3, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = row, y = col, shape = s3)) +
+geom_point(color = "darkslategray", size = 10) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Sample 3:** 30 random individuals]
+
+]
+
+.pull-right[
+
+```{R, sample3 scatter, echo = F, fig.fullwidth = T, dev = "svg"}
+ggplot(data = pop_df, aes(x = x, y = y)) +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 3, alpha = 0.3
+) +
+geom_point(aes(shape = s3), color = "darkslategray", size = 6) +
+geom_abline(
+  intercept = lm1$coefficients[1], slope = lm1$coefficients[2],
+  size = 2, linetype = 2, color = "black", alpha = 0.3
+) +
+geom_abline(
+  intercept = lm2$coefficients[1], slope = lm2$coefficients[2],
+  size = 2, linetype = 2, color = "black", alpha = 0.3
+) +
+geom_abline(
+  intercept = lm3$coefficients[1], slope = lm3$coefficients[2],
+  size = 2, linetype = 2, color = "black"
+) +
+scale_shape_manual(values = c(1, 19)) +
+theme_empty
+```
+
+.center[**Population relationship**]
+
+$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+
+.center[**Sample relationship**]
+
+$$ \hat{y}_i = `r round(lm3$coefficients[1], 2)` + `r round(lm3$coefficients[2], 2)` x_i $$
+
+]
+
+---
+layout: false
+class: inverse, center, middle
+
+Let's repeat this **10,000 times**.
+
+(This exercise is called a (Monte Carlo) simulation.)
+
+---
+layout: true
+# Population *vs.* sample
+
+---
+
+```{R, simulation scatter, echo = F, dev = "png", dpi = 300, cache = T}
+# Reshape sim_df
+line_df <- tibble(
+  intercept = sim_df %>% filter(term != "x") %>% select(estimate) %>% unlist(),
+  slope = sim_df %>% filter(term == "x") %>% select(estimate) %>% unlist()
+)
+ggplot() +
+geom_abline(data = line_df, aes(intercept = intercept, slope = slope), alpha = 0.01) +
+geom_point(data = pop_df, aes(x = x, y = y), size = 3, color = "darkslategray") +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 1.5
+) +
+theme_empty
+```
+
+---
+layout: true
+# Population *vs.* sample
+
+**Question:** Why are we so worked up about the distinction between *population* and *sample*?
+
+---
+
+.pull-left[
+```{R, simulation scatter2, echo = F, dev = "png", dpi = 300, cache = T}
+# Reshape sim_df
+line_df <- tibble(
+  intercept = sim_df %>% filter(term != "x") %>% select(estimate) %>% unlist(),
+  slope = sim_df %>% filter(term == "x") %>% select(estimate) %>% unlist()
+)
+ggplot() +
+geom_abline(data = line_df, aes(intercept = intercept, slope = slope), alpha = 0.01, size = 1) +
+geom_point(data = pop_df, aes(x = x, y = y), size = 6, color = "darkslategray") +
+geom_abline(
+  intercept = lm0$coefficients[1], slope = lm0$coefficients[2],
+  color = red_pink, size = 3
+) +
+theme_empty
+```
+]
+
+.pull-right[
+
+What do you notice?
+
+- On **average**, our regression lines match the population line very nicely.
+
+- However, **individual lines** (samples) can really miss the mark.
+
+- Differences between individual samples and the population lead to **uncertainty** for the econometrician.
+
+]
+
+--
+
+**Answer:** **Uncertainty matters.**
+
+$\hat{\beta}$ itself is a random variable—dependent upon the random sample. When we take a sample and run a regression, we don't know if it's a 'good' sample ( $\hat{\beta}$ is close to $\beta$) or a 'bad sample' (our sample differs greatly from the population).
+
+---
+layout: false
+# Population *vs.* sample
+
+## Uncertainty
+
+Keeping track of this uncertainty will be a key concept throughout our class.
+
+- Estimating standard errors for our estimates.
+
+- Testing hypotheses.
+
+- Correcting for heteroskedasticity and autocorrelation.
+
+--
+
+But first, let's remind ourselves of how we get these (uncertain) regression estimates.
+
+---
+# Linear regression
+
+## The estimator
+
+We can estimate a regression line in .mono[R] (`lm(y ~ x, my_data)`) and .mono[Stata] (`reg y x`). But where do these estimates come from?
+
+A few slides back:
+
+> $$ \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i $$
+> which gives us the *best-fit* line through our dataset.
+
+But what do we mean by "best-fit line"?
+
+---
+layout: false
+
+# Being the "best"
 
 **Question:** What do we mean by *best-fit* line?
 
 **Answers:**
 
-- The line that minimizes the sum of squared error (SSE)...
+- In general: *Best-fit* means the line that minimizes the sum of squared errors (SSE):
 
 $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 
@@ -96,17 +439,9 @@ $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 $$ e_i = y_i - \hat{y}_i $$
 
 
-- Ordinary least squares (OLS) minimizes SSE.
+- As its name suggests, ordinary least squares (**OLS**) minimizes SSE.
 - Based upon a set of (mostly palatable) assumptions, OLS provides
   - the best linear unbiased estimator (BLUE),
   - the minimum variance, unbiased estimator
 
 ---
-
-
-<!-- ---
-exclude: true
-
-```{R, generate pdfs, include = F}
-system("decktape remark 01_intro.html 01_intro.pdf --chrome-arg=--allow-file-access-from-files")
-``` -->
