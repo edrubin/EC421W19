@@ -10,3 +10,4 @@ magrittr
 knitr
 bindrcpp
 broom
+latex2exp
