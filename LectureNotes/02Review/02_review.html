@@ -105,7 +105,7 @@ layout: true
 
 .center[**Population relationship**]
 
-$$ y_i = 2.5 + 0.6 x_i + u_i $$
+$$ y_i = 2.53 + 0.57 x_i + u_i $$
 
 $$ y_i = \beta_0 + \beta_1 x_i + u_i $$
 
@@ -130,7 +130,7 @@ $$ y_i = \beta_0 + \beta_1 x_i + u_i $$
 
 .center[**Population relationship**]
 
-$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+$$ y_i = 2.53 + 0.57 x_i + u_i $$
 
 .center[**Sample relationship**]
 
@@ -140,6 +140,7 @@ $$ \hat{y}_i = 1.36 + 0.76 x_i $$
 ]
 
 ---
+count: false
 
 .pull-left[
 
@@ -155,7 +156,7 @@ $$ \hat{y}_i = 1.36 + 0.76 x_i $$
 
 .center[**Population relationship**]
 
-$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+$$ y_i = 2.53 + 0.57 x_i + u_i $$
 
 .center[**Sample relationship**]
 
@@ -164,6 +165,7 @@ $$ \hat{y}_i = 3.53 + 0.34 x_i $$
 
 ]
 ---
+count:false
 
 .pull-left[
 
@@ -179,7 +181,7 @@ $$ \hat{y}_i = 3.53 + 0.34 x_i $$
 
 .center[**Population relationship**]
 
-$$ y_i = 3 + \frac{1}{2} x_i + u_i $$
+$$ y_i = 2.53 + 0.57 x_i + u_i $$
 
 .center[**Sample relationship**]
 
@@ -270,11 +272,11 @@ layout: false
 
 # Being the "best"
 
-**Question:** What do we mean by *best-fit* line?
+**Question:** What do we mean by *best-fit line*?
 
 **Answers:**
 
-- In general: *Best-fit* means the line that minimizes the sum of squared errors (SSE):
+- In general,&lt;sup&gt;†&lt;/sup&gt; *best-fit line* means the line that minimizes the sum of squared errors (SSE):
 
 $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 
@@ -282,13 +284,203 @@ $$ \text{SSE} = \sum_{i = 1}^{n} e_i^2 $$
 
 $$ e_i = y_i - \hat{y}_i $$
 
+- Ordinary **least squares** (**OLS**) minimizes the sum of the squared errors.
+- Based upon a set of (mostly palatable) assumptions, OLS
+  - Is unbiased (and consistent)
+  - Is the *best*&lt;sup&gt;††&lt;/sup&gt; linear unbiased estimator (BLUE)
 
-- As its name suggests, ordinary least squares (**OLS**) minimizes SSE.
-- Based upon a set of (mostly palatable) assumptions, OLS provides
-  - the best linear unbiased estimator (BLUE),
-  - the minimum variance, unbiased estimator
+.footnote[
+[†]: *In general* here means *generally in econometrics*. It's possible to have other definitions (common in machine learning).
+
+[††]: In the case of BLUE, *best* means minimum variance.
+]
 
 ---
+layout: true
+# OLS *vs.* other lines/estimators
+
+---
+
+Let's consider the dataset we previously generated.
+
+&lt;img src="02_review_files/figure-html/ols vs lines 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+For any line (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\)`) that we draw
+
+&lt;img src="02_review_files/figure-html/ols vs lines 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+For any line (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\)`) that we draw, we can calculate the errors: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="02_review_files/figure-html/ols vs lines 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+For any line (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\)`) that we draw, we can calculate the errors: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="02_review_files/figure-html/ols vs lines 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+For any line (_i.e._, `\(\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x\)`) that we draw, we can calculate the errors: `\(e_i = y_i - \hat{y}_i\)`
+
+&lt;img src="02_review_files/figure-html/ols vs lines 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Because SSE squares the errors (_i.e._, `\(\sum e_i^2\)`), big errors are penalized more than small ones.
+
+&lt;img src="02_review_files/figure-html/ols vs lines 6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+The OLS estimate is the combination of `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)` that minimize SSE.
+
+&lt;img src="02_review_files/figure-html/ols vs lines 7-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# OLS
+
+## Formally
+
+---
+
+In simple linear regression, our OLS estimator derives from choosing the `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`, _i.e._,
+
+$$ \min_{\hat{\beta}_0,\, \hat{\beta}_1} \text{SSE} $$
+
+--
+
+But we already know
+
+$$ \text{SSE} = \sum_i e_i^2 $$
+
+Now we use the definitions of `\(e_i\)` and `\(\hat{y}\)` (plus and some algebra)
+
+$$
+`\begin{aligned}
+  e_i^2 &amp;= \left( y_i - \hat{y}_i \right)^2 = \left( y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i \right)^2 \\
+  &amp;= y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2
+\end{aligned}`
+$$
+
+--
+
+**Recall:** Minimizing a multivariate function requires (**1**) first derivatives equal zero (the *first-order conditions*) and (**2**) second-order conditions on concavity.
+
+---
+
+We're getting close. We need to **minimize SSE**, and we've just shown how SSE relates to our sample (our data, _i.e._, `\(x\)` and `\(y\)`) and our estimates (_i.e._, `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`).
+
+$$ \text{SSE} = \sum_i e_i^2 = \sum_i \left( y_i^2 - 2 y_i \hat{\beta}_0 - 2 y_i \hat{\beta}_1 x_i + \hat{\beta}_0^2 + 2 \hat{\beta}_0 \hat{\beta}_1 x_i + \hat{\beta}_1^2 x_i^2 \right) $$
+
+For the first-order conditions of minimization, we now take the first derivates&lt;sup&gt;†&lt;/sup&gt; of SSE with respect to `\(\hat{\beta}_0\)` and `\(\hat{\beta}_1\)`.
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_0} &amp;= \sum_i \left( 2 \hat{\beta}_0 + 2 \hat{\beta}_1 x_i - 2 y_i \right) = 2n \hat{\beta}_0 + 2 \hat{\beta}_1 \sum_i x_i - 2 \sum_i y_i \\
+  &amp;= 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y}
+\end{aligned}`
+$$
+
+where `\(\overline{x} = \frac{\sum x_i}{n}\)` and `\(\overline{y} = \frac{\sum y_i}{n}\)` give the sample means of `\(x\)` and `\(y\)` (sample size `\(n\)`).
+
+.footnote[
+[†]: I'll leave the second-order conditions for you...
+]
+
+---
+
+The first-order conditions state that the derivatives are equal to zero, so:
+
+$$ \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_0} = 2n \hat{\beta}_0 + 2n \hat{\beta}_1 \overline{x} - 2n \overline{y} = 0 $$
+
+which implies
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Now for `\(\hat{\beta}_1\)`.
+
+---
+
+Take the derivative of SSE with respect to `\(\hat{\beta}_1\)`
+
+$$
+`\begin{aligned}
+  \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_1} &amp;= \sum_i \left( 2 \hat{\beta}_0 x_i + 2 \hat{\beta}_1 x_i^2 - 2 y_i x_i \right) = 2 \hat{\beta}_0 \sum_i x_i + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i \\
+  &amp;= 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i
+\end{aligned}`
+$$
+
+set it equal to zero (first-order conditions, again)
+
+$$ \dfrac{\partial \text{SSE}}{\partial \hat{\beta}_1} = 2n \hat{\beta}_0 \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+and substitute in our relationship for `\(\hat{\beta}_0\)`, _i.e._, `\(\hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x}\)`. Thus,
+
+$$
+ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0
+$$
+
+---
+
+Continuing from the last slide
+
+$$ 2n \left(\overline{y} - \hat{\beta}_1 \overline{x}\right) \overline{x} + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+we multiply out
+
+$$ 2n \overline{y}\,\overline{x} - 2n \hat{\beta}_1 \overline{x}^2 + 2 \hat{\beta}_1 \sum_i x_i^2 - 2 \sum_i y_i x_i = 0 $$
+
+$$ \implies 2 \hat{\beta}_1 \left( \sum_i x_i^2 - n \overline{x}^2 \right) = 2 \sum_i y_i x_i - 2n \overline{y}\,\overline{x} $$
+
+$$ \implies \hat{\beta}_1 = \dfrac{\sum_i y_i x_i - 2n \overline{y}\,\overline{x}}{\sum_i x_i^2 - n \overline{x}^2} = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+---
+
+Done!
+
+We now have (lovely) OLS estimators for the slope
+
+$$ \hat{\beta}_1 = \dfrac{\sum_i (x_i - \overline{x})(y_i - \overline{y})}{\sum_i (x_i - \overline{x})^2} $$
+
+and the intercept
+
+$$ \hat{\beta}_0 = \overline{y} - \hat{\beta}_1 \overline{x} $$
+
+Plus, you know what the *least squares* part of ordinary least squares means. ☺
+
+--
+
+We now turn to the assumptions and (implied) properties of OLS.
+
+---
+layout: false
+class: inverse, center, middle
+
+# OLS: Assumptions and properties
+
+---
+layout: true
+# OLS: Assumptions and properties
+
+## Properties
+
+**Question:** What properties might we care about for an estimator?
+
+---
+
+.mono[TODO: Illustrate different possibilities for distributions of estimators.]
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
