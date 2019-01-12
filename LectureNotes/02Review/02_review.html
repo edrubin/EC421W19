@@ -4,7 +4,7 @@
     <title>Metrics Review</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-01-10" />
+    <meta name="date" content="2019-01-12" />
     <link href="02_review_files/remark-css/default.css" rel="stylesheet" />
     <link href="02_review_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="02_review_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Metrics Review
 ## EC 421, Set 2
 ### Edward Rubin
-### 10 January 2019
+### 12 January 2019
 
 ---
 
@@ -855,7 +855,7 @@ Now, let's estimate 95% confidence intervals for each of these intervals...
 
 
 
-**From our previous simulation:** 97.7% of 95% confidences intervals contain the true parameter value of `\(\beta_1\)`.
+**From our previous simulation:** 97.8% of 95% confidences intervals contain the true parameter value of `\(\beta_1\)`.
 
 &lt;img src="02_review_files/figure-html/simulation ci-1.svg" style="display: block; margin: auto;" /&gt;
 
@@ -892,7 +892,7 @@ While uncertainty certainly exists, we can build statistical tests that generall
 
 **OLS `\(t\)` test**
 
-Imagine a (null) hypothesis which states that `\(\beta_1\)` is equal to some value `\(c\)`, _i.e._, `\(H_0:\: \beta_1 = c\)`
+Imagine a (null) hypothesis which states that `\(\beta_1\)` is equal to some value `\(c\)`, _i.e._, `\(H_o:\: \beta_1 = c\)`
 
 From OLS's properties, we can show that the test statistic
 
@@ -932,7 +932,7 @@ lm(y ~ x, data = pop_df) %&gt;% tidy()
 ```
 --
 
-`\(H_0:\: \beta_1 = 0\)` and `\(H_1:\: \beta_1 \neq 0\)`
+`\(H_o:\: \beta_1 = 0\)` and `\(H_a:\: \beta_1 \neq 0\)`
 
 --
 
@@ -944,7 +944,7 @@ lm(y ~ x, data = pop_df) %&gt;% tidy()
 
 --
 
-Reject `\(H_0\)`
+Reject `\(H_o\)`
 
 ---
 
@@ -957,14 +957,68 @@ For each of the 10,000 samples, we will calculate the `\(t\)` statistic, and the
 The answer should be approximately 5 percent—our `\(\alpha\)` level.
 
 ---
-layout: false
+layout: true
 # Uncertainty and inference
 
+---
 
 
 
+In our simulation, 2.2 percent of our `\(t\)` statistics reject the null hypothesis.
 
+The distribution of our `\(t\)` statistics (shading the rejection regions).
 &lt;img src="02_review_files/figure-html/simulation t plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+Correspondingly, 2.2 percent of our p-values reject the null hypothesis.
+
+The distribution of our p-values (shading the p-values below 0.05).
+&lt;img src="02_review_files/figure-html/simulation p plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: true
+# Uncertainty and inference
+## *F* tests
+
+---
+You will occasionally see `\(F\)` tests in econometrics. We use `\(F\)` tests to hypotheses that involve multiple parameters (_e.g._, `\(\beta_1 = \beta_2\)` or `\(\beta_3 + \beta_4 = 1\)`), rather than a single simple hypothesis like `\(\beta_1 = 0\)` (for which we would use a `\(t\)` test).
+
+---
+**Example**
+
+Economists love to say "Money is fungible."
+
+Imagine that we might want to test whether money received as income actually has the same effect on consumption as money received from tax rebates/returns.
+
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_2 \text{Rebate}\_i + u\_i $$
+
+We can write our null hypothesis as
+
+$$ H_o:\: \beta_1 = \beta_2 \iff H_o :\: \beta_1 - \beta_2 = 0 $$
+
+Imposing this null hypothesis gives us the **restricted model**
+
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_1 \text{Rebate}\_i + u\_i $$
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \left( \text{Income}\_{i} + \text{Rebate}\_i \right) + u\_i $$
+
+---
+
+**Example**
+
+To this the null hypothesis `\(H_o :\: \beta_1 = \beta_2\)` against `\(H_a :\: \beta_1 \neq \beta_2\)`, we use the `\(F\)` statistic
+
+$$ F\_{q,\,n-k} = \dfrac{\left(\text{SSE}\_r - \text{SSE}\_u\right)/q}{\text{SSE}\_u/(n-k-1)} $$
+
+which (as its name suggests) follows the `\(F\)` distribution with `\(q\)` numerator degrees of freedom and `\(n-k\)` denominator degrees of freedom.
+
+The term `\(\text{SSE}_r\)` is the sum of squared errors (SSE) from our **restricted model**
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \left( \text{Income}\_{i} + \text{Rebate}\_i \right) + u\_i $$
+
+and `\(\text{SSE}_u\)` is the sum of squared errors (SSE) from our **unrestricted model**
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_2 \text{Rebate}\_i + u\_i $$
 
 ---
 exclude: true

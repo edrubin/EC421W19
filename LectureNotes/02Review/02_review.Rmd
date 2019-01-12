@@ -30,7 +30,6 @@ opts_chunk$set(
   fig.height = 7,
   fig.width = 10.5,
   # dpi = 300,
-  # cache = T,
   warning = F,
   message = F
 )
@@ -158,7 +157,7 @@ layout: true
 --
 
 ```{R, gen dataset, include = F, cache = T}
-# Set population and sample sizes
+# Set population and sample sizes 
 n_p <- 100
 n_s <- 30
 # Set the seed
@@ -380,7 +379,7 @@ layout: true
 ---
 
 ```{R, simulation scatter, echo = F, dev = "png", dpi = 300, cache = T}
-# Reshape sim_df
+# Reshape sim_df 
 line_df <- tibble(
   intercept = sim_df %>% filter(term != "x") %>% select(estimate) %>% unlist(),
   slope = sim_df %>% filter(term == "x") %>% select(estimate) %>% unlist()
@@ -405,7 +404,7 @@ layout: true
 
 .pull-left[
 ```{R, simulation scatter2, echo = F, dev = "png", dpi = 300, cache = T}
-# Reshape sim_df
+# Reshape sim_df 
 line_df <- tibble(
   intercept = sim_df %>% filter(term != "x") %>% select(estimate) %>% unlist(),
   slope = sim_df %>% filter(term == "x") %>% select(estimate) %>% unlist()
@@ -1245,7 +1244,7 @@ While uncertainty certainly exists, we can build statistical tests that generall
 
 **OLS $t$ test**
 
-Imagine a (null) hypothesis which states that $\beta_1$ is equal to some value $c$, _i.e._, $H_0:\: \beta_1 = c$
+Imagine a (null) hypothesis which states that $\beta_1$ is equal to some value $c$, _i.e._, $H_o:\: \beta_1 = c$
 
 From OLS's properties, we can show that the test statistic
 
@@ -1276,7 +1275,7 @@ lm(y ~ x, data = pop_df) %>% tidy()
 ```
 --
 
-$H_0:\: \beta_1 = 0$ and $H_1:\: \beta_1 \neq 0$
+$H_o:\: \beta_1 = 0$ and $H_a:\: \beta_1 \neq 0$
 
 --
 
@@ -1288,7 +1287,7 @@ $\text{p-value} < 0.05$
 
 --
 
-Reject $H_0$
+Reject $H_o$
 
 ---
 
@@ -1301,9 +1300,10 @@ For each of the 10,000 samples, we will calculate the $t$ statistic, and then we
 The answer should be approximately 5 percent—our $\alpha$ level.
 
 ---
-layout: false
+layout: true
 # Uncertainty and inference
 
+---
 
 ```{R, simulation t data, include = F}
 # Calculate test statistics
@@ -1318,14 +1318,101 @@ t_density <- density(t_df$t_stat, from = -5, to = 4) %$%
   mutate(area = abs(x) > abs(qt(0.975, 28)))
 ```
 
+In our simulation, `r t_df$reject %>% mean() %>% multiply_by(100) %>% round(1)` percent of our $t$ statistics reject the null hypothesis.
 
-```{R, simulation t plot, echo = F, dev = "svg"}
+The distribution of our $t$ statistics (shading the rejection regions).
+```{R, simulation t plot, echo = F, dev = "svg", fig.height = 5.75}
 ggplot(data = t_density, aes(x = x, ymin = 0, ymax = y)) +
-geom_ribbon(fill = "darkslategray", alpha = 0.8) +
+geom_vline(xintercept = 0) +
+geom_ribbon(fill = "grey85", alpha = 0.8) +
+geom_ribbon(
+  data = t_density %>% filter(x < qt(0.025, 28)),
+  fill = red_pink
+) +
+geom_ribbon(
+  data = t_density %>% filter(x > qt(0.975, 28)),
+  fill = red_pink
+) +
 geom_hline(yintercept = 0) +
-geom_vline(xintercept = qt(c(0.025, 0.975), df = 28), color = red_pink) +
+# geom_vline(xintercept = qt(c(0.025, 0.975), df = 28), color = red_pink) +
 theme_simple
 ```
+
+---
+
+```{R, simulation p data, include = F}
+# Calculate test statistics
+p_df <- sim_df %>%
+  filter(term == "x") %>%
+  mutate(
+    p_value = 2 * pt(
+      q = abs((estimate - lm0$coefficients[2]) / std.error),
+      df = 28,
+      lower.tail = F
+    ),
+    reject = p_value < 0.05
+  )
+p_density <- density(p_df$p_value, from = 0, to = 1) %$%
+  data.frame(x = x, y = y) %>%
+  mutate(area = x < 0.05)
+```
+
+Correspondingly, `r p_df$reject %>% mean() %>% multiply_by(100) %>% round(1)` percent of our p-values reject the null hypothesis.
+
+The distribution of our p-values (shading the p-values below 0.05).
+```{R, simulation p plot, echo = F, dev = "svg", fig.height = 5.75}
+ggplot(data = p_density, aes(x = x, ymin = 0, ymax = y)) +
+geom_vline(xintercept = 0) +
+geom_ribbon(fill = "grey85", alpha = 0.8) +
+geom_ribbon(
+  data = p_density %>% filter(x < 0.05),
+  fill = red_pink
+) +
+geom_hline(yintercept = 0) +
+theme_simple
+```
+
+---
+layout: true
+# Uncertainty and inference
+## *F* tests
+
+---
+You will occasionally see $F$ tests in econometrics. We use $F$ tests to hypotheses that involve multiple parameters (_e.g._, $\beta_1 = \beta_2$ or $\beta_3 + \beta_4 = 1$), rather than a single simple hypothesis like $\beta_1 = 0$ (for which we would use a $t$ test).
+
+---
+**Example**
+
+Economists love to say "Money is fungible."
+
+Imagine that we might want to test whether money received as income actually has the same effect on consumption as money received from tax rebates/returns.
+
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_2 \text{Rebate}\_i + u\_i $$
+
+We can write our null hypothesis as
+
+$$ H_o:\: \beta_1 = \beta_2 \iff H_o :\: \beta_1 - \beta_2 = 0 $$
+
+Imposing this null hypothesis gives us the **restricted model**
+
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_1 \text{Rebate}\_i + u\_i $$
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \left( \text{Income}\_{i} + \text{Rebate}\_i \right) + u\_i $$
+
+---
+
+**Example**
+
+To this the null hypothesis $H_o :\: \beta_1 = \beta_2$ against $H_a :\: \beta_1 \neq \beta_2$, we use the $F$ statistic
+
+$$ F\_{q,\,n-k} = \dfrac{\left(\text{SSE}\_r - \text{SSE}\_u\right)/q}{\text{SSE}\_u/(n-k-1)} $$
+
+which (as its name suggests) follows the $F$ distribution with $q$ numerator degrees of freedom and $n-k$ denominator degrees of freedom.
+
+The term $\text{SSE}_r$ is the sum of squared errors (SSE) from our **restricted model**
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \left( \text{Income}\_{i} + \text{Rebate}\_i \right) + u\_i $$
+
+and $\text{SSE}_u$ is the sum of squared errors (SSE) from our **unrestricted model**
+$$ \text{Consumption}\_i = \beta\_0 + \beta\_1 \text{Income}\_{i} + \beta\_2 \text{Rebate}\_i + u\_i $$
 
 ---
 exclude: true
