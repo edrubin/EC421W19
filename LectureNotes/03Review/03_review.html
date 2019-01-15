@@ -4,7 +4,7 @@
     <title>Metrics Review, Part 2</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-01-14" />
+    <meta name="date" content="2019-01-15" />
     <link href="03_review_files/remark-css/default.css" rel="stylesheet" />
     <link href="03_review_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="03_review_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Metrics Review, Part 2
 ## EC 421, Set 3
 ### Edward Rubin
-### 14 January 2019
+### 15 January 2019
 
 ---
 
@@ -156,6 +156,28 @@ Notice our old friend SSE: `\(\sum_i \left( y_i - \hat{y}_i \right)^2 = \sum_i e
 --
 
 To see this problem, we can simulate a dataset of 10,000 observations on `\(y\)` and 1,000 random `\(x_k\)` variables. **No relations between `\(y\)` and the `\(x_k\)`!**
+
+Pseudo-code outline of the simulation:
+--
+
+.pseudocode-small[
+
+- Generate 10,000 observations on `\(y\)`
+- Generate 10,000 observations on variables `\(x_1\)` through `\(x_{1000}\)`
+- Regressions
+  - LM&lt;sub&gt;1&lt;/sub&gt;: Regress `\(y\)` on `\(x_1\)`; record R&lt;sup&gt;2&lt;/sup&gt;
+  - LM&lt;sub&gt;2&lt;/sub&gt;: Regress `\(y\)` on `\(x_1\)` and `\(x_2\)`; record R&lt;sup&gt;2&lt;/sup&gt;
+  - LM&lt;sub&gt;3&lt;/sub&gt;: Regress `\(y\)` on `\(x_1\)`, `\(x_2\)`, and `\(x_3\)`; record R&lt;sup&gt;2&lt;/sup&gt;
+  - ...
+  - LM&lt;sub&gt;1000&lt;/sub&gt;: Regress `\(y\)` on `\(x_1\)`, `\(x_2\)`, ..., `\(x_{1000}\)`; record R&lt;sup&gt;2&lt;/sup&gt;
+]
+
+---
+
+**The problem:** As we add variables to our model, `\(R^2\)` *mechanically* increases.
+
+.mono[R] code for the simulation:
+
 
 
 ```r
@@ -313,19 +335,19 @@ Biased regression estimate: `\(\widehat{\text{Pay}}_i = 32.2 + -1.1 \times \text
 
 ---
 count: false
-**Recalling the omitted variable:** &lt;font color="#e64173"&gt;female&lt;/font&gt; and &lt;font color="#314f4f"&gt;male&lt;/font&gt;
+Recalling the omitted variable: Gender (**&lt;font color="#e64173"&gt;female&lt;/font&gt;** and **&lt;font color="#314f4f"&gt;male&lt;/font&gt;**)
 
 &lt;img src="03_review_files/figure-html/plot ovb 3-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 count: false
-**Recalling the omitted variable:** &lt;font color="#e64173"&gt;female&lt;/font&gt; and &lt;font color="#314f4f"&gt;male&lt;/font&gt;
+Recalling the omitted variable: Gender (**&lt;font color="#e64173"&gt;female&lt;/font&gt;** and **&lt;font color="#314f4f"&gt;male&lt;/font&gt;**)
 
 &lt;img src="03_review_files/figure-html/plot ovb 4-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 count: false
-Biased regression estimate: `\(\widehat{\text{Pay}}_i = 20.3 + 0.4 \times \text{School}_i + 10.2 \times \text{Male}_i\)`
+Unbiased regression estimate: `\(\widehat{\text{Pay}}_i = 20.3 + 0.4 \times \text{School}_i + 10.2 \times \text{Male}_i\)`
 
 &lt;img src="03_review_files/figure-html/plot ovb 5-1.svg" style="display: block; margin: auto;" /&gt;
 
@@ -346,7 +368,7 @@ layout: false
 
 1. Proceed with caution (sometimes you can sign the bias).
 
-2. Stop.
+2. Maybe just stop.
 
 .footnote[
 [†]: Coming soon to our lectures.
@@ -357,24 +379,296 @@ layout: true
 # Interpreting coefficients
 
 ---
+class: inverse, middle, center
 
+---
 ## Continuous variables
+
+Consider the relationship
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{School}_i + u_i $$
+
+where
+
+- `\(\text{Pay}_i\)` is a continuous variable measuring an individual's pay
+- `\(\text{School}_i\)` is a continuous variable that measures years of education
+
+--
+
+**Interpretations**
+
+- `\(\beta_0\)`: the `\(y\)`-intercept, _i.e._, `\(\text{Pay}\)` when `\(\text{School} = 0\)`
+- `\(\beta_1\)`: the expected increase in `\(\text{Pay}\)` for a one-unit increase in `\(\text{School}\)`
+
+---
+## Continuous variables
+
+Deriving the slope's interpretation:
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{School} = \ell + 1 \right] - \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{School} = \ell \right] &amp;= \\
+  \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell + 1) + u \right] - \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + u \right] &amp;= \\
+  \left[ \beta_0 + \beta_1 (\ell + 1) \right] - \left[ \beta_0 + \beta_1 \ell \right] &amp;= \\
+  \beta_0 - \beta_0 + \beta_1 \ell - \beta_1 \ell + \beta_1 &amp;=
+  \beta_1
+\end{aligned}`
+$$
+
+--
+
+_I.e._, the slope gives the expected increase in our outcome variable for a one-unit increase in the explanatory variable.
+
+---
+## Continuous variables
+
+If we have multiple explanatory variables, _e.g._,
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{School}_i + \beta_2 \, \text{Ability}_i + u_i $$
+
+then the interpretation changes slightly.
+--
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{School} = \ell + 1 \land \text{Ability} = \alpha \right] - &amp; \\
+    \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{School} = \ell \land \text{Ability} = \alpha \right] &amp;= \\
+  \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell + 1) + \beta_2 \alpha + u \right] -
+    \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + \beta_2 \alpha + u \right] &amp;= \\
+  \left[ \beta_0 + \beta_1 (\ell + 1) + \beta_2 \alpha \right] -
+    \left[ \beta_0 + \beta_1 \ell + \beta_2 \alpha \right] &amp;= \\
+  \beta_0 - \beta_0 + \beta_1 \ell - \beta_1 \ell + \beta_1 + \beta_2 \alpha - \beta_2 \alpha &amp;=
+  \beta_1
+\end{aligned}`
+$$
+
+--
+
+_I.e._, the slope gives the expected increase in our outcome variable for a one-unit increase in the explanatory variable, **holding all other variables constant**. (*Ceteris paribus*)
+
+---
+## Continuous variables
+
+Alternative derivation
+
+Consider the model
+
+$$ y = \beta_0 + \beta_1 \, x + u $$
+
+Differentiate the model:
+
+$$ \dfrac{dy}{dx} = \beta_1 $$
+
+
+---
+## Categorical variables
+
+Consider the relationship
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{Female}_i + u_i $$
+
+where
+
+- `\(\text{Pay}_i\)` is a continuous variable measuring an individual's pay
+- `\(\text{Female}_i\)` is a binary/indicator variable taking `\(1\)` when `\(i\)` is female
+
+--
+
+**Interpretations**
+
+- `\(\beta_0\)`: the expected `\(\text{Pay}\)` for males (_i.e._, when `\(\text{Female} = 0\)`)
+- `\(\beta_1\)`: the expected difference in `\(\text{Pay}\)` between females and males
+- `\(\beta_0 + \beta_1\)`: the expected `\(\text{Pay}\)` for females
+
+---
 
 ## Categorical variables
 
+Derivations
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{Male} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 0 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + 0 + u_i \right] \\
+ &amp;= \beta_0
+\end{aligned}`
+$$
+
+--
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Pay} | \text{Female} \right] &amp;=
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1\times 1 + u_i \right] \\
+ &amp;= \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 + u_i \right] \\
+ &amp;= \beta_0 + \beta_1
+\end{aligned}`
+$$
+
+--
+
+**Note:** If there are no other variables to condition on, then `\(\hat{\beta}_1\)` equals the difference in group means, _e.g._, `\(\overline{x}_\text{Female} - \overline{x}_\text{Male}\)`.
+
+--
+
+**Note&lt;sub&gt;2&lt;/sub&gt;:** The *holding all other variables constant* interpretation also applies for categorical variables in multiple regression settings.
+
+---
 ## Interactions
 
+Interactions allow the effect of one variable to change based upon the level of another variable.
+
+**Examples**
+
+1. Does the effect of schooling on pay change by gender?
+
+1. Does the effect of gender on pay change by race?
+
+1. Does the effect of schooling on pay change by experience?
+
+---
+## Interactions
+
+Previously, we considered a model that allowed women and men to have different wages, but the model assumed the effect of school on pay was the same for everyone:
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{School}_i + \beta_2 \, \text{Female}_i + u_i $$
+
+but we can also allow the effect of school to vary by gender:
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{School}_i + \beta_2 \, \text{Female}_i + \beta_3 \, \text{School}_i\times\text{Female}_i + u_i $$
+
+---
+## Interactions
+
+The model where schooling has the same effect for everyone (**&lt;font color="#e64173"&gt;F&lt;/font&gt;** and **&lt;font color="#314f4f"&gt;M&lt;/font&gt;**):
+
+
+
+&lt;img src="03_review_files/figure-html/int plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Interactions
+
+The model where schooling's effect can differ by gender (**&lt;font color="#e64173"&gt;F&lt;/font&gt;** and **&lt;font color="#314f4f"&gt;M&lt;/font&gt;**):
+
+&lt;img src="03_review_files/figure-html/int plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Interactions
+
+Interpreting coefficients can be a little tricky with interactions, but the key&lt;sup&gt;†&lt;/sup&gt; is to carefully work through the math.
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \, \text{School}_i + \beta_2 \, \text{Female}_i + \beta_3 \, \text{School}_i\times\text{Female}_i + u_i $$
+
+Expected returns to schooling for women:
+
+$$
+`\begin{aligned}
+ \mathop{\boldsymbol{E}}\left[ \text{Pay}_i | \text{Female} \land \text{School} = \ell + 1 \right] - \mathop{\boldsymbol{E}}\left[ \text{Pay}_i | \text{Female} \land \text{School} = \ell \right] &amp;= \\
+ \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 (\ell+1) + \beta_2 + \beta_3 (\ell + 1) + u_i \right] + \mathop{\boldsymbol{E}}\left[ \beta_0 + \beta_1 \ell + \beta_2 + \beta_3 \ell + u_i  \right] &amp;= \\
+ \beta_1 + \beta_3
+\end{aligned}`
+$$
+
+--
+
+Similarly, `\(\beta_1\)` gives the returns to schooling for men. Thus, `\(\beta_3\)` gives the **difference in the returns to schooling** for women and men.
+
+.footnote[
+[†]: As if often the key with econometrics.
+]
+
+---
 ## Log-linear specification
 
+In economics, you will frequently see logged outcome variables with linear (non-logged) explanatory variables, _e.g._,
+
+$$ \log(\text{Pay}_i) = \beta_0 + \beta_1 \, \text{School}_i + u_i $$
+
+This specification changes our interpretation of the slope coefficients.
+
+**Interpretation**
+
+- A one-unit increase in our explanatory variable increases the outcome variable by approximately `\(\beta_1\)` percent.
+
+- *Example:* An additional year of schooling increases pay by approximately 3 percent (for `\(\beta_1 = 0.03\)`).
+
+---
+## Log-linear specification
+
+**Derivation**
+
+Consider the log-linear model
+
+$$ \log(y) = \beta_0 + \beta_1 \, x + u $$
+
+and differentiate
+
+$$ \dfrac{dy}{y} = \beta_1 dx $$
+
+So a marginal change in `\(x\)` (_i.e._, `\(dx\)`) leads to a `\(\beta_1 dx\)` **percentage change** in `\(y\)`.
+
+---
+## Log-linear specification
+
+Because the log-linear specification comes with a different interpretation, you need to make sure it fits your data-generating process/model.
+
+Does `\(x\)` change `\(y\)` in levels (_e.g._, a 3-unit increase) or percentages (_e.g._, a 10-percent increase)?
+
+--
+
+_I.e._, you need to be sure an exponential relationship makes sense:
+
+$$ \log(y_i) = \beta_0 + \beta_1 \, x_i + u_i \iff y_i = e^{\beta_0 + \beta_1 x_i + u_i} $$
+
+---
+## Log-linear specification
+
+&lt;img src="03_review_files/figure-html/log linear plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
 ## Log-log specification
 
-## Log-linear with a binary variable
+Similarly, econometricians frequently employ log-log models, in which the outcome variable is logged *and* at least one explanatory variable is logged, _e.g._,
+
+$$ \log(Pay_i) = \beta_0 + \beta_1 \, \log(\text{School}_i) + u_i $$
+
+**Interpretation:**
+
+- A one-percent increase in `\(x\)` will lead to a `\(\beta_1\)` percent change in `\(y\)`.
+- Often interpreted as an elasticity.
+
+---
+## Log-log specification
+
+**Derivation**
+
+Consider the log-log model
+
+$$ \log(y) = \beta_0 + \beta_1 \, \log(x) + u $$
+
+and differentiate
+
+$$ \dfrac{dy}{y} = \beta_1 \dfrac{dx}{x} $$
+
+which says that for a one-percent increase in `\(x\)`, we will see a `\(\beta_1\)` percent increase in `\(y\)`. As an elasticity:
+
+$$ \dfrac{dy}{dx} \dfrac{x}{y} = \beta_1 $$
+
+---
+## Log-log specification
+
+&lt;img src="03_review_files/figure-html/log log plot-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: true
 # Additional topics
 
 ---
+
+## Log-linear with indicator
 
 ## Treatment effects and causality
 

@@ -8,6 +8,7 @@
   font-family: monospace;
 }
 
+
 .title-slide > h2  {
   color: rgba(249, 38, 114, 0.75);
   /* color: #afafaf; */
@@ -54,4 +55,26 @@
   display: none;
 }
 
-.mjx-chtml{ font-size: 105% !important; }
+.mjx-chtml{
+  font-size: 105% !important;
+  /* line-height: 105% !important; */
+}
+
+/* Mono-spaced font, smaller */
+.mono-small {
+  font-family: monospace;
+  font-size: 20px;
+}
+.mono-small .mjx-chtml {
+  font-size: 105% !important;
+}
+
+.pseudocode, .pseudocode-small {
+  font-family: monospace;
+  background: #f8f8f8;
+  border-radius: 3px;
+  padding: 4px;
+}
+.pseudocode-small {
+  font-size: 20px;
+}
