@@ -64,12 +64,22 @@ theme_axes <- theme_empty + theme(
 # Prologue
 
 ---
-
 # .mono[R] showcase
 
-**TODO**
+**[.mono[ggplot2]](https://ggplot2.tidyverse.org/reference/index.html)**
 
-**TODO**
+- Incredibly powerful graphing and mapping package for .mono[R].
+- Written in a way that helps you build your figures layer by layer.
+- Exportable to many applications.
+- Party of the `tidyverse`.
+
+**[.mono[shiny]](https://shiny.rstudio.com)**
+
+- Export your figures and code to interactive web apps.
+- Enormous range of applications
+  - [Distribution calculator](https://gallery.shinyapps.io/dist_calc/)
+  - [Tabsets](https://shiny.rstudio.com/gallery/tabsets.html)
+  - [Traveling salesman](https://gallery.shinyapps.io/shiny-salesman/)
 
 ---
 
@@ -807,6 +817,62 @@ $$
 **Note<sub>2</sub>:** The *holding all other variables constant* interpretation also applies for categorical variables in multiple regression settings.
 
 ---
+## Categorical variables
+
+$y_i = \beta_0 + \beta_1 x_i + u_i$ for binary variable $x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}$
+
+```{R, cat data, include = F}
+# Set seed
+set.seed(1235)
+# Sample size
+n <- 5e3
+# Generate data
+cat_df <- tibble(
+  x = sample(x = c(0, 1), size = n, replace = T),
+  y = 3 + 7 * x + rnorm(n, sd = 2)
+)
+# Regression
+cat_reg <- lm(y ~ x, data = cat_df)
+```
+
+```{R, dat plot 1, echo = F, dev = "svg", fig.height = 5.5}
+set.seed(12345)
+ggplot(data = cat_df, aes(x = x, y = y, color = as.factor(x))) +
+geom_jitter(width = 0.3, size = 1.5, alpha = 0.5) +
+scale_color_manual(values = c("darkslategrey", red_pink)) +
+theme_empty
+```
+
+---
+## Categorical variables
+
+$y_i = \beta_0 + \beta_1 x_i + u_i$ for binary variable $x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}$
+
+```{R, dat plot 2, echo = F, dev = "svg", fig.height = 5.5}
+set.seed(12345)
+ggplot(data = cat_df, aes(x = x, y = y, color = as.factor(x))) +
+geom_jitter(width = 0.3, size = 1.5, alpha = 0.5) +
+scale_color_manual(values = c("darkslategrey", red_pink)) +
+geom_hline(yintercept = cat_reg$coefficients[1], size = 1, color = "darkslategrey") +
+geom_hline(yintercept = cat_reg$coefficients[1] + cat_reg$coefficients[2], size = 1, color = red_pink) +
+annotate(
+  geom = "text",
+  x = 0.5,
+  y = -1 + cat_reg$coefficients[1],
+  label = TeX("$\\hat{\\beta}_0 = \\bar{\\mathrm{Group}_0}$"),
+  size = 6
+) +
+annotate(
+  geom = "text",
+  x = 0.5,
+  y = 1 + cat_reg$coefficients[1] + cat_reg$coefficients[2],
+  label = TeX("$\\hat{\\beta}_0 + \\hat{\\beta}_1 = \\bar{\\mathrm{Group}_1}$"),
+  size = 6,
+  color = red_pink
+) +
+theme_empty
+```
+---
 ## Interactions
 
 Interactions allow the effect of one variable to change based upon the level of another variable.
@@ -1032,6 +1098,23 @@ which says that for a one-percent increase in $x$, we will see a $\beta_1$ perce
 $$ \dfrac{dy}{dx} \dfrac{x}{y} = \beta_1 $$
 
 ---
+## Log-linear with a binary variable
+
+**Note:** If you have a log-linear model with a binary indicator variable, the interpretation for the coefficient on that variable changes.
+
+Consider
+
+$$ y_i = \beta_0 + \beta_1 x_1 + u_i $$
+
+for binary variable $x_1$.
+
+The interpretation of $\beta_1$ is now
+
+- When $x_1$ changes from 0 to 1, $y$ will change by $100 \times \left( e^{\beta_1} -1 \right)$ percent.
+- When $x_1$ changes from 1 to 0, $y$ will change by $100 \times \left( e^{-\beta_1} -1 \right)$ percent.
+
+
+---
 ## Log-log specification
 
 ```{R, log log plot, echo = F, cache = T, dev = "svg", fig.height = 6}
@@ -1060,13 +1143,236 @@ layout: true
 # Additional topics
 
 ---
+class: inverse, middle, center
 
-## Log-linear with indicator
+---
+## Inference *vs.* prediction
 
+So far, we've focused mainly **statistical inference**—using estimators and their distributions properties to try to learn about underlying, unknown population parameters.
+
+$$ y\_i = \color{#e64173}{\hat{\beta}\_{0}} + \color{#e64173}{\hat{\beta\_1}} \, x\_{1i} + \color{#e64173}{\hat{\beta\_2}} \, x\_{2i} + \cdots + \color{#e64173}{\hat{\beta}\_{k}} \, x\_{ki} + e\_i $$
+
+--
+
+**Prediction* includes a fairly different set of topics/tools within econometrics (and data science/machine learning)—creating models that accurately estimate individual observations.
+
+$$ \color{#e64173}{\hat{y}\_i} = \mathop{\hat{f}}\left( x_1,\, x_2,\, \ldots x_k \right) $$
+
+---
+## Inference *vs.* prediction
+
+Succinctly
+
+- **Inference:** causality, $\hat{\beta}_k$ (consistent and efficient), standard errors/hypothesis tests for $\hat{\beta}_k$, generally OLS
+
+- **Prediction:***<sup>†</sup> correlation, $\hat{y}_i$ (low error), model selection, nonlinear models are much more common
+
+.footnote[
+[†]: Includes forecasting.
+]
+
+---
 ## Treatment effects and causality
 
+Much of modern (micro)econometrics focuses on causally estimating (*identifying*) the effect of programs/policies, _e.g._,
+
+- [Government shutdowns](https://www.sciencedirect.com/science/article/pii/S004727271830118X)
+- [The minimum wage](https://www.jstor.org/stable/2118030)
+- [Recreational-cannabis legalization](https://pages.uoregon.edu/bchansen/working.html)
+- [Salary-history bans](http://www.drewmcnichols.com/research)
+- [Preschool](https://amstat.tandfonline.com/doi/abs/10.1198/016214508000000841#.XD4PVy2ZNO4)
+- [The Clean Water Act](https://academic.oup.com/qje/article-abstract/134/1/349/5092609)
+
+--
+
+In this literature, the program is often a binary variable, and we place high importance on finding an unbiased estimate for the program's effect, $\hat{\tau}$.
+
+$$ \text{Outcome}_i = \beta_0 + \tau \, \text{Program}_i + u_i $$
+
+---
 ## Transformations
 
+Our linearity assumption requires
+
+1. **parameters enter linearly** (_i.e._, the $\beta_k$ multiplied by variables)
+2. the $u_i$ **disturbances enter additively**
+
+We allow nonlinear relationships between $y$ and the explanatory variables.
+
+--
+
+**Examples**
+
+- **Polynomials** and **interactions:** $y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_2 + \beta_4 x_2^2 + \beta_5 \left( x_1 x_2 \right) + u_i$
+
+- **Exponentials** and **logs:** $\log(y_i) = \beta_0 + \beta_1 x_1 + \beta_2 e^{x_2} + u_i$
+
+- **Indicators** and **thresholds:** $y_i = \beta_0 + \beta_1 x_1 + \beta_2 \, \mathbb{I}(x_1 \geq 100) + u_i$
+
+---
+
+**Transformation challenge:** (literally) infinite possibilities. What do we pick?
+
+```{R, trans figure start, dev = "svg", fig.height = 6.5, echo = F}
+# Set seed
+set.seed(1235)
+# Sample size
+n <- 1e3
+# Generate data
+trans_df <- tibble(
+  x = runif(n, 0, 3),
+  # y = 1 + x + x^2 + x^3 + x^4 + 0.5 * x^5 + rnorm(n, mean = 0, sd = 6)
+  y = 2 * exp(x) + rnorm(n, mean = 0, sd = 6)
+)
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+
+---
+
+$y_i = \beta_0 + u_i$
+
+```{R, trans figure 0, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+---
+count: false
+
+$y_i = \beta_0 + \beta_1 x + u_i$
+
+```{R, trans figure 1, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+---
+count: false
+
+$y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + u_i$
+
+```{R, trans figure 2, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 2), color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+
+---
+count: false
+
+$y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + u_i$
+
+```{R, trans figure 3, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 2), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 3), color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+---
+count: false
+
+$y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + u_i$
+
+```{R, trans figure 4, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 2), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 3), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 4), color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+---
+count: false
+
+$y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + u_i$
+
+```{R, trans figure 5, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 2), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 3), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 4), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 5), color = "orange", size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+
+---
+count: false
+
+**Truth:** $y_i = 2 e^{x} + u_i$
+
+```{R, trans figure 6, dev = "svg", fig.height = 6.5, echo = F}
+# Plot
+ggplot(data = trans_df, aes(x = x, y = y)) +
+geom_line(stat = "smooth", method = lm, formula = y ~ 1, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ x, color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 2), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 3), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 4), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ poly(x, 5), color = "orange", size = 1.5, alpha = 0.3) +
+geom_line(stat = "smooth", method = lm, formula = y ~ exp(x), color = red_pink, size = 1.5) +
+geom_point(size = 2.5, color = "darkslategrey", alpha = 0.5) +
+theme_empty
+```
+
+---
 ## Outliers
 
+Because OLS minimizes the sum of the **squared** errors, outliers can play a large role in our estimates.
+
+**Common responses**
+
+- Remove the outliers from the dataset
+
+- Replace outliers with the 99<sup>th</sup> percentile of their variable (*Winsorize*)
+
+- Take the log of the variable to "take care of" outliers
+
+- Do nothing. Outliers are not always bad. Some people are "far" from the average. It may not make sense to try to change this variation.
+
+---
 ## Missing data
+
+Similarly, missing data can affect your results.
+
+.mono[R] doesn't know how to deal with a missing observation.
+```{R, example na}
+1 + 2 + 3 + NA + 5
+```
+
+If you run a regression<sup>†</sup> with missing values, .mono[R] drops the observations missing those values.
+
+If the observations are missing in a nonrandom way, a random sample may end up nonrandom.
+
+.footnote[
+[†]: Or perform almost any operation/function
+]
+
+---
+exclude: true
+
+```{R, generate pdfs, include = F}
+system("decktape remark 03_review.html 03_review.pdf --chrome-arg=--allow-file-access-from-files")
+```

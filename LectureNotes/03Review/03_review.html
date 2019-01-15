@@ -28,12 +28,22 @@ class: inverse, center, middle
 # Prologue
 
 ---
-
 # .mono[R] showcase
 
-**TODO**
+**[.mono[ggplot2]](https://ggplot2.tidyverse.org/reference/index.html)**
 
-**TODO**
+- Incredibly powerful graphing and mapping package for .mono[R].
+- Written in a way that helps you build your figures layer by layer.
+- Exportable to many applications.
+- Party of the `tidyverse`.
+
+**[.mono[shiny]](https://shiny.rstudio.com)**
+
+- Export your figures and code to interactive web apps.
+- Enormous range of applications
+  - [Distribution calculator](https://gallery.shinyapps.io/dist_calc/)
+  - [Tabsets](https://shiny.rstudio.com/gallery/tabsets.html)
+  - [Traveling salesman](https://gallery.shinyapps.io/shiny-salesman/)
 
 ---
 
@@ -515,6 +525,21 @@ $$
 **Note&lt;sub&gt;2&lt;/sub&gt;:** The *holding all other variables constant* interpretation also applies for categorical variables in multiple regression settings.
 
 ---
+## Categorical variables
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` for binary variable `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+
+
+&lt;img src="03_review_files/figure-html/dat plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+## Categorical variables
+
+`\(y_i = \beta_0 + \beta_1 x_i + u_i\)` for binary variable `\(x_i = \{\color{#314f4f}{0}, \, \color{#e64173}{1}\}\)`
+
+&lt;img src="03_review_files/figure-html/dat plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+---
 ## Interactions
 
 Interactions allow the effect of one variable to change based upon the level of another variable.
@@ -658,6 +683,23 @@ which says that for a one-percent increase in `\(x\)`, we will see a `\(\beta_1\
 $$ \dfrac{dy}{dx} \dfrac{x}{y} = \beta_1 $$
 
 ---
+## Log-linear with a binary variable
+
+**Note:** If you have a log-linear model with a binary indicator variable, the interpretation for the coefficient on that variable changes.
+
+Consider
+
+$$ y_i = \beta_0 + \beta_1 x_1 + u_i $$
+
+for binary variable `\(x_1\)`.
+
+The interpretation of `\(\beta_1\)` is now
+
+- When `\(x_1\)` changes from 0 to 1, `\(y\)` will change by `\(100 \times \left( e^{\beta_1} -1 \right)\)` percent.
+- When `\(x_1\)` changes from 1 to 0, `\(y\)` will change by `\(100 \times \left( e^{-\beta_1} -1 \right)\)` percent.
+
+
+---
 ## Log-log specification
 
 &lt;img src="03_review_files/figure-html/log log plot-1.svg" style="display: block; margin: auto;" /&gt;
@@ -667,16 +709,162 @@ layout: true
 # Additional topics
 
 ---
+class: inverse, middle, center
 
-## Log-linear with indicator
+---
+## Inference *vs.* prediction
 
+So far, we've focused mainly **statistical inference**—using estimators and their distributions properties to try to learn about underlying, unknown population parameters.
+
+$$ y\_i = \color{#e64173}{\hat{\beta}\_{0}} + \color{#e64173}{\hat{\beta\_1}} \, x\_{1i} + \color{#e64173}{\hat{\beta\_2}} \, x\_{2i} + \cdots + \color{#e64173}{\hat{\beta}\_{k}} \, x\_{ki} + e\_i $$
+
+--
+
+**Prediction* includes a fairly different set of topics/tools within econometrics (and data science/machine learning)—creating models that accurately estimate individual observations.
+
+$$ \color{#e64173}{\hat{y}\_i} = \mathop{\hat{f}}\left( x_1,\, x_2,\, \ldots x_k \right) $$
+
+---
+## Inference *vs.* prediction
+
+Succinctly
+
+- **Inference:** causality, `\(\hat{\beta}_k\)` (consistent and efficient), standard errors/hypothesis tests for `\(\hat{\beta}_k\)`, generally OLS
+
+- **Prediction:***&lt;sup&gt;†&lt;/sup&gt; correlation, `\(\hat{y}_i\)` (low error), model selection, nonlinear models are much more common
+
+.footnote[
+[†]: Includes forecasting.
+]
+
+---
 ## Treatment effects and causality
 
+Much of modern (micro)econometrics focuses on causally estimating (*identifying*) the effect of programs/policies, _e.g._,
+
+- [Government shutdowns](https://www.sciencedirect.com/science/article/pii/S004727271830118X)
+- [The minimum wage](https://www.jstor.org/stable/2118030)
+- [Recreational-cannabis legalization](https://pages.uoregon.edu/bchansen/working.html)
+- [Salary-history bans](http://www.drewmcnichols.com/research)
+- [Preschool](https://amstat.tandfonline.com/doi/abs/10.1198/016214508000000841#.XD4PVy2ZNO4)
+- [The Clean Water Act](https://academic.oup.com/qje/article-abstract/134/1/349/5092609)
+
+--
+
+In this literature, the program is often a binary variable, and we place high importance on finding an unbiased estimate for the program's effect, `\(\hat{\tau}\)`.
+
+$$ \text{Outcome}_i = \beta_0 + \tau \, \text{Program}_i + u_i $$
+
+---
 ## Transformations
 
+Our linearity assumption requires
+
+1. **parameters enter linearly** (_i.e._, the `\(\beta_k\)` multiplied by variables)
+2. the `\(u_i\)` **disturbances enter additively**
+
+We allow nonlinear relationships between `\(y\)` and the explanatory variables.
+
+--
+
+**Examples**
+
+- **Polynomials** and **interactions:** `\(y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_2 + \beta_4 x_2^2 + \beta_5 \left( x_1 x_2 \right) + u_i\)`
+
+- **Exponentials** and **logs:** `\(\log(y_i) = \beta_0 + \beta_1 x_1 + \beta_2 e^{x_2} + u_i\)`
+
+- **Indicators** and **thresholds:** `\(y_i = \beta_0 + \beta_1 x_1 + \beta_2 \, \mathbb{I}(x_1 \geq 100) + u_i\)`
+
+---
+
+**Transformation challenge:** (literally) infinite possibilities. What do we pick?
+
+&lt;img src="03_review_files/figure-html/trans figure start-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+`\(y_i = \beta_0 + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 0-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 4-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+`\(y_i = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+**Truth:** `\(y_i = 2 e^{x} + u_i\)`
+
+&lt;img src="03_review_files/figure-html/trans figure 6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
 ## Outliers
 
+Because OLS minimizes the sum of the **squared** errors, outliers can play a large role in our estimates.
+
+**Common responses**
+
+- Remove the outliers from the dataset
+
+- Replace outliers with the 99&lt;sup&gt;th&lt;/sup&gt; percentile of their variable (*Winsorize*)
+
+- Take the log of the variable to "take care of" outliers
+
+- Do nothing. Outliers are not always bad. Some people are "far" from the average. It may not make sense to try to change this variation.
+
+---
 ## Missing data
+
+Similarly, missing data can affect your results.
+
+.mono[R] doesn't know how to deal with a missing observation.
+
+```r
+1 + 2 + 3 + NA + 5
+```
+
+```
+#&gt; [1] NA
+```
+
+If you run a regression&lt;sup&gt;†&lt;/sup&gt; with missing values, .mono[R] drops the observations missing those values.
+
+If the observations are missing in a nonrandom way, a random sample may end up nonrandom.
+
+.footnote[
+[†]: Or perform almost any operation/function
+]
+
+---
+exclude: true
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
