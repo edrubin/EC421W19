@@ -17,6 +17,10 @@
 
 .remark-slide-content {
   background-color: #ffffff;
+  font-size: 24px;
+  /* font-weight: 300; */
+  /* line-height: 1.5; */
+  /* padding: 1em 2em 1em 2em; */
 }
 
 .inverse {
@@ -49,3 +53,5 @@
 .white-slide .remark-slide-number {
   display: none;
 }
+
+.mjx-chtml{ font-size: 105% !important; }

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Metrics Review, Part 2</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Edward Rubin" />
+    <meta name="date" content="2019-01-14" />
+    <link href="03_review_files/remark-css/default.css" rel="stylesheet" />
+    <link href="03_review_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="03_review_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Metrics Review, Part 2
+## EC 421, Set 3
+### Edward Rubin
+### 14 January 2019
+
+---
+
+class: inverse, center, middle
+
+
+
+# Prologue
+
+---
+
+# .mono[R] showcase
+
+**TODO**
+
+**TODO**
+
+---
+
+# Schedule
+
+## Last Time
+
+We reviewed the fundamentals of statistics and econometrics.
+
+**Follow up 1:** Someone asked about differences in R for Windows *vs.* Mac. One difference:  the characters you use for navigating the directory (file paths) within your computer.
+- **Windows:**
+  - *Option 1:* `"C:\\MyName\\Folder1\\Folder2"`
+  - *Option 2:* `"C:/MyName/Folder1/Folder2"`
+- **OSX** and **Linux:**: `"/User/MyName/Folder1/Folder2"`
+
+--
+
+**Follow up 2:** Is this font size better?
+
+$$ \text{Diet} = \mathop{f}(\text{tacos},\, \text{pho},\, \text{kale},\, \text{water}) $$
+
+
+---
+
+# Schedule
+
+## Today
+
+We review of more of the main/basic results in metrics.
+
+## This week
+
+Will post the **first assignment** as the end of the week.
+
+You will have a week to complete it.
+
+---
+class: inverse, middle, center
+
+# Multiple regression
+
+---
+layout: true
+# Multiple regression
+
+---
+
+## More explanatory variables
+
+We're moving from **simple linear regression** (one outcome variable and one explanatory variable)
+
+$$ y_i = \beta_0 + \beta_1 x_i + u_i $$
+
+to the land of **multiple linear regression** (one outcome variable and multiple explanatory variables)
+
+$$ y\_i = \beta\_0 + \beta\_1 x\_{1i} + \beta\_2 x\_{2i} + \cdots + \beta\_k x\_{ki} + u\_i $$
+
+--
+
+**Why?**
+--
+ Better explain the variation in `\(y\)`, improve predictions, avoid omitted-variable bias, ...
+
+---
+
+
+
+`\(y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + u_i \quad\)` `\(x_1\)` is continuous `\(\quad x_2\)` is categorical
+
+&lt;img src="03_review_files/figure-html/mult reg plot 1-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+The intercept and categorical variable `\(x_2\)` control for the groups' means.
+
+&lt;img src="03_review_files/figure-html/mult reg plot 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+With groups' means removed:
+
+&lt;img src="03_review_files/figure-html/mult reg plot 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+`\(\hat{\beta}_1\)` estimates the relationship between `\(y\)` and `\(x_1\)` after controlling for `\(x_2\)`.
+
+&lt;img src="03_review_files/figure-html/mult reg plot 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+
+Another way to think about it:
+
+&lt;img src="03_review_files/figure-html/mult reg plot 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Model fit
+
+Measures of *goodness of fit* try to analyze how well our model describes (*fits*) the data.
+
+**Common measure:** `\(R^2\)` [R-squared] (*a.k.a.* coefficient of determination)
+
+$$ R^2 = \dfrac{\sum_i (\hat{y}_i - \overline{y})^2}{\sum_i \left( y_i - \overline{y} \right)^2} = 1 - \dfrac{\sum_i \left( y_i - \hat{y}_i \right)^2}{\sum_i \left( y_i - \overline{y} \right)^2} $$
+
+Notice our old friend SSE: `\(\sum_i \left( y_i - \hat{y}_i \right)^2 = \sum_i e_i^2\)`.
+
+--
+
+`\(R^2\)` literally tells us the share of the variance in `\(y\)` our current models accounts for. Thus `\(0 \leq R^2 \leq 1\)`.
+
+---
+
+**The problem:** As we add variables to our model, `\(R^2\)` *mechanically* increases.
+
+--
+
+To see this problem, we can simulate a dataset of 10,000 observations on `\(y\)` and 1,000 random `\(x_k\)` variables. **No relations between `\(y\)` and the `\(x_k\)`!**
+
+
+```r
+set.seed(1234)
+y &lt;- rnorm(1e4)
+x &lt;- matrix(data = rnorm(1e7), nrow = 1e4)
+x %&lt;&gt;% cbind(matrix(data = 1, nrow = 1e4, ncol = 1), x)
+r_df &lt;- mclapply(X = 1:(1e3-1), mc.cores = 12, FUN = function(i) {
+  tmp_reg &lt;- lm(y ~ x[,1:(i+1)]) %&gt;% summary()
+  data.frame(
+    k = i + 1,
+    r2 = tmp_reg %$% r.squared,
+    r2_adj = tmp_reg %$% adj.r.squared
+  )
+}) %&gt;% bind_rows()
+```
+
+---
+
+**The problem:** As we add variables to our model, `\(R^2\)` *mechanically* increases.
+
+
+
+
+&lt;img src="03_review_files/figure-html/r2 plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**One solution:** Adjusted `\(R^2\)`
+
+&lt;img src="03_review_files/figure-html/adjusted r2 plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+**The problem:** As we add variables to our model, `\(R^2\)` *mechanically* increases.
+
+**One solution:** Control (penalize) for the number of variables, _e.g._, adjusted `\(R^2\)`:
+
+$$ \overline{R}^2 = 1 - \dfrac{\sum_i \left( y_i - \hat{y}_i \right)^2/(n-k-1)}{\sum_i \left( y_i - \overline{y} \right)^2/(n-1)} $$
+
+*Note:* Adjusted `\(R^2\)` need not be between 0 and 1.
+
+---
+
+## Tradeoffs
+
+There are tradeoffs to remember as we add/remove variables:
+
+**Fewer variables**
+
+- Generally explain less variation in `\(y\)`
+- Provide simple interpretations and visualizations (*parsimonious*)
+- May need to worry about omitted-variable bias
+
+**More variables**
+
+- More likely to find *spurious* relationships (statistically significant due to chance—does not reflect a true, population-level relationship)
+- More difficult to interpret the model
+- You may still miss important variabless—still omitted-variable bias
+
+---
+layout: true
+# Omitted-variable bias
+---
+class: inverse, middle, center
+
+---
+
+We'll go deeper into this issue in a few weeks, but as a refresher:
+
+**Omitted-variable bias** (OVB) arises when we omit a variable that
+
+1. affects our outcome variable `\(y\)`
+
+2. correlates with an explanatory variable `\(x_j\)`
+
+As it's name suggests, this situation leads to bias in our estimate of `\(\beta_j\)`.
+
+--
+
+**Note:** OVB Is not exclusive to multiple linear regression, but it does require multiple variables affect `\(y\)`.
+
+---
+**Example**
+
+Let's imagine a simple model for the amount individual `\(i\)` gets paid
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \text{School}_i + \beta_2 \text{Male}_i + u_i $$
+
+where
+
+- `\(\text{School}_i\)` gives `\(i\)`'s years of schooling
+- `\(\text{Male}_i\)` denotes an indicator variable for whether individual `\(i\)` is male.
+
+thus
+
+- `\(\beta_1\)`: the returns to an additional year of schooling
+- `\(\beta_2\)`: the premium for being male (if `\(\beta_2 &gt; 0\)`, then there is discrimination against women—receiving less pay based upon gender)
+
+---
+layout: true
+# Omitted-variable bias
+**Example, continued**
+
+---
+
+From our population model
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \text{School}_i + \beta_2 \text{Male}_i + u_i $$
+
+If a study focuses on the relationship between pay and schooling, _i.e._,
+
+$$ \text{Pay}_i = \beta_0 + \beta_1 \text{School}_i + \left(\beta_2 \text{Male}_i + u_i\right) $$
+$$ \text{Pay}_i = \beta_0 + \beta_1 \text{School}_i + \varepsilon_i $$
+
+where `\(\varepsilon_i = \beta_2 \text{Male}_i + u_i\)`.
+
+We used our exogeneity assumption to derive OLS' unbiasedness. But even if `\(\mathop{\boldsymbol{E}}\left[ u | X \right] = 0\)`, it is not true that `\(\mathop{\boldsymbol{E}}\left[ \varepsilon | X \right] = 0\)` so long as `\(\beta_2 \neq 0\)`.
+
+Specifically, `\(\mathop{\boldsymbol{E}}\left[ \varepsilon | \text{Male} = 1 \right] = \beta_2 + \mathop{\boldsymbol{E}}\left[ u | \text{Male} = 1 \right] \neq 0\)`.
+--
+ **Now OLS is biased.**
+
+---
+
+Let's try to see this result graphically.
+
+
+
+The population model:
+
+$$ \text{Pay}_i = 20 + 0.5 \times \text{School}_i + 10 \times \text{Male}_i + u_i $$
+
+Our regression model that suffers from omitted-variable bias:
+
+$$ \text{Pay}_i = \hat{\beta}_0 + \hat{\beta}_1 \times \text{School}_i + e_i $$
+
+Finally, imagine that women, on average, receive more schooling than men.
+
+---
+layout: true
+# Omitted-variable bias
+**Example, continued:** `\(\text{Pay}_i = 20 + 0.5 \times \text{School}_i + 10 \times \text{Male}_i + u_i\)`
+
+---
+
+The relationship between pay and schooling.
+
+&lt;img src="03_review_files/figure-html/plot ovb 1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+Biased regression estimate: `\(\widehat{\text{Pay}}_i = 32.2 + -1.1 \times \text{School}_i\)`
+
+&lt;img src="03_review_files/figure-html/plot ovb 2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+**Recalling the omitted variable:** &lt;font color="#e64173"&gt;female&lt;/font&gt; and &lt;font color="#314f4f"&gt;male&lt;/font&gt;
+
+&lt;img src="03_review_files/figure-html/plot ovb 3-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+**Recalling the omitted variable:** &lt;font color="#e64173"&gt;female&lt;/font&gt; and &lt;font color="#314f4f"&gt;male&lt;/font&gt;
+
+&lt;img src="03_review_files/figure-html/plot ovb 4-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+count: false
+Biased regression estimate: `\(\widehat{\text{Pay}}_i = 20.3 + 0.4 \times \text{School}_i + 10.2 \times \text{Male}_i\)`
+
+&lt;img src="03_review_files/figure-html/plot ovb 5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: false
+
+# Omitted-variable bias
+
+## Solutions
+
+1. Don't omit variables
+
+2. Instrumental variables and two-stage least squares&lt;sup&gt;†&lt;/sup&gt;
+
+**Warning:** There are situations in which neither solution is possible.
+
+--
+
+1. Proceed with caution (sometimes you can sign the bias).
+
+2. Stop.
+
+.footnote[
+[†]: Coming soon to our lectures.
+]
+
+---
+layout: true
+# Interpreting coefficients
+
+---
+
+## Continuous variables
+
+## Categorical variables
+
+## Interactions
+
+## Log-linear specification
+
+## Log-log specification
+
+## Log-linear with a binary variable
+
+---
+layout: true
+# Additional topics
+
+---
+
+## Treatment effects and causality
+
+## Transformations
+
+## Outliers
+
+## Missing data
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
