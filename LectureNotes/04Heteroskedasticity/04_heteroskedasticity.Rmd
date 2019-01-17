@@ -90,18 +90,25 @@ theme_axes <- theme_void() + theme(
 ---
 # .mono[R] showcase
 
+**[.mono[R Markdown]](https://rmarkdown.rstudio.com)**
+- Simple mark-up language for for combining/creating documents, equations, figures, .mono[R], and more
+- [Basics of .mono[Markdown]](https://rmarkdown.rstudio.com/authoring_basics.html)
+- _E.g._, `**I'm bold**`, `*I'm italic*`, `I <- "code"`
+
 **[Econometrics with .mono[R]](https://www.econometrics-with-r.org)**
 - (Currently) free, online textbook
-- Written and published using .mono[R] (of course)
+- Written and published using .mono[R] (and probably .mono[R Markdown])
 - *Warning:* I haven't read this book yet.
 
-**[Item 2]()**
+Related: Tyler Ransom has a [great cheatsheet for econometrics](https://github.com/tyleransom/EconometricsLabs/blob/master/econometricsCheatSheet.pdf).
 
 ---
 
 # Schedule
 
 ## Last Time
+
+We wrapped up our review.
 
 ## Today
 
@@ -645,11 +652,11 @@ $$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{j} x\
 
 Just as with the Bruesch-Pagan test, White's test statistic is
 
-$$ \text{LM} = n \times R_e^2 $$
+$$ \text{LM} = n \times R_e^2 \qquad \text{Under H}_0,\, \text{LM} \overset{\text{d}}{\sim} \chi_k^2 $$
 
 but now the $R^2_e$ comes from the regression of $e^2$ on the explanatory variables, their squares, and their interactions.
 
-As before, under the null, $\text{LM}$ is distributed $\chi_k^2$.
+$$ e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m}\_{\text{Interactions}} + v\_i $$
 
 --
 
@@ -668,7 +675,7 @@ $$
 \begin{aligned}
   e^2 =
   &\alpha_0 + \alpha_1 x_1 + \alpha_2 x_2 + \alpha_3 x_3 + \alpha_4 x_1^2 + \alpha_5 x_2^2 + \alpha_6 x_3^2 \\
-  &+ \alpha_7 x_1 x_2 + \alpha_8 x_1 x_3 + \alpha_9 x_2 x_3 + v  
+  &+ \alpha_7 x_1 x_2 + \alpha_8 x_1 x_3 + \alpha_9 x_2 x_3 + v
 \end{aligned}
 $$
 
@@ -697,3 +704,155 @@ $$
  e_i^2 &= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} \color{#e64173}{+ \hat{\alpha}_2 x^2_{1i}} & \widehat{\text{LM}} &= `r round(lm_bp2, 2)` &\mathit{p}\text{-value} < 0.001
 \end{aligned}
 $$
+
+---
+layout: false
+# Testing for heteroskedasticity
+
+Okay. We have some tests that may help us detect heteroskedasticity.
+
+What do we do if we detect it?
+---
+layout: true
+# Living with heteroskedasticity
+---
+class: inverse, middle, true
+---
+
+In the presence of heteroskedasticity, OLS is
+
+- still .hi[unbiased]
+- .hi[no longer the most efficient] unbiased linear estimator
+
+On average, we get the right answer but with more noise (less precision).
+
+--
+
+**Options:**
+
+1. Check regression .hi[specification].
+2. Find a new, more efficient unbiased .hi[estimator].
+3. Live with OLS's inefficiency and make .hi[corrections for inference].
+  - Standard errors
+  - Confidence intervals
+  - Hypothesis tests
+
+---
+layout: true
+# Living with heteroskedasticity
+## Misspecification
+---
+
+As we've discussed, the specification<sup>†</sup> of your regression model matters a lot for the unbiasedness and efficiency of your estimator.
+
+**Response #1:** Ensure your function form doesn't cause heteroskedasticity.
+
+.footnote[[†]: *Specification:* Functional form and included variables.]
+---
+
+*Example:* If the population relationship is $$ y = \beta_0 + \beta_1 x + \beta_2 x^2 + u $$
+
+But you omit $x^2$ and estimate $$ y = \gamma_0 + \gamma_1 x + w $$
+
+Then $$ w = u + \beta_2 x^2 \quad \implies \quad \mathop{\text{Var}} \left( w \right) = f(x) $$
+
+The variance of $w$ changes systematically with $x$ (heteroskedasticity).
+---
+
+More generally:
+
+**Misspecification problem:** Incorrect specification of the regression model can cause heteroskedasticity.
+
+--
+
+**Solution:** 💡 Get it right (_e.g._, don't omit $x^2$).
+
+--
+
+**New problems:**
+
+- We often don't know the *right* specification.
+
+- We'd like a more formal process for addressing heteroskedasticity.
+
+--
+
+**Conclusion:** Adjusting the specification often doesn't solve the problem.
+
+---
+layout: true
+# Living with heteroskedasticity
+## Weighted least squares
+---
+
+Weighted least squares (WLS) presents another approach.
+
+--
+
+Let the true population relationship be
+
+$$
+\begin{align}
+  y_i = \beta_0 + \beta_1 x_{1i} + u_i \tag{1}
+\end{align}
+$$
+
+with $u_i \sim \mathop{N} \left( 0,\, \sigma_i^2 \right)$.
+
+--
+
+Now transform $(1)$ by dividing each observation's data by $\sigma_i$, _i.e._,
+
+$$
+\begin{align}
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+---
+
+$$
+\begin{align}
+  y_i &= \beta_0 + \beta_1 x_{1i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+Whereas $(1)$ is heteroskedastic,
+--
+ $\color{#e64173}{(2)}$ .hi[is homoskedastic].
+
+∴ OLS is efficient and unbiased for estimating the $\beta_k$ in $(2)$!
+
+--
+
+Why is $(2)$ homoskedastic?
+
+--
+
+$$ \mathop{\text{Var}} \left( \dfrac{u_i}{\sigma_i} \right) = \dfrac{1}{\sigma_i^2} \mathop{\text{Var}} \left( u_i \right) = \dfrac{1}{\sigma_i^2} \sigma_i^2 = 1 \quad \forall i $$
+---
+
+.hi[Weighted least squares] (WLS) estimators are a special class of .hi[generalized least squares] (GLS) estimators focused on heteroskedasticity.
+
+--
+
+$$
+\begin{align}
+  y_i &= \beta_0 + \beta_1 x_{1i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+*Notes:*
+
+1. **Inverse-variance weighting:** WLS downweights observations with higher variance in their errors.
+
+2. **Big requirement:** WLS requires that we *know* $\sigma_i^2$ for each observation.
+
+---
+exclude: true
+
+```{R, generate pdfs, include = F}
+system("decktape remark 04_heteroskedasticity.html 04_heteroskedasticity.pdf --chrome-arg=--allow-file-access-from-files")
+```
