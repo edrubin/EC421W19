@@ -296,7 +296,52 @@ theme(legend.position = "bottom")
 ```
 
 ---
+Looking at our estimator can also help.
 
+For the simple linear regression $y_i = \beta_0 + \beta_1 x_i + u_i$
+
+$$
+\begin{aligned}
+  \hat{\beta}_1 &= \\[0.3em]
+  &= \dfrac{\sum_i \left( x_i - \overline{x} \right) \left( y_i - \overline{y} \right)}{\sum_i \left( x_i -\overline{x} \right)} \\[0.3em]
+  &= \dfrac{\sum_i \left( x_i - \overline{x} \right) \left( y_i - \overline{y} \right)/(n-1)}{\sum_i \left( x_i -\overline{x} \right) / (n-1)} \\[0.3em]
+  &= \dfrac{\mathop{\hat{\text{Cov}}}(x,\,y)}{\mathop{\hat{\text{Var}}} \left( x \right)}
+\end{aligned}
+$$
+
+---
+Simple linear regression estimator:
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(x,\,y)}{\mathop{\hat{\text{Var}}} \left( x \right)} $$
+
+moving to multiple linear regression, the estimator changes slightly:
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(\color{#e64173}{\tilde{x}_1},\,y)}{\mathop{\hat{\text{Var}}} \left( \color{#e64173}{\tilde{x}_1} \right)} $$
+
+where $\color{#e64173}{\tilde{x}_1}$ is the *residualized* $x_1$ variable—the variation remaining in $x$ after controlling for the other explanatory variables.
+
+---
+More formally, consider the multiple-regression model
+
+$$ y_i = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u_i $$
+
+Our residualized $x_{1}$ (which we named $\color{#e64173}{\tilde{x}_1}$) comes from regressing $x_1$ on an intercept and all of the other explanatory variables and collecting the residuals, _i.e._,
+
+$$
+\begin{aligned}
+  \hat{x}\_{1i} &= \hat{\gamma}\_0 + \hat{\gamma}\_2 \, x\_{2i} + \hat{\gamma}\_3 \, x\_{3i} \\
+  \color{#e64173}{\tilde{x}\_{1i}} &= x\_{1i} - \hat{x}\_{1i}
+\end{aligned}
+$$
+
+--
+
+allowing us to better understand our OLS multiple-regression estimator
+
+$$ \hat{\beta}_1 = \dfrac{\mathop{\hat{\text{Cov}}}(\color{#e64173}{\tilde{x}_1},\,y)}{\mathop{\hat{\text{Var}}} \left( \color{#e64173}{\tilde{x}_1} \right)} $$
+
+
+---
 ## Model fit
 
 Measures of *goodness of fit* try to analyze how well our model describes (*fits*) the data.
@@ -1168,7 +1213,7 @@ $$ y\_i = \color{#e64173}{\hat{\beta}\_{0}} + \color{#e64173}{\hat{\beta\_1}} \,
 
 --
 
-**Prediction* includes a fairly different set of topics/tools within econometrics (and data science/machine learning)—creating models that accurately estimate individual observations.
+**Prediction** includes a fairly different set of topics/tools within econometrics (and data science/machine learning)—creating models that accurately estimate individual observations.
 
 $$ \color{#e64173}{\hat{y}\_i} = \mathop{\hat{f}}\left( x_1,\, x_2,\, \ldots x_k \right) $$
 
@@ -1179,7 +1224,7 @@ Succinctly
 
 - **Inference:** causality, $\hat{\beta}_k$ (consistent and efficient), standard errors/hypothesis tests for $\hat{\beta}_k$, generally OLS
 
-- **Prediction:***<sup>†</sup> correlation, $\hat{y}_i$ (low error), model selection, nonlinear models are much more common
+- **Prediction:**<sup>†</sup> correlation, $\hat{y}_i$ (low error), model selection, nonlinear models are much more common
 
 .footnote[
 [†]: Includes forecasting.

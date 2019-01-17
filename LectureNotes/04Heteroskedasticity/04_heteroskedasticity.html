@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Heteroskedasticity</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Edward Rubin" />
+    <meta name="date" content="2019-01-17" />
+    <link href="04_heteroskedasticity_files/remark-css/default.css" rel="stylesheet" />
+    <link href="04_heteroskedasticity_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="04_heteroskedasticity_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Heteroskedasticity
+## EC 421, Set 4
+### Edward Rubin
+### 17 January 2019
+
+---
+
+class: inverse, center, middle
+
+
+
+# Prologue
+
+---
+# .mono[R] showcase
+
+**[Econometrics with .mono[R]](https://www.econometrics-with-r.org)**
+- (Currently) free, online textbook
+- Written and published using .mono[R] (of course)
+- *Warning:* I haven't read this book yet.
+
+**[Item 2]()**
+
+---
+
+# Schedule
+
+## Last Time
+
+## Today
+
+Heteroskedasticity
+
+## This week
+
+First assignment! Due in a week.
+
+---
+layout: true
+# Heteroskedasticity
+---
+class: inverse, middle, center
+---
+
+Let's write down our **current assumptions**
+
+--
+
+1. Our sample (the `\(x_k\)`'s and `\(y_i\)`) was .hi[randomly drawn] from the population.
+
+--
+
+2. `\(y\)` is a .hi[linear function] of the `\(\beta_k\)`'s and `\(u_i\)`.
+
+--
+
+3. There is no perfect .hi[multicollinearity] in our sample.
+
+--
+
+4. The dependent variables are .hi[exogenous]: `\(\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)\)`.
+
+--
+
+5. The disurbances have .hi[constant variance] `\(\sigma^2\)` and .hi[zero covariance], _i.e._,
+  - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+  - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0\)` for `\(i\neq j\)`
+
+--
+
+6. The disturbances come from a .hi[Normal] distribution, _i.e._, `\(u_i \overset{\text{iid}}{\sim} \mathop{\text{N}}\left( 0, \sigma^2 \right)\)`.
+
+---
+
+Today we're focusing on assumption \#5:
+
+&gt; 5\. The disurbances have .hi[constant variance] `\(\sigma^2\)` and .hi[zero covariance], _i.e._,
+&gt;  - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+&gt;  - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0\)` for `\(i\neq j\)`
+
+--
+
+Specifically, we will focus on the assumption of .hi[constant variance] (also known as *homoskedasticity*).
+
+--
+
+**Violation of this assumption:**
+
+.hi[Heteroskedasticity:] `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2_i\)` and `\(\sigma^2_i \neq \sigma^2_j\)` for some `\(i\neq j\)`.
+
+--
+
+In other words: Our disturbances have different variances.
+
+---
+
+Classic example of heteroskedasticity: The funnel
+
+Variance of `\(u\)` increases with `\(x\)`
+
+&lt;img src="04_heteroskedasticity_files/figure-html/het ex1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Another example of heteroskedasticity: (double funnel?)
+
+Variance of `\(u\)` increasing at the extremes of `\(x\)`
+
+&lt;img src="04_heteroskedasticity_files/figure-html/het ex2 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Another example of heteroskedasticity:
+
+Differing variances of `\(u\)` by group
+
+&lt;img src="04_heteroskedasticity_files/figure-html/het ex3 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.hi[Heteroskedasticity] is present when the variance of `\(u\)` changes with any combination of our explanatory variables `\(x_1\)`, through `\(x_k\)` (henceforth: `\(X\)`).
+
+--
+
+(Very common in practice)
+
+---
+
+## Consequences
+
+So what are the consquences of heteroskedasticity? Bias? Inefficiency?
+
+First, let's check if it has consquences for the the unbiasedness of OLS.
+
+--
+
+**Recall&lt;sub&gt;1&lt;/sub&gt;:** OLS being unbiased means `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta}_k \middle| X \right] = \beta_k\)` for all `\(k\)`.
+
+--
+
+**Recall&lt;sub&gt;2&lt;/sub&gt;:** We previously showed `\(\hat{\beta}_1 = \dfrac{\sum_i\left(y_i-\overline{y}\right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2}\)`
+
+--
+
+It will actually help us to rewrite this estimator as
+
+$$ \hat{\beta}_1 = \beta_1 + \dfrac{\sum_i \left( x_i - \overline{x} \right) u_i}{\sum_i \left( x_i - \overline{x} \right)^2} $$
+---
+
+**Proof:** Assuming `\(y_i = \beta_0 + \beta_1 x_i + u_i\)`
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1
+  &amp;= \dfrac{\sum_i\left(y_i-\overline{y}\right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\left[ \beta_0 + \beta_1 x_i + u_i \right]- \left[ \beta_0 + \beta_1 \overline{x} + \overline{u} \right] \right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\beta_1 \left[ x_i - \overline{x} \right] + \left[u_i - \overline{u}\right]  \right)\left(x_i-\overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \dfrac{\sum_i\left(\beta_1 \left[ x_i - \overline{x} \right]^2 + \left[ x_i - \overline{x} \right] \left[u_i - \overline{u}\right]\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) \left(u_i - \overline{u}\right)}{\sum_i\left(x_i -\overline{x}\right)^2}
+\end{aligned}`
+$$
+---
+
+$$
+`\begin{aligned}
+  \hat{\beta}_1
+  &amp;= \cdots = \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) \left(u_i - \overline{u}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \sum_i\left(x_i - \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \left(\sum_i x_i - \sum_i \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \left(\sum_i x_i - n \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i - \overline{u} \color{#e64173}{\left(\sum_i x_i - \sum_i x_i\right)}}{\sum_i\left(x_i -\overline{x}\right)^2} \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \quad \text{😅}
+\end{aligned}`
+$$
+---
+
+## Consequences: Bias
+
+We now want to see if heteroskedasticity biases the OLS estimator for `\(\beta_1\)`.
+
+--
+
+$$
+`\begin{aligned}
+  \mathop{\boldsymbol{E}}\left[ \hat{\beta}_1 \middle| X \right]
+  &amp;= \mathop{\boldsymbol{E}}\left[ \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \middle| X \right] \\
+  &amp;= \beta_1 + \mathop{\boldsymbol{E}}\left[ \dfrac{\sum_i\left(x_i - \overline{x}\right) u_i}{\sum_i\left(x_i -\overline{x}\right)^2} \middle| X \right] \\
+  &amp;= \beta_1 + \dfrac{\sum_i\left(x_i - \overline{x}\right)}{\sum_i\left(x_i -\overline{x}\right)^2} \color{#e64173}{\underbrace{\mathop{\boldsymbol{E}}\left[ u_i \middle| X \right]}_{=0}} \\
+  &amp;= \beta_1 \quad \text{😹}
+\end{aligned}`
+$$
+
+--
+Phew. .hi[OLS is still unbiased] for the `\(\beta_k\)`.
+---
+
+## Consequences: Efficiency
+
+OLS's efficiency and inference do not survive heteroskedasticity.
+
+- In the presence of heteroskedasticity, OLS is .hi[no longer the most efficient] (best) linear unbiased estimator.
+
+--
+
+- It would be more informative (efficient) to .hi[weight observations] inversely to their `\(u_i\)`'s variance.
+
+  - Downweight high-variance `\(u_i\)`'s (too noisy to learn much).
+
+  - Upweight observations with low-variance `\(u_i\)`'s (more 'trustworthy').
+
+  - Now you have the idea of weighted least squares (WLS)
+
+---
+
+## Consequences: Inference
+
+OLS .hi[standard errors are biased] in the presence of heteroskedasticity.
+
+- Wrong confidence intervals
+
+- Problems for hypothesis testing (both `\(t\)` and `\(F\)` tests)
+
+--
+
+- It's hard to learn much without sound inference.
+---
+
+## Solutions
+
+1. **Tests** to determine whether heteroskedasticity is present.
+
+2. **Remedies** for (1) efficiency and (2) inference
+
+---
+layout: true
+# Testing for heteroskedasticity
+
+---
+class: inverse, middle, center
+
+---
+
+While we *might* have solutions for heteroskedasticity, the efficiency of our estimators depends upon whether or not heteroskedasticity is present.
+
+1. The **Goldfeld-Quandt test**
+
+1. The **Breush-Pagan test**
+
+1. The **White test**
+
+--
+
+Each of these tests centers on the fact that we can .hi[use the OLS residual] `\(\color{#e64173}{e_i}\)` .hi[to estimate the population disturbance] `\(\color{#e64173}{u_i}\)`.
+
+---
+layout: true
+# Testing for heteroskedasticity
+## The Goldfeld-Quandt test
+---
+
+Focuses on a specific type of heteroskedasticity: whether the variance of `\(u_i\)` differs .hi[between two groups].&lt;sup&gt;†&lt;/sup&gt;
+
+Remember how we used our residuals to estimate the `\(\sigma^2\)`?
+
+$$ s^2 = \dfrac{\text{SSE}}{n-1} = \dfrac{\sum_i e_i^2}{n-1} $$
+
+We will use this same idea to determine whether there is evidence that our two groups differ in the variances of their disturbances, effectively comparing `\(s^2_1\)` and `\(s^2_2\)` from our two groups.
+
+.footnote[
+[†]: The G-Q test was one of the early tests of heteroskedasticity (1965).
+]
+---
+
+Operationally,
+
+.pseudocode-small[
+
+1. Order your the observations by `\(x\)`
+
+2. Split the data into two groups of size n.super[⭑]
+  - G&lt;sub&gt;1&lt;/sub&gt;: The first third
+  - G&lt;sub&gt;2&lt;/sub&gt;: The last third
+
+3. Run separate regressions of `\(y\)` on `\(x\)` for G.sub[1] and G.sub[2]
+
+4. Record SSE.sub[1] and SSE.sub[2]
+
+5. Calculate the G-Q test statistic
+
+]
+---
+
+The G-Q test statistic
+
+$$ F_{\left(n^{\star}-k,\, n^{\star}-k\right)} = \dfrac{\text{SSE}_2/(n^\star-k)}{\text{SSE}_1/(n^\star-k)} = \dfrac{\text{SSE}_2}{\text{SSE}_1} $$
+
+follows an `\(F\)` distribution (under the null hypothesis) with `\(n^{\star}-k\)` and `\(n^{\star}-k\)` degrees of freedom.&lt;sup&gt;†&lt;/sup&gt;
+
+--
+
+**Notes**
+
+- The G-Q test requires the disturbances follow normal distributions.
+- The G-Q assumes a very specific type/form of heteroskedasticity.
+- Performs very well if we know the form of potentially heteroskedasticity.
+
+.footnote[
+[†]: Goldfelt and Quadt suggested `\(n^{\star}\)` of `\((3/8)n\)`.
+]
+---
+
+&lt;img src="04_heteroskedasticity_files/figure-html/gq1a-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+&lt;img src="04_heteroskedasticity_files/figure-html/gq1b-1.svg" style="display: block; margin: auto;" /&gt;
+
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SSE}_2 = 18,203.4}}{\color{#314f4f}{\text{SSE}_1 = 1,039.5}} \approx 17.5 \implies\)` *p*-value `\(&lt; 0.001\)`
+
+`\(\therefore\)` We reject H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` and conclude there is statistically significant evidence of heteroskedasticity.
+---
+
+The problem...
+---
+
+&lt;img src="04_heteroskedasticity_files/figure-html/gq2-1.svg" style="display: block; margin: auto;" /&gt;
+
+`\(F_{375,\,375} = \dfrac{\color{#e64173}{\text{SSE}_2 = 14,516.8}}{\color{#314f4f}{\text{SSE}_1 = 14,937.1}} \approx 1 \implies\)` *p*-value `\(\approx 0.609\)`
+
+`\(\therefore\)` We fail to reject H.sub[0]: `\(\sigma^2_1 = \sigma^2_2\)` while heteroskedasticity is present.
+---
+layout: true
+# Testing for heteroskedasticity
+## The Breush-Pagan test
+---
+
+Breusch and Pagan (1981) attempted to solve this issue of being too specific with the functional form of the heteroskedasticity.
+
+- Allows the data to show if/how the variance of `\(u_i\)` correlates with `\(X\)`.
+
+- If `\(\sigma_i^2\)` correlates with `\(X\)`, then we have heteroskedasticity.
+
+- Regresses `\(e_i^2\)` on `\(X = \left[ 1,\, x_1,\, x_2,\, \ldots,\, x_k \right]\)` and tests for joint significance.
+---
+
+How to implement:
+
+.pseudocode-small[
+
+1\. Regress y on an intercept, x.sub[1], x.sub[2], …, x.sub[k].
+
+2\. Record residuals e.
+
+3\. Regress e.super[2] on an intercept, x.sub[1], x.sub[2], …, x.sub[k].
+
+$$ e\_i^2 = \alpha\_0 + \alpha\_1 x\_{1i} + \alpha\_2 x\_{2i} + \cdots + \alpha\_k x\_{ki} + v\_i $$
+
+4\. Record R.super[2].
+
+5\. Test hypothesis H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_k = 0\)`
+
+]
+
+---
+
+The B-P test statistic&lt;sup&gt;†&lt;/sup&gt; is
+
+$$ \text{LM} = n \times R^2_{e} $$
+
+where `\(R^2_e\)` is the `\(R^2\)` from the regression
+
+$$ e\_i^2 = \alpha\_0 + \alpha\_1 x\_{1i} + \alpha\_2 x\_{2i} + \cdots + \alpha\_k x\_{ki} + v\_i $$
+
+Under the null, `\(\text{LM}\)` is asymptotically distributed as `\(\chi^2_k\)`.
+
+--
+
+This test statistic tests H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_k = 0\)`.
+
+Rejecting the null hypothesis implies evidence of heteroskedasticity.
+
+.footnote[
+[†]: This specific form of the test statistic actually comes form Koenker (1981).
+]
+---
+
+**Problem:** We're still assuming a fairly restrictive .hi[functional form] between our explanatory variables `\(X\)` and the variances of our disturbances `\(\sigma^2_i\)`.
+
+--
+
+**Result:** B-P *may* still miss fairly simple forms of heteroskedasticity.
+
+---
+
+Breusch-Pagan tests are still .hi[sensitive to functional form].
+
+&lt;img src="04_heteroskedasticity_files/figure-html/bp1-1.svg" style="display: block; margin: auto;" /&gt;
+
+$$
+`\begin{aligned}
+  e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} &amp; \widehat{\text{LM}} &amp;= 1.26 &amp;\mathit{p}\text{-value} \approx 0.261 \\
+  e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} \color{#e64173}{+ \hat{\alpha}_2 x^2_{1i}} &amp; \widehat{\text{LM}} &amp;= 185.8 &amp;\mathit{p}\text{-value} &lt; 0.001
+\end{aligned}`
+$$
+---
+layout: true
+# Testing for heteroskedasticity
+## The White test
+---
+
+So far we've been testing for specific relationships between our explanatory variables and the variances of the disturbances, _e.g._,
+
+- H.sub[0]: `\(\sigma_1^2 = \sigma_2^2\)` for two groups based upon `\(x_j\)` (**G-Q**)
+
+- H.sub[0]: `\(\alpha_1 = \cdots = \alpha_k = 0\)` from `\(e_i^2 = \alpha_0 + \alpha_1 x_{1i} + \cdots + \alpha_k x_{ki} + v_i\)` (**B-P**)
+
+--
+
+However, we actually want to know if
+
+$$ \sigma_1^2 = \sigma_2^2 = \cdots = \sigma_n^2 $$
+
+**Q:** Can't we just test this hypothesis?
+--
+ **A:** Sort of.
+---
+
+Toward this goal, Hal White took advantage of the fact that we can .hi[replace the homoskedasticity requirement with a weaker assumption]:
+
+- **Old:** `\(\mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2\)`
+
+- **New:** `\(u^2\)` is *uncorrelated* with the explanatory variables (_i.e._,  `\(x_j\)` for all `\(j\)`), their squares (_i.e._, `\(x_j^2\)`), and the first-degree interactions (_i.e._, `\(x_j x_h\)`).
+
+--
+
+This new assumption is easier to explicitly test (*hint:* regression).
+---
+
+An outline of White's test for heteroskedasticity:
+
+.pseudocode-small[
+
+1\. Regress y on x.sub[1], x.sub[2], …, x.sub[k]. Save residuals e.
+
+2\. Regress squared residuals on all explanatory variables, their squares, and interactions.
+
+$$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m + v\_i $$
+
+3\. Record R.sub[e].super[2].
+
+4\. Calculate test statistic to test H.sub[0]: `\(\alpha_p = 0\)` for all `\(p\neq0\)`.
+
+]
+---
+
+Just as with the Bruesch-Pagan test, White's test statistic is
+
+$$ \text{LM} = n \times R_e^2 $$
+
+but now the `\(R^2_e\)` comes from the regression of `\(e^2\)` on the explanatory variables, their squares, and their interactions.
+
+As before, under the null, `\(\text{LM}\)` is distributed `\(\chi_k^2\)`.
+
+--
+
+----
+
+**Note:** If a variable is equal to its square (_e.g._, binary variables), then you don't (can't) include it. THe same rule applies for interactions.
+
+---
+
+*Example:* Consider the model.super[†] `\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u\)`
+
+**Step 1:** Estimate the model; obtain residuals `\((e)\)`.
+
+**Step 2:** Regress `\(e^2\)` on explanatory variables, squares, and interactions.
+$$
+`\begin{aligned}
+  e^2 =
+  &amp;\alpha_0 + \alpha_1 x_1 + \alpha_2 x_2 + \alpha_3 x_3 + \alpha_4 x_1^2 + \alpha_5 x_2^2 + \alpha_6 x_3^2 \\
+  &amp;+ \alpha_7 x_1 x_2 + \alpha_8 x_1 x_3 + \alpha_9 x_2 x_3 + v  
+\end{aligned}`
+$$
+
+Record the R.super[2] from this equation (call it `\(R_e^2\)`).
+
+**Step 3:** Test H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0\)` using `\(\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_3^2\)`.
+
+.footnote[
+[†]: To simplify notation here, I'm dropping the `\(i\)` subscripts.
+]
+---
+
+&lt;img src="04_heteroskedasticity_files/figure-html/white1-1.svg" style="display: block; margin: auto;" /&gt;
+
+We've already done the White test for this simple linear regression.
+
+$$
+`\begin{aligned}
+ e_i^2 &amp;= \hat{\alpha}_0 + \hat{\alpha}_1 x_{1i} \color{#e64173}{+ \hat{\alpha}_2 x^2_{1i}} &amp; \widehat{\text{LM}} &amp;= 185.8 &amp;\mathit{p}\text{-value} &lt; 0.001
+\end{aligned}`
+$$
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
