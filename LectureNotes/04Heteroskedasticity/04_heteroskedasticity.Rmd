@@ -141,7 +141,7 @@ Let's write down our **current assumptions**
 
 --
 
-4. The dependent variables are .hi[exogenous]: $\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)$.
+4. The explanatory variables are .hi[exogenous]: $\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)$.
 
 --
 
