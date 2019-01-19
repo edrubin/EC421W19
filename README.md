@@ -15,4 +15,4 @@ The slides below (linked by their topic) are .html files that will only work pro
 
 ## Problem sets
 
-1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html)
+1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/dataPS01.csv) 
