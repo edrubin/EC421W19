@@ -12,3 +12,7 @@ The slides below (linked by their topic) are .html files that will only work pro
 2. [Review of key math/stat/metrics topics](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/02Review/02_review.html): density functions, deriving the OLS estimators, properties of estimators, statistical inference (standard errors, confidence intervals, hypothesis testing), simulation | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/02Review/02_review.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/02Review/02_review.Rmd)
 3. [Review of key topics from EC320](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/03Review/03_review.html) (the first course in our intro-to-metrics sequence) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/03Review/03_review.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/03Review/03_review.Rmd)
 4. [Heteroskedasticity: Test and implications](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/04Heteroskedasticity/04_heteroskedasticity.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/04Heteroskedasticity/04_heteroskedasticity.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/04Heteroskedasticity/04_heteroskedasticity.Rmd)
+
+## Problem sets
+
+1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html)
