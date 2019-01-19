@@ -1,4 +1,4 @@
 # Data
 Data for the course.
 
-- `dataPS1.csv`: Data for the first problem set.
+- `dataPS01.csv`: Data for the first problem set.

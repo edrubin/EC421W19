@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Problem Set 1: OLS Review</title>
+    <meta charset="utf-8">
+    <link href="ps01_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="ps01_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="ps01_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="ps01_files/kePrint-0.0.1/kePrint.js"></script>
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Problem Set 1: OLS Review
+## EC 421: Introduction to Econometrics
+### Due <em>before</em> midnight on Sunday, 27 January 2019
+
+---
+
+class: clear
+
+.mono[DUE] This problem set is due *before* midnight on Sunday, 27 January 2019. All files must be uploaded [Canvas](https://canvas.uoregon.edu/).
+
+.mono[README!] The data&lt;sup&gt;†&lt;/sup&gt; in this problem set come from the paper ["Are Emily and George More Employable than Lakisha and Jamal? A Field Experiment on Labor Market Discrimination"](https://www.aeaweb.org/articles?id=10.1257/0002828042002561) by Bertrand and Mullainathan (published in the *American Economic Review* (AER) in 2004).&lt;sup&gt;††&lt;/sup&gt; In their (very influential) paper, Bertrand and Mullainathan use a clever experiment to study the effects of race in labor-market decisions by sending fake résumés to job listings. To isolate the effect of race on employment decisions, Bertrand and Mullainathan randomize whether the résumé lists a typically African-American name or a typically White name.
+
+.mono[OBJECTIVE] This problem set has three purposes: (1) reinforce the econometrics topics we reviewed in class; (2) build your .mono[R] toolset; (3) start building your intuition about causality within econometrics.
+
+## Problem 1: Getting started
+
+**Start here.** We're going to set up .mono[R] and read in the data
+
+**1a.** Open up RStudio, start a .mono[R] new script (File ➡ New file ➡ R Script). You will hand in this script as part of your assignment.
+
+**1b.** Load the the `pacman` package. Now use its function `p_load` to load the `tidyverse` package, _i.e._,
+
+
+```r
+# Load the 'pacman' package
+library(pacman)
+# Load the packages 'tidyverse' and 'haven'
+p_load(tidyverse)
+```
+
+*Note:* If `pacman` is not already installed on your computer, then you need to install it, _i.e._, `install.packages("pacman")`. If `tidyverse` is not already installed, then `p_load(tidyverse)` will automatically install it for you—which is why we're using `pacman`.
+
+
+
+
+
+**1c.** [Download](https://raw.githack.com/edrubin/EC421W19/master/Data/dataPS01.csv) the dataset (also available on [Canvas](https://canvas.uoregon.edu/)). Save it in a helpful location. Remember this location.
+
+**1d.** Read the data into .mono[R]. What are the dimensions of the dataset (numbers of rows and columns)?
+
+
+
+*Note:* Let each row in this dataset represent a different résumé sent to a job posting. The table on the last page explains each of the variables.
+
+**1e.** What are the names of the first three variables? *Hint:* `names(your_df)`
+
+
+
+**1f.** What are the first four *first names* in the dataset (`first_name` variable)?
+
+*Hint:* `head(your_df$var_name)`
+
+
+
+.footnote[
+[†]: The data that we use in the problem set contain a subset of the variables from the original paper.
+
+[††]: [Here's a link](https://medium.com/@brooke.cusmano/are-emily-and-greg-more-employable-than-lakisha-and-jamal-13d11dfac511) to an article on Medium that discussed their paper.
+]
+---
+class: clear
+
+## Problem 2: Analysis
+
+Reviewing the basic analysis tools of econometrics.
+
+**Note:** When you use OLS to regress a binary indicator variable (like `i_callback`) on a set of explanatory variables, your coefficients are telling you how the explanatory variables affect the probability that the indicatory variable equals one. So if we regress `i_callback` on `n_jobs`, the coefficient on `n_jobs` tells us how the probability of a callback changes with each additional job listed on the résumé.
+
+**2a.** What percentage of the résumés generated a callback (`i_callback`)?
+
+*Hint:* The `mean()` of a binary indicator variable gives the percentage of times the variable equals one.
+
+
+
+**2b.** Calculate percentage of callbacks (_i.e._, the mean of `i_callback`) for each racial group (`race`). Does it appear as though employers considered an applicant's race when making callbacks? Explain.
+
+*Hint:* `filter(your_df, race == "b")` will select all observations (from the dataset `your_df`) where the variable `race` takes the value `"b"`. Similarly `filter(your_df, race == "b")$i_callback` will give you the values of `i_callback` for obsevations whose value of `race` is `"b"`.
+
+
+
+**2c.** What is the difference in the groups' mean callback rate?
+
+
+
+**2d.** Based upon the difference in percentages that we observe in **2b.**, can we conclude that employers consider race in hiring decisions?
+
+&lt;!-- **No.** We have shown a difference in the groups' percentages, but we do not know if this difference is statistically meaningful. --&gt;
+
+**2e.** Without running a regression, conduct a statistical test for the difference in the two groups' average callback rates (_i.e._, test that the proportion of callbacks is equal for the two groups).
+
+*Hint:* Back to your statistics class—difference in proportions (a `\(Z\)` test) or means (a `\(t\)` test).
+
+
+
+**2f.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black` (whether the résumé's name implied a black applicant). Report the coefficient on `i_black`. Does it match the difference that you found in **2c**?
+
+
+
+**2g.** Conduct a `\(t\)` test for the coefficient on `i_black` in the regression above in **2f**. Write our your hypotheses (both H.sub[0] and H.sub[A]), the test statistic, the result of your test (_i.e._, reject or fail to reject H.sub[0]), and your conclusion.
+
+
+**2h.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black`, `n_expr` (years of experience), and the interaction between `i_black` and `n_expr`. Interpret the estimates for the coefficients (both the meaning of the coefficients and whether they are statistically significant).
+
+*Hint:* In .mono[R], `lm(y ~ x1 + x2 + x1:x2, data = your_df)` regresses `y` on `x1`, `x2`, and the interaction between `x1` and `x2` (all from the dataset `your_df`).
+
+
+
+---
+class: clear
+
+## Problem 3: Thinking about causality
+
+Now for the big picture.
+
+This project by Bertrand and Mullainathan took a decent amount of time and effort—finding job listings, generating fake résumés, responding to the listings, *etc.* It probably would have been much quicker/cheaper/easier to just go out and get data from job applicants—whether they received callbacks and their races. So why didn't they take the easier, cheaper, and quicker route?
+
+To answer this question, we are going to consider the model
+$$ \text{Callback}_i = \beta_0 + \beta_1 \text{Race}_i + u_i \tag{3.0} $$
+and think about omitted-variable bias.
+
+**3a.** If we go out, collect data on job applicants, and estimate the model in `\((3.0)\)` using OLS, _i.e._,
+$$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{Race}_i + e_i \tag{3.1} $$
+we should be concerned about omitted-variable bias. Explain why this is the case **and** provide at least one example of an omitted variable that could bias our estimates in `\((3.1)\)`.
+
+**3b.** To avoid this potential bias, Bertrand and Mullainathan ran an experiment in which they randomized applicants' names on the résumés—thus randomly assigning the (implied) race of the job applicants. How does this randomization help Bertrand and Mullainathan avoid omitted variables bias?
+
+In other words, why are we less concerned about omitted variable bias in the following estimated model
+$$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{(Randomized Race)}_i + w_i \tag{3.2} $$
+while we were concerned about bias in `\((3.1)\)`?
+---
+class: clear
+
+### Description of variables and names
+&lt;br&gt;
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Variable &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_callback] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary variable (0,1) for whether the resume received a callback. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[n_jobs] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Number of previous jobs listed on the application. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[n_expr] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Number of years of experience listed on the application. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_military] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary variable for whether the application included military status. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_computer] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary variable for whether the application included computer skills. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[first_name] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; The first name listed on the application. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[sex] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; The implied sex of the first name on the application (.mono-small['f'] or .mono-small['m']). &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_female] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary indicator for whether the implied sex was female. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_male] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary indicator for whether the implied sex was male. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[race] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; The implied race of the first name on the application (.mono-small['b'] or .mono-small['w']). &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_black] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary indicator for whether the implied race was African American. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; .mono-small[i_white] &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Binary indicator for whether the implied race was White. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+In general, I've tried to stick with a naming convention. Variables that begin with .mono-small[i\\_] denote binary indicatory variables (taking on the value of .mono-small[0] or .mono-small[1]). Variables that begin with .mono-small[n_] are numeric variables.
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "8.5:11",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
