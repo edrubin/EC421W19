@@ -37,6 +37,10 @@
 
 .remark-code-line-highlighted     { background-color: rgba(249, 39, 114, 0.5); }
 
+.smaller {
+  font-size: 95%;
+}
+
 .remark-slide-content {
   background-color: #ffffff;
   font-size: 24px;

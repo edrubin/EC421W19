@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Heteroskedasticity, Part 2</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Edward Rubin" />
+    <meta name="date" content="2019-01-22" />
+    <link href="05_heteroskedasticity_files/remark-css/default.css" rel="stylesheet" />
+    <link href="05_heteroskedasticity_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="05_heteroskedasticity_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Heteroskedasticity, Part 2
+## EC 421, Set 5
+### Edward Rubin
+### 22 January 2019
+
+---
+
+class: inverse, center, middle
+
+
+
+# Prologue
+
+---
+
+# Schedule
+
+## Last Time
+
+Heteroskedasticity: Issues and tests
+
+## Today
+
+Living with heteroskedasticity
+
+## This week
+
+First assignment! .hi[Due at 11:59pm on 27 Jan. 2019.]
+---
+
+# .mono[R] showcase
+
+**[.mono[R Markdown]](https://rmarkdown.rstudio.com)**
+- Simple mark-up language for for combining/creating documents, equations, figures, .mono[R], and more
+- [Basics of .mono[Markdown]](https://rmarkdown.rstudio.com/authoring_basics.html)
+- _E.g._, `**I'm bold**`, `*I'm italic*`, `I &lt;- "code"`
+
+**[Econometrics with .mono[R]](https://www.econometrics-with-r.org)**
+- (Currently) free, online textbook
+- Written and published using .mono[R] (and probably .mono[R Markdown])
+- *Warning:* I haven't read this book yet.
+
+Related: Tyler Ransom has a [great cheatsheet for econometrics](https://github.com/tyleransom/EconometricsLabs/blob/master/econometricsCheatSheet.pdf).
+---
+layout: true
+# Heteroskedasticity: Review
+---
+class: inverse, middle
+---
+
+Let's recall our **current assumptions**
+
+--
+
+1. Our sample (the `\(x_k\)`'s and `\(y_i\)`) was .hi[randomly drawn] from the population.
+
+--
+
+2. `\(y\)` is a .hi[linear function] of the `\(\beta_k\)`'s and `\(u_i\)`.
+
+--
+
+3. There is no perfect .hi[multicollinearity] in our sample.
+
+--
+
+4. The explanatory variables are .hi[exogenous]: `\(\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)\)`.
+
+--
+
+5. The disurbances have .hi[constant variance] `\(\sigma^2\)` and .hi[zero covariance], _i.e._,
+  - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X_i \right] = \mathop{\text{Var}} \left( u_i \middle| X_i \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+  - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X_i,\,X_j \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X_i,\,X_j \right] = 0\)` for `\(i\neq j\)`
+
+--
+
+6. The disturbances come from a .hi[Normal] distribution, _i.e._, `\(u_i \overset{\text{iid}}{\sim} \mathop{\text{N}}\left( 0, \sigma^2 \right)\)`.
+
+---
+
+Today we're focusing on assumption \#5:
+
+&gt; 5\. The disurbances have .hi[constant variance] `\(\sigma^2\)` and .hi[zero covariance], _i.e._,
+&gt;  - `\(\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X_i \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2\)`
+&gt;  - `\(\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X_i,\,X_j \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X_i,\,X_j \right] = 0\)` for `\(i\neq j\)`
+
+--
+
+Specifically, we will focus on the assumption of .hi[constant variance] (also known as *homoskedasticity*).
+
+--
+
+**Violation of this assumption:**
+
+.hi[Heteroskedasticity:] `\(\mathop{\text{Var}} \left( u_i \right) = \sigma^2_i\)` and `\(\sigma^2_i \neq \sigma^2_j\)` for some `\(i\neq j\)`.
+
+--
+
+In other words: Our disturbances have different variances.
+
+---
+
+Classic example of heteroskedasticity: The funnel
+
+Variance of `\(u\)` increases with `\(x\)`
+
+&lt;img src="05_heteroskedasticity_files/figure-html/het ex1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Another example of heteroskedasticity: (double funnel?)
+
+Variance of `\(u\)` increasing at the extremes of `\(x\)`
+
+&lt;img src="05_heteroskedasticity_files/figure-html/het ex2 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Another example of heteroskedasticity:
+
+Differing variances of `\(u\)` by group
+
+&lt;img src="05_heteroskedasticity_files/figure-html/het ex3 -1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.hi[Heteroskedasticity] is present when the variance of `\(u\)` changes with any combination of our explanatory variables `\(x_1\)`, through `\(x_k\)` (henceforth: `\(X\)`).
+---
+
+layout: false
+# Testing for heteroskedasticity
+
+We have some tests that may help us detect heteroskedasticity.
+
+- Goldfeld-Quandt
+- Breusch-Pagan
+- White
+
+--
+
+What do we do if we detect it?
+---
+layout: true
+# Living with heteroskedasticity
+---
+class: inverse, middle, true
+---
+
+In the presence of heteroskedasticity, OLS is
+
+- still .hi[unbiased]
+- .hi[no longer the most efficient] unbiased linear estimator
+
+On average, we get the right answer but with more noise (less precision).
+
+--
+
+**Options:**
+
+1. Check regression .hi[specification].
+2. Find a new, more efficient .hi[unbiased estimator] for `\(\beta_j\)`'s.
+3. Live with OLS's inefficiency; find a .hi[new variance estimator].
+  - Standard errors
+  - Confidence intervals
+  - Hypothesis tests
+---
+layout: true
+# Living with heteroskedasticity
+## Misspecification
+---
+
+As we've discussed, the specification&lt;sup&gt;†&lt;/sup&gt; of your regression model matters a lot for the unbiasedness and efficiency of your estimator.
+
+**Response #1:** Ensure your specification doesn't cause heteroskedasticity.
+
+.footnote[[†]: *Specification:* Functional form and included variables.]
+---
+
+*Example:* Let the population relationship be $$ y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i $$
+
+with `\(\mathop{\boldsymbol{E}}\left[ u_i \middle| x_i \right] = 0\)` and `\(\mathop{\text{Var}} \left( u_i \middle| x_i \right) = \sigma^2\)`.
+
+However, we omit `\(x^2\)` and estimate $$ y_i = \gamma_0 + \gamma_1 x_i + w_i $$
+
+Then $$ w_i = u_i + \beta_2 x_i^2 \implies \mathop{\text{Var}} \left( w_i \right) = f(x_i) $$
+
+_I.e._, the variance of `\(w_i\)` changes systematically with `\(x_i\)` (heteroskedasticity).
+---
+
+
+
+.pink[Truth:] `\(\color{#e64173}{\log\left(y_i\right) = \beta_0 + \beta_1 x_i + u_i}\)`  .slate[**Misspecification:**] `\(\color{#314f4f}{y_i = \beta_0 + \beta_1 x_i + v_i}\)`
+
+&lt;img src="05_heteroskedasticity_files/figure-html/spec plot1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+.pink[**Truth:**] `\(\color{#e64173}{\log\left(y_i\right) = \beta_0 + \beta_1 x_i + u_i}\)`  .slate[Misspecification:] `\(\color{#314f4f}{y_i = \beta_0 + \beta_1 x_i + v_i}\)`
+
+&lt;img src="05_heteroskedasticity_files/figure-html/spec plot2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+More generally:
+
+**Misspecification problem:** Incorrect specification of the regression model can cause heteroskedasticity.
+
+--
+
+**Solution:** 💡 Get it right (_e.g._, don't omit `\(x^2\)`).
+
+--
+
+**New problems:**
+
+- We often don't know the *right* specification.
+- We'd like a more formal process for addressing heteroskedasticity.
+
+--
+
+**Conclusion:** Adjusting the specification often doesn't solve the problem.
+
+---
+layout: true
+# Living with heteroskedasticity
+## Weighted least squares
+---
+
+Weighted least squares (WLS) presents another approach.
+
+**Response \#2:** Increase efficiency by weighting our observations.
+
+--
+
+Let the true population relationship be
+
+$$
+`\begin{align}
+  y_i = \beta_0 + \beta_1 x_{1i} + u_i \tag{1}
+\end{align}`
+$$
+
+with `\(u_i \sim \mathop{N} \left( 0,\, \sigma_i^2 \right)\)`.
+
+--
+
+Now transform `\((1)\)` by dividing each observation's data by `\(\sigma_i\)`, _i.e._,
+
+$$
+`\begin{align}
+  \dfrac{y_i}{\sigma_i} &amp;= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}`
+$$
+
+---
+
+$$
+`\begin{align}
+  y_i &amp;= \beta_0 + \beta_1 x_{1i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &amp;= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}`
+$$
+
+Whereas `\((1)\)` is heteroskedastic,
+--
+ `\(\color{#e64173}{(2)}\)` .hi[is homoskedastic].
+
+∴ OLS is efficient and unbiased for estimating the `\(\beta_k\)` in `\((2)\)`!
+
+--
+
+Why is `\((2)\)` homoskedastic?
+
+--
+
+$$ \mathop{\text{Var}} \left( \dfrac{u_i}{\sigma_i} \middle| x_i \right) = \dfrac{1}{\sigma_i^2} \mathop{\text{Var}} \left( u_i \middle| x_i \right) = \dfrac{1}{\sigma_i^2} \sigma_i^2 = 1 \quad \forall i $$
+---
+
+.hi[Weighted least squares] (WLS) estimators are a special class of .hi[generalized least squares] (GLS) estimators focused on heteroskedasticity.
+
+--
+
+$$
+  y\_i = \beta\_0 + \beta\_1 x\_{1i} + u\_i \quad \color{#e64173}{\text{ vs. }} \quad
+  \dfrac{y\_i}{\sigma\_i} = \beta\_0 \dfrac{1}{\sigma\_i} + \beta\_1 \dfrac{x\_{1i}}{\sigma\_i} + \dfrac{u\_i}{\sigma\_i}
+$$
+
+*Notes:*
+
+1. WLS **transforms** a heteroskedastic model into a homoskedastic model.
+2. **Weighting:** WLS downweights observations with higher variance `\(u_i\)`'s.
+3. **Big requirement:** WLS requires that we *know* `\(\sigma_i^2\)` for each observation.
+4. WLS is generally **infeasible**. *Feasible* GLS (FGLS) offers a solution.
+5. Under its assumptions: WLS is the **best linear unbiased estimator**.
+---
+layout: true
+# Living with heteroskedasticity
+## Heteroskedasticity-robust standard errors
+---
+
+**Response \#3:**
+
+- Ignore OLS's inefficiency (in the presence of heteroskedasticity).
+- Focus on .hi[unbiased estimates for our standard errors].
+- In the process: Correct inference.
+---
+
+*Recall*: We can write the OLS estimator for `\(\beta_1\)` as
+
+$$ \hat{\beta}\_1 = \beta\_1 + \dfrac{\sum_i \left( x\_i - \overline{x} \right) u\_i}{\sum\_i \left( x\_i - \overline{x} \right)^2} = \beta\_1 + \dfrac{\sum_i \left( x\_i - \overline{x} \right) u\_i}{\text{SST}\_x} \tag{3} $$
+
+--
+
+Let `\(\mathop{\text{Var}} \left( u_i \middle| x_i \right) = \sigma_i^2\)`.
+
+--
+
+We can use `\((3)\)` to write the variance of `\(\hat{\beta}_1\)`, _i.e._,
+
+$$ \mathop{\text{Var}} \left( \hat{\beta}_1 \middle| x_i \right) = \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 \sigma_i^2}{\text{SST}_x^2} \tag{4} $$
+---
+
+If we want unbiased estimates for our standard errors, we need an unbiased estimate for
+
+$$ \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 \sigma_i^2}{\text{SST}_x^2} $$
+
+Our old friend Hal White provided such an estimator:
+
+$$ \widehat{\mathop{\text{Var}}} \left( \hat{\beta}_1 \right) = \dfrac{\sum_i \left( x_i - \overline{x} \right)^2 e_i^2}{\text{SST}_x^2} $$
+
+where the `\(e_i\)` comes from the OLS regression of interest.
+---
+
+With these standard errors, we can return to correct statistical inferencel
+
+_E.g._, we can update our previous `\(t\)` statistic formula with our new heteroskedasticity-robust standard erros.
+
+$$ t = \dfrac{\text{Estimate} - \text{Hypothesized value}}{\text{Standard error}} $$
+---
+
+**Notes**
+
+- We are still using .hi[OLS estimates for] `\(\color{#e64173}{\beta_j}\)`
+- Our het.-robust standard errors use a .hi[different estimator].
+- Homoskedasticity
+  - Plain OLS variance estimator is more efficient.
+  - Het.-robust is still unbiased.
+- Heteroskedasticity
+  - Plain OLS variance estimator is biased.
+  - Het.-robust variance estimator is unbiased.
+---
+
+These standard errors go by many names
+
+- Heteroskedasticity-robust standard errors
+- White standard errors
+- Eicker-White standard errors
+- Huber standard errors
+- Eicker-Huber-White standards errors
+- (some other combination of Eicker, Huber, and White)
+
+**Do not say:** "Robust standard errors". The problem: "robust" to what?
+---
+layout: false
+class: inverse, middle
+
+# Living with heteroskedasticity&lt;br&gt;Examples
+---
+layout: true
+# Living with heteroskedasticity
+---
+
+## Examples
+
+Back to our test-scores dataset…
+
+
+```r
+# Load packages
+library(pacman)
+p_load(tidyverse, Ecdat)
+# Select and rename desired variables; assign to new dataset
+test_df &lt;- select(Caschool, test_score = testscr, ratio = str, income = avginc)
+# Format as tibble
+test_df &lt;- as_tibble(test_df)
+# View first 2 rows of the dataset
+head(test_df, 2)
+```
+
+```
+#&gt; # A tibble: 2 x 3
+#&gt;   test_score ratio income
+#&gt;        &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1       691.  17.9  22.7 
+#&gt; 2       661.  21.5   9.82
+```
+---
+layout: true
+# Living with heteroskedasticity
+## Example: Model specification
+---
+
+We found significant evidence of heteroskedasticity.
+
+Let's check if it was due to misspecifying our model.
+---
+
+Model.sub[1]: `\(\text{Score}_i = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Income}_i + u_i\)`
+&lt;br&gt;`lm(test_score ~ ratio + income, data = test_df)`
+
+
+&lt;img src="05_heteroskedasticity_files/figure-html/ex spec1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Model.sub[2]: `\(\log\left(\text{Score}_i\right) = \beta_0 + \beta_1 \text{Ratio}_i + \beta_2 \text{Income}_i + u_i\)`
+&lt;br&gt;`lm(log(test_score) ~ ratio + income, data = test_df)`
+
+
+&lt;img src="05_heteroskedasticity_files/figure-html/ex spec2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Model.sub[3]: `\(\log\left(\text{Score}_i\right) = \beta_0 + \beta_1 \log\left(\text{Ratio}_i\right) + \beta_2 \log\left(\text{Income}_i\right) + u_i\)`
+&lt;br&gt;`lm(log(test_score) ~ log(ratio) + log(income), data = test_df)`
+
+
+&lt;img src="05_heteroskedasticity_files/figure-html/ex spec3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+Model.sub[4]: Include interaction, first-order terms, and second-order terms
+&lt;br&gt;.smaller[`lm(test_score ~ I(ratio^2) + I(income^2) + income*ratio, data = test_df)`]
+
+
+&lt;img src="05_heteroskedasticity_files/figure-html/ex spec4-1.svg" style="display: block; margin: auto;" /&gt;
+---
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
