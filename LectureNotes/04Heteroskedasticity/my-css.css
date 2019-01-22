@@ -9,6 +9,26 @@
   font-family: monospace;
 }
 
+/* Pink text */
+.pink {
+  color: #e64173 !important;
+}
+/* Slate ("darkslategrey") text */
+.slate {
+  color: #314f4f !important;
+}
+/* Grey text */
+.grey-mid {
+  color: #7f7f7f !important;
+}
+/* Grey text */
+.grey-vlight {
+  color: #e5e5e5 !important;
+}
+/* White text */
+.white {
+  color: #ffffff !important;
+}
 
 .title-slide > h2  {
   color: rgba(249, 38, 114, 0.75);
@@ -87,4 +107,8 @@
 .sub{
   vertical-align: sub;
   font-size: 85%;
+}
+
+.remark-code {
+  font-size: 70%;
 }

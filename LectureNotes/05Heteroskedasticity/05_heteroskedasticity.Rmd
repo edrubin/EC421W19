@@ -1,0 +1,394 @@
+---
+title: "Heteroskedasticity"
+subtitle: "EC 421, Set 4"
+author: "Edward Rubin"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, center, middle
+
+```{r Setup, include = F}
+options(htmltools.dir.version = FALSE)
+library(pacman)
+p_load(broom, latex2exp, ggplot2, ggthemes, viridis, dplyr, magrittr, knitr, parallel)
+# Define pink color
+red_pink <- "#e64173"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+# Dark slate grey: #314f4f
+# Notes directory
+dir_slides <- "~/Dropbox/UO/Teaching/EC421W19/LectureNotes/02Review/"
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -0.5, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_simple <- theme_bw() + theme(
+  line = element_blank(),
+  panel.grid = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text.x = element_text(size = 18, family = "STIXGeneral"),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  # plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_math <- theme_void() + theme(
+  text = element_text(family = "MathJax_Math"),
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes <- theme_void() + theme(
+  text = element_text(family = "Fira Sans Book"),
+  axis.title = element_text(size = 18),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+```
+
+# Prologue
+
+---
+# .mono[R] showcase
+
+**[.mono[R Markdown]](https://rmarkdown.rstudio.com)**
+- Simple mark-up language for for combining/creating documents, equations, figures, .mono[R], and more
+- [Basics of .mono[Markdown]](https://rmarkdown.rstudio.com/authoring_basics.html)
+- _E.g._, `**I'm bold**`, `*I'm italic*`, `I <- "code"`
+
+**[Econometrics with .mono[R]](https://www.econometrics-with-r.org)**
+- (Currently) free, online textbook
+- Written and published using .mono[R] (and probably .mono[R Markdown])
+- *Warning:* I haven't read this book yet.
+
+Related: Tyler Ransom has a [great cheatsheet for econometrics](https://github.com/tyleransom/EconometricsLabs/blob/master/econometricsCheatSheet.pdf).
+
+---
+
+# Schedule
+
+## Last Time
+
+Heteroskedasticity
+- Issues
+- Tests
+
+## Today
+
+Living with heteroskedasticity
+
+## This week
+
+First assignment! .hi[Due at 11:59pm on 27 Jan. 2019.]
+
+---
+layout: true
+# Heteroskedasticity
+---
+class: inverse, middle, center
+---
+
+Let's recall our **current assumptions**
+
+--
+
+1. Our sample (the $x_k$'s and $y_i$) was .hi[randomly drawn] from the population.
+
+--
+
+2. $y$ is a .hi[linear function] of the $\beta_k$'s and $u_i$.
+
+--
+
+3. There is no perfect .hi[multicollinearity] in our sample.
+
+--
+
+4. The explanatory variables are .hi[exogenous]: $\mathop{\boldsymbol{E}}\left[ u \middle| X \right] = 0 \left(\implies \mathop{\boldsymbol{E}}\left[ u \right] = 0\right)$.
+
+--
+
+5. The disurbances have .hi[constant variance] $\sigma^2$ and .hi[zero covariance], _i.e._,
+  - $\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2$
+  - $\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0$ for $i\neq j$
+
+--
+
+6. The disturbances come from a .hi[Normal] distribution, _i.e._, $u_i \overset{\text{iid}}{\sim} \mathop{\text{N}}\left( 0, \sigma^2 \right)$.
+
+---
+
+Today we're focusing on assumption \#5:
+
+> 5\. The disurbances have .hi[constant variance] $\sigma^2$ and .hi[zero covariance], _i.e._,
+>  - $\mathop{\boldsymbol{E}}\left[ u_i^2 \middle| X \right] = \mathop{\text{Var}} \left( u_i \middle| X \right) = \sigma^2 \implies \mathop{\text{Var}} \left( u_i \right) = \sigma^2$
+>  - $\mathop{\text{Cov}} \left( u_i, \, u_j \middle| X \right) = \mathop{\boldsymbol{E}}\left[ u_i u_j \middle| X \right] = 0$ for $i\neq j$
+
+--
+
+Specifically, we will focus on the assumption of .hi[constant variance] (also known as *homoskedasticity*).
+
+--
+
+**Violation of this assumption:**
+
+.hi[Heteroskedasticity:] $\mathop{\text{Var}} \left( u_i \right) = \sigma^2_i$ and $\sigma^2_i \neq \sigma^2_j$ for some $i\neq j$.
+
+--
+
+In other words: Our disturbances have different variances.
+
+---
+
+Classic example of heteroskedasticity: The funnel
+
+Variance of $u$ increases with $x$
+
+```{R, het ex1, dev = "svg", echo = F, fig.height = 5.5}
+set.seed(12345)
+ggplot(data = tibble(
+  x = runif(1e3, -3, 3),
+  e = rnorm(1e3, 0, sd = 4 + 1.5 * x)
+), aes(x = x, y = e)) +
+geom_point(color = "darkslategrey", size = 2.75, alpha = 0.5) +
+labs(x = "x", y = "u") +
+theme_axes_math
+```
+---
+
+Another example of heteroskedasticity: (double funnel?)
+
+Variance of $u$ increasing at the extremes of $x$
+
+```{R, het ex2 , dev = "svg", echo = F, fig.height = 5.5}
+set.seed(12345)
+ggplot(data = tibble(
+  x = runif(1e3, -3, 3),
+  e = rnorm(1e3, 0, sd = 2 + x^2)
+), aes(x = x, y = e)) +
+geom_point(color = "darkslategrey", size = 2.75, alpha = 0.5) +
+labs(x = "x", y = "u") +
+theme_axes_math
+```
+---
+
+Another example of heteroskedasticity:
+
+Differing variances of $u$ by group
+
+```{R, het ex3 , dev = "svg", echo = F, fig.height = 5.5}
+set.seed(12345)
+ggplot(data = tibble(
+  g = sample(c(F,T), 1e3, replace = T),
+  x = runif(1e3, -3, 3),
+  e = rnorm(1e3, 0, sd = 0.5 + 2 * g)
+), aes(x = x, y = e, color = g, shape = g, alpha = g)) +
+geom_point(size = 2.75) +
+scale_color_manual(values = c("darkslategrey", red_pink)) +
+scale_shape_manual(values = c(16, 1)) +
+scale_alpha_manual(values = c(0.5, 0.8)) +
+labs(x = "x", y = "u") +
+theme_axes_math
+```
+---
+
+.hi[Heteroskedasticity] is present when the variance of $u$ changes with any combination of our explanatory variables $x_1$, through $x_k$ (henceforth: $X$).
+---
+
+layout: false
+# Testing for heteroskedasticity
+
+We have some tests that may help us detect heteroskedasticity.
+
+- Goldfeld-Quandt
+- Breusch-Pagan
+- White
+
+--
+
+What do we do if we detect it?
+---
+layout: true
+# Living with heteroskedasticity
+---
+class: inverse, middle, true
+---
+
+In the presence of heteroskedasticity, OLS is
+
+- still .hi[unbiased]
+- .hi[no longer the most efficient] unbiased linear estimator
+
+On average, we get the right answer but with more noise (less precision).
+
+--
+
+**Options:**
+
+1. Check regression .hi[specification].
+2. Find a new, more efficient unbiased .hi[estimator].
+3. Live with OLS's inefficiency and make .hi[corrections for inference].
+  - Standard errors
+  - Confidence intervals
+  - Hypothesis tests
+---
+layout: true
+# Living with heteroskedasticity
+## Misspecification
+---
+
+As we've discussed, the specification<sup>†</sup> of your regression model matters a lot for the unbiasedness and efficiency of your estimator.
+
+**Response #1:** Ensure your function form doesn't cause heteroskedasticity.
+
+.footnote[[†]: *Specification:* Functional form and included variables.]
+---
+
+*Example:* If the population relationship is $$ y = \beta_0 + \beta_1 x + \beta_2 x^2 + u $$
+
+But you omit $x^2$ and estimate $$ y = \gamma_0 + \gamma_1 x + w $$
+
+Then $$ w = u + \beta_2 x^2 \quad \implies \quad \mathop{\text{Var}} \left( w \right) = f(x) $$
+
+The variance of $w$ changes systematically with $x$ (heteroskedasticity).
+---
+
+```{R, spec1, dev = "svg", echo = F}
+set.seed(12345)
+tibble(x = rnorm(1e3), y = )
+```
+
+
+---
+
+More generally:
+
+**Misspecification problem:** Incorrect specification of the regression model can cause heteroskedasticity.
+
+--
+
+**Solution:** 💡 Get it right (_e.g._, don't omit $x^2$).
+
+--
+
+**New problems:**
+
+- We often don't know the *right* specification.
+
+- We'd like a more formal process for addressing heteroskedasticity.
+
+--
+
+**Conclusion:** Adjusting the specification often doesn't solve the problem.
+
+---
+layout: true
+# Living with heteroskedasticity
+## Weighted least squares
+---
+
+Weighted least squares (WLS) presents another approach.
+
+--
+
+Let the true population relationship be
+
+$$
+\begin{align}
+  y_i = \beta_0 + \beta_1 x_{1i} + u_i \tag{1}
+\end{align}
+$$
+
+with $u_i \sim \mathop{N} \left( 0,\, \sigma_i^2 \right)$.
+
+--
+
+Now transform $(1)$ by dividing each observation's data by $\sigma_i$, _i.e._,
+
+$$
+\begin{align}
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+---
+
+$$
+\begin{align}
+  y_i &= \beta_0 + \beta_1 x_{1i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+Whereas $(1)$ is heteroskedastic,
+--
+ $\color{#e64173}{(2)}$ .hi[is homoskedastic].
+
+∴ OLS is efficient and unbiased for estimating the $\beta_k$ in $(2)$!
+
+--
+
+Why is $(2)$ homoskedastic?
+
+--
+
+$$ \mathop{\text{Var}} \left( \dfrac{u_i}{\sigma_i} \right) = \dfrac{1}{\sigma_i^2} \mathop{\text{Var}} \left( u_i \right) = \dfrac{1}{\sigma_i^2} \sigma_i^2 = 1 \quad \forall i $$
+---
+
+.hi[Weighted least squares] (WLS) estimators are a special class of .hi[generalized least squares] (GLS) estimators focused on heteroskedasticity.
+
+--
+
+$$
+\begin{align}
+  y_i &= \beta_0 + \beta_1 x_{1i} + u_i \tag{1} \\[1em]
+  \dfrac{y_i}{\sigma_i} &= \beta_0 \dfrac{1}{\sigma_i} + \beta_1 \dfrac{x_{1i}}{\sigma_i} + \dfrac{u_i}{\sigma_i} \tag{2}
+\end{align}
+$$
+
+*Notes:*
+
+1. **Inverse-variance weighting:** WLS downweights observations with higher variance in their errors.
+
+2. **Big requirement:** WLS requires that we *know* $\sigma_i^2$ for each observation.
