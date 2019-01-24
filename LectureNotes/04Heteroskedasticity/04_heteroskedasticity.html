@@ -4,7 +4,7 @@
     <title>Heteroskedasticity</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-01-22" />
+    <meta name="date" content="2019-01-23" />
     <link href="04_heteroskedasticity_files/remark-css/default.css" rel="stylesheet" />
     <link href="04_heteroskedasticity_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="04_heteroskedasticity_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Heteroskedasticity
 ## EC 421, Set 4
 ### Edward Rubin
-### 22 January 2019
+### 23 January 2019
 
 ---
 
@@ -325,7 +325,7 @@ follows an `\(F\)` distribution (under the null hypothesis) with `\(n^{\star}-k\
 - Performs very well if we know the form of potentially heteroskedasticity.
 
 .footnote[
-[†]: Goldfeld and Quandt suggested `\(n^{\star}\)` of `\((3/8)n\)`.
+[†]: Goldfeld and Quandt suggested `\(n^{\star}\)` of `\((3/8)n\)`. `\(k\)` gives number of estimated parameters (_i.e._, `\(\hat{\beta}_j\)`'s).
 ]
 ---
 
@@ -487,7 +487,7 @@ An outline of White's test for heteroskedasticity:
 
 2\. Regress squared residuals on all explanatory variables, their squares, and interactions.
 
-$$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m + v\_i $$
+$$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{k+j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m + v\_i $$
 
 3\. Record R.sub[e].super[2].
 
@@ -502,14 +502,12 @@ $$ \text{LM} = n \times R_e^2 \qquad \text{Under H}_0,\, \text{LM} \overset{\tex
 
 but now the `\(R^2_e\)` comes from the regression of `\(e^2\)` on the explanatory variables, their squares, and their interactions.
 
-$$ e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m}\_{\text{Interactions}} + v\_i $$
+$$ e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{k+j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m}\_{\text{Interactions}} + v\_i $$
 
---
+**Note:** The `\(k\)` (for our `\(\chi_k^2\)`) equals the number of estimated parameters in the regression above (the `\(\alpha_j\)`), excluding the intercept `\(\left( \alpha_0 \right)\)`.
+---
 
-----
-
-**Note:** If a variable is equal to its square (_e.g._, binary variables), then you don't (can't) include it. THe same rule applies for interactions.
-
+**Practical note:** If a variable is equal to its square (_e.g._, binary variables), then you don't (can't) include it. The same rule applies for interactions.
 ---
 
 *Example:* Consider the model.super[†] `\(y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u\)`
@@ -527,7 +525,7 @@ $$
 
 Record the R.super[2] from this equation (call it `\(R_e^2\)`).
 
-**Step 3:** Test H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0\)` using `\(\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_3^2\)`.
+**Step 3:** Test H.sub[0]: `\(\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0\)` using `\(\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_9^2\)`.
 
 .footnote[
 [†]: To simplify notation here, I'm dropping the `\(i\)` subscripts.
@@ -708,6 +706,8 @@ Remember the Goldfeld-Quandt test statistic?
 --
 `\(\approx1.53\)`
 --
+ Test via `\(F_{158-3,\,158-3}\)`
+--
 
 ```r
 # G-Q test statistic
@@ -721,11 +721,11 @@ Remember the Goldfeld-Quandt test statistic?
 
 ```r
 # p-value
-pf(q = f_gq, df1 = 158, df2 = 158, lower.tail = F)
+pf(q = f_gq, df1 = 158-3, df2 = 158-3, lower.tail = F)
 ```
 
 ```
-#&gt; [1] 0.003920402
+#&gt; [1] 0.004226666
 ```
 ---
 
@@ -740,7 +740,7 @@ H.sub[0]: `\(\sigma_1^2 = \sigma_2^2\)` *vs.* H.sub[A]: `\(\sigma_1^2 \neq \sigm
 
 Goldfeld-Quandt test statistic: `\(F \approx 1.53\)`
 
-*p*-value `\(\approx 0.00392\)`
+*p*-value `\(\approx 0.00423\)`
 
 ∴ Reject H.sub[0] (*p*-value is less than 0.05).
 
@@ -779,7 +779,7 @@ e_model4 &lt;- residuals(est_model4)
 
 `\(F_{n^\star-k,\,n^\star-k} = \dfrac{\text{SSE}_4}{\text{SSE}_3} \approx\dfrac{29,101.52}{26,243.52} \approx1.11\)`
 
-which has a *p*-value of approximately 0.2583.
+which has a *p*-value of approximately 0.2603.
 
 --
 
@@ -901,7 +901,7 @@ $$
 \end{align}`
 $$
 which moves the null hypothesis from
-&lt;br&gt;.slate[H.sub[0]:] `\(\color{#314f4f}{\alpha_1 = \alpha_2 = \alpha_3 = 0}\)` to
+&lt;br&gt;.slate[H.sub[0]:] `\(\color{#314f4f}{\alpha_1 = \alpha_2 = 0}\)` to
 &lt;br&gt;.pink[H.sub[0]:] `\(\color{#e64173}{\alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = 0}\)`
 
 --
@@ -934,7 +934,7 @@ white_model &lt;- lm(
   data = test_df
 )
 # Grab the R-squared
-(white_r2 &lt;- summary(bp_model)$r.squared)
+(white_r2 &lt;- summary(white_model)$r.squared)
 ```
 ---
 count: false
@@ -980,7 +980,7 @@ white_r2 &lt;- summary(white_model)$r.squared
 ---
 count: false
 
-**Step 4:** Calculate the associated *p*-value (where `\(\text{LM} \overset{d}{\sim} \chi_k^2\)`)
+**Step 4:** Calculate the associated *p*-value (where `\(\text{LM} \overset{d}{\sim} \chi_k^2\)`); here, `\(k=5\)`
 
 
 ```r
@@ -1078,7 +1078,7 @@ count: false
 - **Q:** Why are we concerned about heteroskedasticity?
 --
 
-- **A:** It biases our standard errors—wrecking our statistical tests and confidence intervals.
+- **A:** It biases our standard errors—wrecking our statistical tests and confidence intervals. Also: OLS is no longer the most efficient (best) linear unbiased estimator.
 ---
 count: false
 

@@ -431,7 +431,7 @@ follows an $F$ distribution (under the null hypothesis) with $n^{\star}-k$ and $
 - Performs very well if we know the form of potentially heteroskedasticity.
 
 .footnote[
-[†]: Goldfeld and Quandt suggested $n^{\star}$ of $(3/8)n$.
+[†]: Goldfeld and Quandt suggested $n^{\star}$ of $(3/8)n$. $k$ gives number of estimated parameters (_i.e._, $\hat{\beta}_j$'s).
 ]
 ---
 
@@ -727,7 +727,7 @@ An outline of White's test for heteroskedasticity:
 
 2\. Regress squared residuals on all explanatory variables, their squares, and interactions.
 
-$$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m + v\_i $$
+$$ e^2 = \alpha\_0 + \sum\_{h=1}^k \alpha\_h x\_h + \sum\_{j=1}^k \alpha\_{k+j} x\_j^2 + \sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m + v\_i $$
 
 3\. Record R.sub[e].super[2].
 
@@ -742,14 +742,12 @@ $$ \text{LM} = n \times R_e^2 \qquad \text{Under H}_0,\, \text{LM} \overset{\tex
 
 but now the $R^2_e$ comes from the regression of $e^2$ on the explanatory variables, their squares, and their interactions.
 
-$$ e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k x\_\ell x\_m}\_{\text{Interactions}} + v\_i $$
+$$ e^2 = \alpha\_0 + \underbrace{\sum\_{h=1}^k \alpha\_h x\_h}\_{\text{Expl. variables}} + \underbrace{\sum\_{j=1}^k \alpha\_{k+j} x\_j^2}\_{\text{Squared terms}} + \underbrace{\sum\_{\ell = 1}^{k-1} \sum\_{m = \ell + 1}^k \alpha\_{\ell,m} x\_\ell x\_m}\_{\text{Interactions}} + v\_i $$
 
---
+**Note:** The $k$ (for our $\chi_k^2$) equals the number of estimated parameters in the regression above (the $\alpha_j$), excluding the intercept $\left( \alpha_0 \right)$.
+---
 
-----
-
-**Note:** If a variable is equal to its square (_e.g._, binary variables), then you don't (can't) include it. THe same rule applies for interactions.
-
+**Practical note:** If a variable is equal to its square (_e.g._, binary variables), then you don't (can't) include it. The same rule applies for interactions.
 ---
 
 *Example:* Consider the model.super[†] $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + u$
@@ -767,7 +765,7 @@ $$
 
 Record the R.super[2] from this equation (call it $R_e^2$).
 
-**Step 3:** Test H.sub[0]: $\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0$ using $\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_3^2$.
+**Step 3:** Test H.sub[0]: $\alpha_1 = \alpha_2 = \cdots = \alpha_9 = 0$ using $\text{LM} = n R^2_e \overset{\text{d}}{\sim} \chi_9^2$.
 
 .footnote[
 [†]: To simplify notation here, I'm dropping the $i$ subscripts.
@@ -933,6 +931,8 @@ $\approx\dfrac{`r round(sse_model2, 2) %>% format(big.mark = ",")`}{`r round(sse
 --
 $\approx`r round(sse_model2/sse_model1, 2)`$
 --
+ Test via $F_{158-3,\,158-3}$
+--
 ```{R, ex gq8}
 # G-Q test statistic
 (f_gq <- sse_model2/sse_model1)
@@ -940,7 +940,7 @@ $\approx`r round(sse_model2/sse_model1, 2)`$
 --
 ```{R, ex gq9}
 # p-value
-pf(q = f_gq, df1 = 158, df2 = 158, lower.tail = F)
+pf(q = f_gq, df1 = 158-3, df2 = 158-3, lower.tail = F)
 ```
 ---
 
@@ -978,7 +978,7 @@ H.sub[0]: $\sigma_1^2 = \sigma_2^2$ *vs.* H.sub[A]: $\sigma_1^2 \neq \sigma_2^2$
 
 Goldfeld-Quandt test statistic: $F \approx `r round(f_gq, 2)`$
 
-*p*-value $\approx `r round(pf(q = f_gq, df1 = 158, df2 = 158, lower.tail = F), 5)`$
+*p*-value $\approx `r round(pf(q = f_gq, df1 = 158-3, df2 = 158-3, lower.tail = F), 5)`$
 
 ∴ Reject H.sub[0] (*p*-value is less than 0.05).
 
@@ -1005,7 +1005,7 @@ e_model4 <- residuals(est_model4)
 
 $F_{n^\star-k,\,n^\star-k} = \dfrac{\text{SSE}_4}{\text{SSE}_3} \approx\dfrac{`r round(sse_model4, 2) %>% format(big.mark = ",")`}{`r round(sse_model3, 2) %>% format(big.mark = ",")`} \approx`r round(sse_model4 / sse_model3, 2)`$
 
-which has a *p*-value of approximately `r round(pf(sse_model4 / sse_model3, 158, 158, lower.tail = F), 4)`.
+which has a *p*-value of approximately `r round(pf(sse_model4 / sse_model3, 158-3, 158-3, lower.tail = F), 4)`.
 
 --
 
@@ -1139,7 +1139,7 @@ $$
 \end{align}
 $$
 which moves the null hypothesis from
-<br>.slate[H.sub[0]:] $\color{#314f4f}{\alpha_1 = \alpha_2 = \alpha_3 = 0}$ to
+<br>.slate[H.sub[0]:] $\color{#314f4f}{\alpha_1 = \alpha_2 = 0}$ to
 <br>.pink[H.sub[0]:] $\color{#e64173}{\alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = 0}$
 
 --
@@ -1170,7 +1170,7 @@ white_model <- lm(
   data = test_df
 )
 # Grab the R-squared
-(white_r2 <- summary(bp_model)$r.squared)
+(white_r2 <- summary(white_model)$r.squared)
 ```
 ---
 count: false
@@ -1206,7 +1206,7 @@ white_r2 <- summary(white_model)$r.squared
 ---
 count: false
 
-**Step 4:** Calculate the associated *p*-value (where $\text{LM} \overset{d}{\sim} \chi_k^2$)
+**Step 4:** Calculate the associated *p*-value (where $\text{LM} \overset{d}{\sim} \chi_k^2$); here, $k=5$
 
 ```{R, ex white4, eval = T}
 # Regress squared residuals on quadratic of explanatory variables
@@ -1323,7 +1323,7 @@ count: false
 - **Q:** Why are we concerned about heteroskedasticity?
 --
 
-- **A:** It biases our standard errors—wrecking our statistical tests and confidence intervals.
+- **A:** It biases our standard errors—wrecking our statistical tests and confidence intervals. Also: OLS is no longer the most efficient (best) linear unbiased estimator.
 ---
 count: false
 
