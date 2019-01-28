@@ -1,2 +1,3 @@
 *.RData
 *.rdb
+*.DS_Store
