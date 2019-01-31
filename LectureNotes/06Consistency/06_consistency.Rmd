@@ -999,7 +999,7 @@ Consider the population model: $y_i = \beta_0 + \beta_1 z_i + u_i$
 - We want to observe $z_i$ but cannot.
 
 - Instead, we *measure* the variable $x_i$, which is $z_i$ plus some error (noise):
-$$ x_i = x_i + \omega_i $$
+$$ x_i = z_i + \omega_i $$
 
 - Assume $\mathop{\boldsymbol{E}}\left[ \omega_i \right] = 0$, $\mathop{\text{Var}} \left( \omega_i \right) = \sigma^2_\omega$, and $\omega$ is independent of $z$ and $u$.
 
