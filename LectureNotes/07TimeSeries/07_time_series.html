@@ -222,7 +222,7 @@ layout: false
 
 1. The `\(u_t\)` are **homoskedastic** with **zero correlation** between `\(u_t\)` and `\(u_s\)`, _i.e._, `\(\mathop{\text{Var}} \left( u_t | X \right) = \mathop{\text{Var}} \left( u_t \right) = \sigma^2\)` and `\(\mathop{\text{Cor}} \left( u_t,\,u_s \middle| X \right) = 0\)`.
 
-1. **Normality of disturbances**, _i.e._, `\(u_i\overset{\text{iid}}{\sim}\mathop{N}\left( 0,\,\sigma^2 \right)\)`.
+1. **Normality of disturbances**, _i.e._, `\(u_t\overset{\text{iid}}{\sim}\mathop{N}\left( 0,\,\sigma^2 \right)\)`.
 ---
 layout: true
 # Time-series models
@@ -345,7 +345,7 @@ $$
 `\begin{aligned}
  \text{Births}_t =
  &amp;\beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Income}_{\color{#e64173}{t-1}} + \beta_3 \text{Income}_{\color{#e64173}{t-2}} \\
- &amp; + \beta_4 \text{Births}_t + \beta_5 \text{Births}_{\color{#FFA500}{t-1}} + \beta_6 \text{Births}_{\color{#FFA500}{t-2}} + u_t
+ &amp; + \beta_4 \text{Births}_{\color{#FFA500}{t-2}} + \beta_5 \text{Births}_{\color{#FFA500}{t-2}} + u_t
 \end{aligned}`
 $$
 ---
