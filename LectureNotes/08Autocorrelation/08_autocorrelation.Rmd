@@ -106,6 +106,7 @@ theme_axes <- theme_void() + theme(
   plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
   legend.position = "none"
 )
+theme_set(theme_gray(base_size = 20))
 ```
 
 # Prologue
@@ -125,9 +126,129 @@ Autocorrelation
 
 ## Upcoming
 
-1. **Survey** due at 11:59pm on Wednesday
+1. **Survey** due at 11:59pm on Wednesday (02/06).
 2. **Assignment** *extended* to noon on Saturday (02/09). .pink[Don't wait.]
-3. **Midterm** next Tuesday (02/11)
+3. **Midterm** next Tuesday (02/11).
+---
+layout: true
+# .mono[R] showcase
+## .mono[ggplot2]
+---
+name: r_showcase
+
+I previously mentioned the .mono[R] package `ggplot2`.
+
+Today, I'm going to show you a bit of the basics of `ggplot2`.
+
+---
+layout: true
+# .mono[ggplot2]
+---
+
+```{R, gg data, echo = F}
+# Load births data; drop totals; create time variable
+birth_df <- read_csv("usa_birth_1933_2015.csv") %>%
+  janitor::clean_names() %>%
+  filter(month != "TOT") %>%
+  mutate(
+    month = as.numeric(month),
+    time = year + (month-1)/12
+  )
+# Load days of months data
+days_df <- read_csv("days_of_month.csv")
+# Clean up days
+days_lon <- gather(days_df, year, n_days, -Month)
+days_lon <- janitor::clean_names(days_lon)
+days_lon$year <- as.integer(days_lon$year)
+# Join
+birth_df <- left_join(
+  x = birth_df,
+  y = days_lon,
+  by = c("year", "month")
+)
+# Calculate 30-day equivalent births by month
+birth_df %<>% mutate(
+  births_30day = births / n_days * 30
+)
+# Add post-ww2 indicator
+birth_df %<>% mutate(post_ww2 = time > 1945 + 8/12)
+```
+
+The `ggplot` function `aes` arguments define variables from `data`.
+
+```{R, gg1, fig.height = 5}
+ggplot(data = birth_df, aes(x = time, y = births))
+```
+---
+count: false
+
+You can apply mathematical operators to the variables.
+
+```{R, gg2, fig.height = 5}
+ggplot(data = birth_df, aes(x = time, y = births/10000))
+```
+---
+count: false
+
+You add *geometries* (points, lines, *etc*.) layer by layer.
+
+```{R, gg3, fig.height = 5}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point()
+```
+---
+count: false
+
+Color is easy.
+
+```{R, gg4, fig.height = 5}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point(color = "deeppink")
+```
+---
+count: false
+
+You can even use variables to color.
+
+```{R, gg5, fig.height = 5}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point(aes(color = post_ww2))
+```
+---
+count: false
+
+Add labels
+
+```{R, gg6, fig.height = 4.75}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point() +
+  xlab("Time") + ylab("Births per 10,000")
+```
+---
+count: false
+
+Change the theme...
+
+```{R, gg7, fig.height = 4.5}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point() +
+  xlab("Time") + ylab("Births per 10,000") +
+  theme_pander(base_size = 20)
+```
+---
+count: false
+
+Add other geometries—_e.g._, connect the dots (`line`) and a regression line
+
+```{R, gg8, fig.height = 4}
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_line(color = "grey85") +
+  geom_point() +
+  geom_smooth(se = F, method = lm) +
+  xlab("Time") + ylab("Births per 10,000") +
+  theme_pander(base_size = 20)
+```
+
 ---
 layout: true
 # Time series
@@ -137,7 +258,17 @@ class: inverse, middle
 ---
 name: review
 
-TODO
+Changes to our model/framework.
+
+- Our model now has $\color{#e64173}{t}$ subscripts for .hi[time periods].
+
+- .hi[Dynamic models] allow .hi[lags] of explanatory and/or outcome variables.
+
+- We changed our **exogeneity** assumption to .hi[contemporaneous exogeneity], _i.e._, $\mathop{\boldsymbol{E}}\left[ u_t \middle| X_t \right] = 0$
+
+- Including .hi-orange[lags of outcome variables] causes .hi[biased/inconsistent coefficient estimates] for OLS.
+
+- .hi-orange[Lagged explanatory variables] make .hi[OLS inefficient].
 
 ---
 layout: false
@@ -330,15 +461,15 @@ For **static models** or **dynamic models with lagged explanatory variables**, i
 
 *Recall:* Same implications as heteroskedasticity.
 
-Autocorrelation get trickier with lagged dependent variables.
+Autocorrelation get trickier with lagged outcome variables.
 ---
 layout: true
 # Autocorrelation
-## OLS and lagged dependent variables
+## OLS and lagged outcome variables
 ---
 name: ols_adl
 
-Consider a model with one lag of the dependent variable—ADL(1, 0)—model with AR(1) disturbances
+Consider a model with one lag of the outcome variable—ADL(1, 0)—model with AR(1) disturbances
 
 $$
 \begin{align}
@@ -391,7 +522,7 @@ In $(1)$, we can see that $u_t$ depends upon (covaries with) $\color{#e64173}{u_
 ∴ This model violates our contemporaneous exogeneity requirement.
 ---
 
-*Implications:* For models with **lagged dependent variables** and **autocorrelated disturbances**
+*Implications:* For models with **lagged outcome variables** and **autocorrelated disturbances**
 
 1. The models .pink[**violate contemporaneous exogeneity**.]
 
@@ -433,7 +564,7 @@ To see how this bias can look, let's run a simulation.
 
 $$
 \begin{align}
-  y_t &= 1 + 10 x_t + 100 y_{t-1} + u_t \\
+  y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t \\
   u_t &= 0.9 u_{t-1} + \varepsilon_t
 \end{align}
 $$
@@ -445,7 +576,7 @@ To generate 100 disturbances from AR(1), with $\rho = 0.9$:
 
 --
 
-We are going to run 1,000 iterations with $T=100$.
+We are going to run 10,000 iterations with $T=100$.
 
 --
 
@@ -463,37 +594,51 @@ Outline of our simulation:
 
 1. Generate T=100 values of u
 
-1. Use x and u to calculate T=100 values of y
+  - Generate T=100 values of ε
+
+  - Use ε and ρ=0.9 to calculate u.sub[t] = ρ u.sub[t-1] + ε.sub[t]
+
+1. Calculate y.sub[t] = β.sub[0] + β.sub[1] x.sub[t] + β.sub[2] y.sub[t-1] + u.sub[t]
 
 1. Regress y on x; record estimates
 
 Repeat 1–4 10,000 times
 ]
 ---
-exclude: true
+layout: false
+class: clear
 
-```{R, sim_gen, echo = F, eval = F}
+```{R, sim setup, echo = F}
 # Define parameters
 set.seed(1234)
 rho <- 0.9
-b0 <- 1; b1 <- 2; b2 <- 0.5
+b0 <- 1
+b1 <- 2
+b2 <- 0.5
 t <- 100
+```
+
+```{R, sim gen, echo = F, eval = F}
 # Function for one iteration of the simulation
 sim_fun <- function(x, rho, b0, b1, b2, t) {
   # Start generating data (initialize y as 1)
+  # NOTE: u and u2 are both AR(1): u is manual; u2 uses canned function 'arima.sim'
   data_x <- tibble(
     e = rnorm(t),
     u = rnorm(1),
+    u2 = arima.sim(model = list(ar = c(0.9)), n = t),
     x = rnorm(t),
-    y = 1
+    y = 1,
+    y2 = 1
   )
   # Calculate u and y, iteratively
   for (j in 2:t) {
     data_x$u[j] <- rho * data_x$u[j-1] + data_x$e[j]
     data_x$y[j] <- b0 + b1 * data_x$x[j] + b2 * data_x$y[j-1] + data_x$u[j]
+    data_x$y2[j] <- b0 + b1 * data_x$x[j] + b2 * data_x$y2[j-1] + data_x$u2[j]
   }
   # Regression
-  lm(y ~ x + lag(y), data = data_x) %>% tidy()
+  lm(y2 ~ x + lag(y2), data = data_x) %>% tidy()
 }
 # Run the simulation 1,000 times
 sim_df <- mclapply(
@@ -509,14 +654,14 @@ saveRDS(
 )
 ```
 
----
-layout: false
-class: clear
+.pull-left[
+.hi-slate[Distribution of OLS estimates,] $\hat{\beta}_2$
+] .pull.right[
+$y_t = 1 + 2 x_t + \color{#e64173}{0.5} y_{t-1} + u_t$
+]
 
-.hi-slate[Distribution of OLS estimates,] $\hat{\beta}_2$ in $y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t$
-
-```{R, sim_density_b2, echo = F}
-ggplot(data = readRDS("sim.rds") %>% filter(term == "lag(y)"), aes(x = estimate)) +
+```{R, sim density b2, echo = F, fig.height = 6.75}
+ggplot(data = readRDS("sim.rds") %>% filter(term == "lag(y2)"), aes(x = estimate)) +
   geom_density(color = NA, fill = red_pink, alpha = 0.95) +
   geom_vline(xintercept = b2, linetype = "dashed") +
   geom_hline(yintercept = 0) +
@@ -528,9 +673,13 @@ ggplot(data = readRDS("sim.rds") %>% filter(term == "lag(y)"), aes(x = estimate)
 layout: false
 class: clear
 
-.hi-slate[Distribution of OLS estimates,] $\hat{\beta}_1$ in $y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t$
+.pull-left[
+.hi-slate[Distribution of OLS estimates,] $\hat{\beta}_1$
+] .pull.right[
+$y_t = 1 + \color{#FFA500}{2} x_t + 0.5 y_{t-1} + u_t$
+]
 
-```{R, sim_density_b1, echo = F}
+```{R, sim density b1, echo = F, fig.height = 6.75}
 ggplot(data = readRDS("sim.rds") %>% filter(term == "x"), aes(x = estimate)) +
   geom_density(color = NA, fill = "orange", alpha = 0.95) +
   geom_vline(xintercept = b1, linetype = "dashed") +
@@ -539,12 +688,250 @@ ggplot(data = readRDS("sim.rds") %>% filter(term == "x"), aes(x = estimate)) +
   labs(x = "Estimate", y = "Density")
 ```
 ---
+layout: false
+class: inverse, middle
+name: testing
+# Testing for autocorrelation
+---
+layout: true
+# Testing for autocorrelation
+## Static models
+---
+name: testing_static
 
-**TODO:**
+Suppose we have the **static model**,
+$$
+\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + u_t \tag{A}
+\end{align}
+$$
+and we want to test for an AR(1) process in our disturbances $u_t$.
 
-- Fix simulation description
-- Remove sim.arima function
-- Review of time series
+--
+
+.hi[Test for autocorrelation:] Test for correlation in the lags of our residuals:
+
+--
+
+$$
+\begin{align}
+  e_t = \color{#e64173}{\rho} e_{t-1} + v_t
+\end{align}
+$$
+
+--
+
+Does $\color{#e64173}{\hat{\rho}}$ differ significantly from zero?
+
+
+---
+
+Specifically, to test for AR(1) disturbances in the static model
+$$
+\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + u_t \tag{A}
+\end{align}
+$$
+
+.pseudocode-small[
+
+1\. Estimate $(\text{A})$ via OLS.
+
+2\. Calculate residuals from the OLS regression in step 1.
+
+3\. Regress the residuals on their lags (without an intercept).
+
+<center>
+  e.sub[t] = ρ e.sub[t-1] + v.sub[t]
+</center>
+
+4\. Use a _t_ test to determine whether there is statistically significant evidence that ρ differs from zero.
+
+5\. Rejecting H.sub[0] implies significant evidence of autocorrelation.
+]
+---
+layout: false
+class: clear, middle
+
+For an example, let's return to our plot of negative autocorrelation.
+
+---
+class: clear
+
+.hi-slate[Negative autocorrelation]: Disturbances $\left( u_t \right)$ over time
+```{R, negative auto u 2, echo = F, fig.height = 7.25}
+# Number of observations
+T <- 1e2
+# Rho
+rho <- -0.95
+# Set seed and starting point
+set.seed(1234)
+start <- rnorm(1)
+# Generate the data
+ar_df <- tibble(
+  t = 1:T,
+  x = runif(T, min = 0, max = 1),
+  e = rnorm(T, mean = 0, sd = 2),
+  u = NA
+)
+for (x in 1:T) {
+  if (x == 1) {
+    ar_df$u[x] <- rho * start + ar_df$e[x]
+  } else {
+    ar_df$u[x] <- rho * ar_df$u[x-1] + ar_df$e[x]
+  }
+}
+ar_df %<>% mutate(y = 1 + 3 * x + u)
+# Plot disturbances over time
+ggplot(data = ar_df,
+  aes(t, u)
+) +
+geom_line(color = "grey85", size = 0.35) +
+geom_point(color = red_pink, size = 2.25) +
+ylab("u") +
+xlab("t") +
+# theme_pander(base_family = "Fira Sans Book", base_size = 20)
+theme_axes_math
+```
+---
+layout: true
+# Testing for autocorrelation
+## Example: Static model and AR(1)
+---
+
+**Step 1:** Estimate the static model $\left( y_t = \beta_0 + \beta_1 x_t + u_t \right)$ with OLS
+
+```{R, ex ar1 1}
+reg_est <- lm(y ~ x, data = ar_df)
+```
+
+--
+
+**Step 2:** Add the residuals to our dataset
+
+```{R, ex ar1 2}
+ar_df$e <- residuals(reg_est)
+```
+
+--
+
+**Step 3:** Regress the residual on its lag (no intercept)
+
+```{R, ex ar1 3}
+reg_resid <- lm(e ~ -1 + lag(e), data = ar_df)
+```
+---
+
+**Step 4:** _t_ test for the estimated $(\hat{\rho})$ coefficient in step 3.
+```{R, ex ar1 4}
+tidy(reg_resid)
+```
+
+--
+
+That's a very small *p*-value—much smaller than 0.05.
+
+--
+
+.hi[Reject H.sub[0]] (H.sub[0] was $\rho=0$, _i.e._, no autocorrelation).
+
+--
+
+**Step 5:** Conclude. Statistically significant evidence of autocorrelation.
+---
+layout: true
+# Testing for autocorrelation
+## Example: Static model and AR(3)
+---
+
+What if we wanted to test for AR(3)?
+
+- We add more lags of residuals to the regression in *Step 3*.
+
+- We **jointly** test the significance of the coefficients (_i.e._, $\text{LM}$ or $F$).
+
+Let's do it.
+---
+
+**Step 1:** Estimate the static model $\left( y_t = \beta_0 + \beta_1 x_t + u_t \right)$ with OLS
+
+```{R, ex ar3 1}
+reg_est <- lm(y ~ x, data = ar_df)
+```
+
+--
+
+**Step 2:** Add the residuals to our dataset
+
+```{R, ex ar3 2}
+ar_df$e <- residuals(reg_est)
+```
+
+--
+
+**Step 3:** Regress the residual on its lag (no intercept)
+
+```{R, ex ar3 3}
+reg_ar3 <- lm(e ~ -1 + lag(e) + lag(e, 2) + lag(e, 3), data = ar_df)
+```
+--
+
+*Note:* `lag(var, n)` from `dplyr` takes the .mono[n].super[th] lag of the variable .mono[var].
+---
+
+**Step 4:** Calculate the $\text{LM} = n\times R_e^2$ test statistic—distributed $\chi_k^2$.
+<br>
+$k$ is the number of regressors in the regression in *Step 3* (here, $k=3$).
+
+```{R, ex ar3 4}
+# Grab R squared
+r2_e <- summary(reg_ar3)$r.squared
+# Calculate the LM test statistic: n times r2_e
+(lm_stat <- 100 * r2_e)
+# Calculate the p-value
+(pchisq(q = lm_stat, df = 3, lower.tail = F))
+```
+---
+
+**Step 5:** Conclude.
+
+--
+
+*Recall:* Our hypotheses consider the model
+$$
+\begin{align}
+  e_t = \rho_1 e_{t-1} + \rho_2 e_{t-2} + \rho_3 e_{t-3}
+\end{align}
+$$
+
+--
+
+which we are actually using to learn about the model
+$$
+\begin{align}
+  u_t = \rho_1 u_{t-1} + \rho_2 u_{t-2} + \rho_3 u_{t-3}
+\end{align}
+$$
+
+--
+
+H.sub[0]: $\rho_1 = \rho_2 = \rho_3 = 0$
+ *vs.* H.sub[A]: $\rho_j \neq 0$ for at least one $j$ in $\{1,\, 2,\, 3\}$
+
+Our p-value is less than 0.05.
+--
+ .hi[Reject H.sub[0].]
+
+--
+
+Conclude there is statistically significant evidence of autocorrelation.
+---
+layout: true
+# Testing for autocorrelation
+## Dynamic models with lagged outcome variables
+---
+name: testing_adl
+
 
 ---
 layout: false
@@ -554,6 +941,7 @@ layout: false
 ### Admin
 
 1. [Schedule](#schedule)
+1. [.mono[R] showcase: .mono[ggplot2]](#r_showcase)
 1. [Review: Time series](#review)
 ]
 
@@ -562,7 +950,18 @@ layout: false
 
 1. [Introduction](#intro)
 1. [In static models](#static_models)
-1. [OLS, unbiased](#ols_static)
-1. [OLS, biased](#ols_adl)
+1. [OLS and bias/consistency](#ols_static)
+  - [Static models](#ols_static)
+  - [Dynamic models w. lagged $y$](#ols_adl)
 1. [Simulation: Bias](#ar2_simulation)
+1. [Testing for autocorrelation](#testing)
+  - [Static models](#testing_static)
+  - [Dynamic models w. lagged $y$](#testing_adl)
 ]
+
+---
+exclude: true
+
+```{R, generate pdfs, include = F}
+system("decktape remark 08_autocorrelation.html 08_autocorrelation.pdf --chrome-arg=--allow-file-access-from-files")
+```

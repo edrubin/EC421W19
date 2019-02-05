@@ -129,11 +129,11 @@
 
 .super{
   vertical-align: super;
-  font-size: 85%;
+  font-size: 70%;
 }
 .sub{
   vertical-align: sub;
-  font-size: 85%;
+  font-size: 70%;
 }
 
 .remark-code {

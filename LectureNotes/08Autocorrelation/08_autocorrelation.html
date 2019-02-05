@@ -42,9 +42,126 @@ Autocorrelation
 
 ## Upcoming
 
-1. **Survey** due at 11:59pm on Wednesday
+1. **Survey** due at 11:59pm on Wednesday (02/06).
 2. **Assignment** *extended* to noon on Saturday (02/09). .pink[Don't wait.]
-3. **Midterm** next Tuesday (02/11)
+3. **Midterm** next Tuesday (02/11).
+---
+layout: true
+# .mono[R] showcase
+## .mono[ggplot2]
+---
+name: r_showcase
+
+I previously mentioned the .mono[R] package `ggplot2`.
+
+Today, I'm going to show you a bit of the basics of `ggplot2`.
+
+---
+layout: true
+# .mono[ggplot2]
+---
+
+
+
+The `ggplot` function `aes` arguments define variables from `data`.
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births))
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+You can apply mathematical operators to the variables.
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000))
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+You add *geometries* (points, lines, *etc*.) layer by layer.
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point()
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg3-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+Color is easy.
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point(color = "deeppink")
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg4-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+You can even use variables to color.
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point(aes(color = post_ww2))
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg5-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+Add labels
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point() +
+  xlab("Time") + ylab("Births per 10,000")
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg6-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+Change the theme...
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_point() +
+  xlab("Time") + ylab("Births per 10,000") +
+  theme_pander(base_size = 20)
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg7-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
+
+Add other geometries—_e.g._, connect the dots (`line`) and a regression line
+
+
+```r
+ggplot(data = birth_df, aes(x = time, y = births/10000)) +
+  geom_line(color = "grey85") +
+  geom_point() +
+  geom_smooth(se = F, method = lm) +
+  xlab("Time") + ylab("Births per 10,000") +
+  theme_pander(base_size = 20)
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg8-1.svg" style="display: block; margin: auto;" /&gt;
+
 ---
 layout: true
 # Time series
@@ -54,7 +171,17 @@ class: inverse, middle
 ---
 name: review
 
-TODO
+Changes to our model/framework.
+
+- Our model now has `\(\color{#e64173}{t}\)` subscripts for .hi[time periods].
+
+- .hi[Dynamic models] allow .hi[lags] of explanatory and/or outcome variables.
+
+- We changed our **exogeneity** assumption to .hi[contemporaneous exogeneity], _i.e._, `\(\mathop{\boldsymbol{E}}\left[ u_t \middle| X_t \right] = 0\)`
+
+- Including .hi-orange[lags of outcome variables] causes .hi[biased/inconsistent coefficient estimates] for OLS.
+
+- .hi-orange[Lagged explanatory variables] make .hi[OLS inefficient].
 
 ---
 layout: false
@@ -159,15 +286,15 @@ For **static models** or **dynamic models with lagged explanatory variables**, i
 
 *Recall:* Same implications as heteroskedasticity.
 
-Autocorrelation get trickier with lagged dependent variables.
+Autocorrelation get trickier with lagged outcome variables.
 ---
 layout: true
 # Autocorrelation
-## OLS and lagged dependent variables
+## OLS and lagged outcome variables
 ---
 name: ols_adl
 
-Consider a model with one lag of the dependent variable—ADL(1, 0)—model with AR(1) disturbances
+Consider a model with one lag of the outcome variable—ADL(1, 0)—model with AR(1) disturbances
 
 $$
 `\begin{align}
@@ -220,7 +347,7 @@ In `\((1)\)`, we can see that `\(u_t\)` depends upon (covaries with) `\(\color{#
 ∴ This model violates our contemporaneous exogeneity requirement.
 ---
 
-*Implications:* For models with **lagged dependent variables** and **autocorrelated disturbances**
+*Implications:* For models with **lagged outcome variables** and **autocorrelated disturbances**
 
 1. The models .pink[**violate contemporaneous exogeneity**.]
 
@@ -262,7 +389,7 @@ To see how this bias can look, let's run a simulation.
 
 $$
 `\begin{align}
-  y_t &amp;= 1 + 10 x_t + 100 y_{t-1} + u_t \\
+  y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t \\
   u_t &amp;= 0.9 u_{t-1} + \varepsilon_t
 \end{align}`
 $$
@@ -274,7 +401,7 @@ To generate 100 disturbances from AR(1), with `\(\rho = 0.9\)`:
 
 --
 
-We are going to run 1,000 iterations with `\(T=100\)`.
+We are going to run 10,000 iterations with `\(T=100\)`.
 
 --
 
@@ -292,39 +419,281 @@ Outline of our simulation:
 
 1. Generate T=100 values of u
 
-1. Use x and u to calculate T=100 values of y
+  - Generate T=100 values of ε
+
+  - Use ε and ρ=0.9 to calculate u.sub[t] = ρ u.sub[t-1] + ε.sub[t]
+
+1. Calculate y.sub[t] = β.sub[0] + β.sub[1] x.sub[t] + β.sub[2] y.sub[t-1] + u.sub[t]
 
 1. Regress y on x; record estimates
 
 Repeat 1–4 10,000 times
 ]
 ---
-exclude: true
+layout: false
+class: clear
 
 
+
+
+
+.pull-left[
+.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_2\)`
+] .pull.right[
+`\(y_t = 1 + 2 x_t + \color{#e64173}{0.5} y_{t-1} + u_t\)`
+]
+
+&lt;img src="08_autocorrelation_files/figure-html/sim density b2-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 layout: false
 class: clear
 
-.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_2\)` in `\(y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t\)`
+.pull-left[
+.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_1\)`
+] .pull.right[
+`\(y_t = 1 + \color{#FFA500}{2} x_t + 0.5 y_{t-1} + u_t\)`
+]
 
-&lt;img src="08_autocorrelation_files/figure-html/sim_density_b2-1.svg" style="display: block; margin: auto;" /&gt;
-
+&lt;img src="08_autocorrelation_files/figure-html/sim density b1-1.svg" style="display: block; margin: auto;" /&gt;
 ---
 layout: false
-class: clear
+class: inverse, middle
+name: testing
+# Testing for autocorrelation
+---
+layout: true
+# Testing for autocorrelation
+## Static models
+---
+name: testing_static
 
-.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_1\)` in `\(y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t\)`
+Suppose we have the **static model**,
+$$
+`\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + u_t \tag{A}
+\end{align}`
+$$
+and we want to test for an AR(1) process in our disturbances `\(u_t\)`.
 
-&lt;img src="08_autocorrelation_files/figure-html/sim_density_b1-1.svg" style="display: block; margin: auto;" /&gt;
+--
+
+.hi[Test for autocorrelation:] Test for correlation in the lags of our residuals:
+
+--
+
+$$
+`\begin{align}
+  e_t = \color{#e64173}{\rho} e_{t-1} + v_t
+\end{align}`
+$$
+
+--
+
+Does `\(\color{#e64173}{\hat{\rho}}\)` differ significantly from zero?
+
+
 ---
 
-**TODO:**
+Specifically, to test for AR(1) disturbances in the static model
+$$
+`\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + u_t \tag{A}
+\end{align}`
+$$
 
-- Fix simulation description
-- Remove sim.arima function
-- Review of time series
+.pseudocode-small[
+
+1\. Estimate `\((\text{A})\)` via OLS.
+
+2\. Calculate residuals from the OLS regression in step 1.
+
+3\. Regress the residuals on their lags (without an intercept).
+
+&lt;center&gt;
+  e.sub[t] = ρ e.sub[t-1] + v.sub[t]
+&lt;/center&gt;
+
+4\. Use a _t_ test to determine whether there is statistically significant evidence that ρ differs from zero.
+
+5\. Rejecting H.sub[0] implies significant evidence of autocorrelation.
+]
+---
+layout: false
+class: clear, middle
+
+For an example, let's return to our plot of negative autocorrelation.
+
+---
+class: clear
+
+.hi-slate[Negative autocorrelation]: Disturbances `\(\left( u_t \right)\)` over time
+&lt;img src="08_autocorrelation_files/figure-html/negative auto u 2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: true
+# Testing for autocorrelation
+## Example: Static model and AR(1)
+---
+
+**Step 1:** Estimate the static model `\(\left( y_t = \beta_0 + \beta_1 x_t + u_t \right)\)` with OLS
+
+
+```r
+reg_est &lt;- lm(y ~ x, data = ar_df)
+```
+
+--
+
+**Step 2:** Add the residuals to our dataset
+
+
+```r
+ar_df$e &lt;- residuals(reg_est)
+```
+
+--
+
+**Step 3:** Regress the residual on its lag (no intercept)
+
+
+```r
+reg_resid &lt;- lm(e ~ -1 + lag(e), data = ar_df)
+```
+---
+
+**Step 4:** _t_ test for the estimated `\((\hat{\rho})\)` coefficient in step 3.
+
+```r
+tidy(reg_resid)
+```
+
+```
+#&gt; # A tibble: 1 x 5
+#&gt;   term   estimate std.error statistic  p.value
+#&gt;   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 lag(e)   -0.851    0.0535     -15.9 6.88e-29
+```
+
+--
+
+That's a very small *p*-value—much smaller than 0.05.
+
+--
+
+.hi[Reject H.sub[0]] (H.sub[0] was `\(\rho=0\)`, _i.e._, no autocorrelation).
+
+--
+
+**Step 5:** Conclude. Statistically significant evidence of autocorrelation.
+---
+layout: true
+# Testing for autocorrelation
+## Example: Static model and AR(3)
+---
+
+What if we wanted to test for AR(3)?
+
+- We add more lags of residuals to the regression in *Step 3*.
+
+- We **jointly** test the significance of the coefficients (_i.e._, `\(\text{LM}\)` or `\(F\)`).
+
+Let's do it.
+---
+
+**Step 1:** Estimate the static model `\(\left( y_t = \beta_0 + \beta_1 x_t + u_t \right)\)` with OLS
+
+
+```r
+reg_est &lt;- lm(y ~ x, data = ar_df)
+```
+
+--
+
+**Step 2:** Add the residuals to our dataset
+
+
+```r
+ar_df$e &lt;- residuals(reg_est)
+```
+
+--
+
+**Step 3:** Regress the residual on its lag (no intercept)
+
+
+```r
+reg_ar3 &lt;- lm(e ~ -1 + lag(e) + lag(e, 2) + lag(e, 3), data = ar_df)
+```
+--
+
+*Note:* `lag(var, n)` from `dplyr` takes the .mono[n].super[th] lag of the variable .mono[var].
+---
+
+**Step 4:** Calculate the `\(\text{LM} = n\times R_e^2\)` test statistic—distributed `\(\chi_k^2\)`.
+&lt;br&gt;
+`\(k\)` is the number of regressors in the regression in *Step 3* (here, `\(k=3\)`).
+
+
+```r
+# Grab R squared
+r2_e &lt;- summary(reg_ar3)$r.squared
+# Calculate the LM test statistic: n times r2_e
+(lm_stat &lt;- 100 * r2_e)
+```
+
+```
+#&gt; [1] 72.38204
+```
+
+```r
+# Calculate the p-value
+(pchisq(q = lm_stat, df = 3, lower.tail = F))
+```
+
+```
+#&gt; [1] 1.318485e-15
+```
+---
+
+**Step 5:** Conclude.
+
+--
+
+*Recall:* Our hypotheses consider the model
+$$
+`\begin{align}
+  e_t = \rho_1 e_{t-1} + \rho_2 e_{t-2} + \rho_3 e_{t-3}
+\end{align}`
+$$
+
+--
+
+which we are actually using to learn about the model
+$$
+`\begin{align}
+  u_t = \rho_1 u_{t-1} + \rho_2 u_{t-2} + \rho_3 u_{t-3}
+\end{align}`
+$$
+
+--
+
+H.sub[0]: `\(\rho_1 = \rho_2 = \rho_3 = 0\)`
+ *vs.* H.sub[A]: `\(\rho_j \neq 0\)` for at least one `\(j\)` in `\(\{1,\, 2,\, 3\}\)`
+
+Our p-value is less than 0.05.
+--
+ .hi[Reject H.sub[0].]
+
+--
+
+Conclude there is statistically significant evidence of autocorrelation.
+---
+layout: true
+# Testing for autocorrelation
+## Dynamic models with lagged outcome variables
+---
+name: testing_adl
+
 
 ---
 layout: false
@@ -334,6 +703,7 @@ layout: false
 ### Admin
 
 1. [Schedule](#schedule)
+1. [.mono[R] showcase: .mono[ggplot2]](#r_showcase)
 1. [Review: Time series](#review)
 ]
 
@@ -342,10 +712,17 @@ layout: false
 
 1. [Introduction](#intro)
 1. [In static models](#static_models)
-1. [OLS, unbiased](#ols_static)
-1. [OLS, biased](#ols_adl)
+1. [OLS and bias/consistency](#ols_static)
+  - [Static models](#ols_static)
+  - [Dynamic models w. lagged `\(y\)`](#ols_adl)
 1. [Simulation: Bias](#ar2_simulation)
+1. [Testing for autocorrelation](#testing)
+  - [Static models](#testing_static)
+  - [Dynamic models w. lagged `\(y\)`](#testing_adl)
 ]
+
+---
+exclude: true
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
