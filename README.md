@@ -15,6 +15,7 @@ The slides below (linked by their topic) are .html files that will only work pro
 5. [Living with heteroskedasticity: Inference, WLS, and specification](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/05Heteroskedasticity/05_heteroskedasticity.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/05Heteroskedasticity/05_heteroskedasticity.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/05Heteroskedasticity/05_heteroskedasticity.Rmd)
 6. [Consistency and OLS in asymptopia](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/06Consistency/06_consistency.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/06Consistency/06_consistency.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/06Consistency/06_consistency.Rmd)
 7. [Introduction to time series](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/07TimeSeries/07_time_series.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/07TimeSeries/07_time_series.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/07TimeSeries/07_time_series.Rmd)
+7. [Autocorrelated disturbances](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/08Autocorrelation/08_autocorrelation.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/08Autocorrelation/08_autocorrelation.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/08Autocorrelation/08_autocorrelation.Rmd)
 
 ## Problem sets
 
