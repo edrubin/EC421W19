@@ -752,7 +752,7 @@ $$
 \end{align}
 $$
 
-_I.e._, to guarantee the numerator equals zero, we need $\mathop{\boldsymbol{E}}\left[ u_t | X \right] = 0$.
+_I.e._, to guarantee the numerator equals zero, we need $\mathop{\boldsymbol{E}}\left[ u_t | X \right] = 0$—for both $\mathop{\boldsymbol{E}}\left[ u_t | X_t \right] = 0$ *and* $\mathop{\boldsymbol{E}}\left[ u_t | X_{s} \right] = 0$ $(s\neq t)$.
 
 --
 
@@ -767,16 +767,24 @@ To see why dynamic models with lagged outcome variables violate our exogeneity a
 
 $$
 \begin{align}
-  \color{#e64173}{\text{Births}_t} &= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + \color{#6A5ACD}{u_t} \tag{1}\\[0.3em]
-  \text{Births}_{t+1} &= \beta_0 + \beta_1 \color{#e64173}{\text{Births}_t} + \beta_2 \text{Births}_{t} + u_{t+1} \tag{2}
+  \color{#e64173}{\text{Births}_t} &= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + \color{#e64173}{u_t} \tag{1}\\[0.3em]
+  \text{Births}_{t+1} &= \beta_0 + \beta_1 \text{Income}_{t+1} + \beta_2 \color{#e64173}{\text{Births}_t} + u_{t+1} \tag{2}
 \end{align}
 $$
 
-In $(1)$, $\color{#6A5ACD}{u_t}$ clearly correlates with $\color{#e64173}{\text{Births}_t}$.
+--
 
-However, $\color{#e64173}{\text{Births}_t}$ is a regressor in $(2)$.
+In $(1)$, $\color{#e64173}{u_t}$ clearly correlates with $\color{#e64173}{\text{Births}_t}$.
 
-Thus our disturbance $\color{#6A5ACD}{u_t}$ is correlated with a regressor.
+--
+
+However, $\color{#e64173}{\text{Births}_t}$ is a regressor in $(2)$ (lagged dependent variable).
+
+--
+
+∴ The disturbance in $t$ $\left(\color{#e64173}{u_t}\right)$ correlates with a regressor in $t+1$ $\left(\color{#e64173}{\text{Births}_t}\right)$.
+
+--
 
 This correlation violates the second part of our exogeneity requirement.
 ---
@@ -790,7 +798,9 @@ All is not lost.
 
 --
 
-For OLS to be consistent, we only need .hi[contemporaneous exogeneity]: a disturbance is uncorrelated with explanatory variables *in the same period*, _i.e._,
+For OLS to be consistent, we only need .hi[contemporaneous exogeneity].
+
+.hi[Contemporaneous exogeneity:] each disturbance is uncorrelated with the explanatory variables .pink[in the same period], _i.e._,
 
 $$
 \begin{align}
@@ -801,9 +811,50 @@ $$
 --
 
 With contemporaneous exogeneity, OLS estimates for the coefficients in a time series model are consistent.
+---
 
+To see why OLS is consistent with contemporaneous exogeneity, consider the OLS estimate for $\beta_1$ in
 
+$$
+\begin{align}
+  \text{Births}_t &= \beta_0 + \beta_1 \text{Births}_{t-1} + u_t
+\end{align}
+$$
 
+which we've shown (a few times) can be written
+
+$$
+\begin{align}
+  \hat{\beta}_1
+  &= \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2}
+\end{align}
+$$
+
+---
+
+$$
+\begin{align}
+  \hat{\beta}_1
+  &= \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2} \\[0.3em]
+  &= \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t/T}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2/T} \\[0.3em]
+  &= \beta_1 + \dfrac{\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)}}{\mathop{\text{Var}} \left( \text{Births}_{t} \right)}
+\end{align}
+$$
+
+--
+
+$\hspace{8.3em}=\beta_1\hspace{1em}$ **if** $\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)=0}$
+
+--
+
+.hi[Contemporaneous exogeneity] gives us $\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)=0}$.
+---
+
+Thus, if we assume .hi[contemporaneous exogeneity], OLS is consistent for the coefficients, *even for models with lagged dependent variables*.
+---
+layout: false
+class: inverse, middle
+# The end.
 ---
 layout: false
 # Table of contents
@@ -825,7 +876,7 @@ layout: false
 1. ["ADL" models](#adl)
   - [Underlying complexity](#adl_complexity)
   - [Equilibrium effects](#adl_eq)
-  - [Partial adjustment models](#adl_partial)
+  - [Partial-adjustment models](#adl_partial)
 1. [Unbiasedness of OLS](#ols_unbiased)
 1. [Consistency of OLS](#ols_consistency)
 ]
@@ -833,6 +884,6 @@ layout: false
 ---
 exclude: true
 
-```{R, generate pdfs, include = F}
+```{R, generate pdfs, include = F, eval = T}
 system("decktape remark 07_time_series.html 07_time_series.pdf --chrome-arg=--allow-file-access-from-files")
 ```

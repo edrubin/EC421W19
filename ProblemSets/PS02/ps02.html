@@ -4,9 +4,9 @@
     <title>Problem Set 2</title>
     <meta charset="utf-8">
     <meta name="author" content="EC 421: Introduction to Econometrics" />
-    <link href="ps02_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="ps02_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="ps02_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link href="ps02_files/remark-css/default.css" rel="stylesheet" />
+    <link href="ps02_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="ps02_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="my-css.css" type="text/css" />
   </head>
   <body>
@@ -16,13 +16,13 @@ class: center, middle, inverse, title-slide
 # Problem Set 2
 ## Heteroskedasticity, Consistency, and Time Series
 ### <strong>EC 421:</strong> Introduction to Econometrics
-### <br>Due <em>before</em> 11:59pm on Friday, 08 February 2019
+### <br>Due <em>before</em> noon (11:59am) on Saturday, 09 February 2019
 
 ---
 
 class: clear
 
-.mono[DUE] Your solutions to this problem set are due *before* 11:59pm on Friday, 08 February 2019. Your files must be uploaded to [Canvas](https://canvas.uoregon.edu/)—including (1) your responses/answers to the question and (2) the .mono[R] script you used to generate your answers. Each student must turn in her/his own answers.
+.mono[DUE] Your solutions to this problem set are due *before* noon on Saturday, 09 February 2019. Your files must be uploaded to [Canvas](https://canvas.uoregon.edu/)—including (1) your responses/answers to the question and (2) the .mono[R] script you used to generate your answers. Each student must turn in her/his own answers.
 
 .mono[OBJECTIVE] This problem set has three purposes: (1) reinforce the econometrics topics we reviewed in class; (2) build your .mono[R] toolset; (3) start building your intuition about causality and time series within econometrics.
 
@@ -52,13 +52,13 @@ Conduct a Goldfeld-Quandt test. State your hypotheses, calculate the G-Q test st
 
 **Hint:** You can use the function `pf(q, df1, df2, lower.tail = F)` to calculate the probability of observing a value of `q` or greater in an `\(F\)` distribution with `df1` numerator degrees of freedom and `df2` denominator degrees of freedom.
 
-**2.** The dataset in this questions comes from ["Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"](https://academic.oup.com/qje/article/129/4/1553/1853754) by Chetty, Hendren, Kline, and Saez—published in *The Quarterly Journal of Economics* (QJE) in 2014. Our outcome variable will be *the probability that an individual born to parents in the bottom fifth of the income distribution makes it into the top fifth of the income distribution.* This measure differs from the main outcome in the paper, but it is also very interesting—and it helps simplify our problem set. In individual observation in this dataset represents a [commuting zone](http://science.sciencemag.org/content/346/6210/1243089/tab-figures-data) in the United States.
+**2.** The dataset in this questions comes from ["Where is the Land of Opportunity? The Geography of Intergenerational Mobility in the United States"](https://academic.oup.com/qje/article/129/4/1553/1853754) by Chetty, Hendren, Kline, and Saez—published in *The Quarterly Journal of Economics* (QJE) in 2014. Our outcome variable will be *the probability that an individual born to parents in the bottom fifth of the income distribution makes it into the top fifth of the income distribution.* This measure differs from the main outcome in the paper, but it is also very interesting—and it helps simplify our problem set. An individual observation in this dataset represents a [commuting zone](http://science.sciencemag.org/content/346/6210/1243089/tab-figures-data) in the United States.
 
 
 
 **2a.** Open up Rstudio, an .mono[R] script, load whichever packages you want, and load the dataset contained in .mono[dataPS02.csv].
 
-**2b** Describe the distribution of our main variable of interest (`prob_q5_q1`). You can provide statistical or graphical descriptions of this variable—try `summary(dataset$variable)` and `hist(dataset$variable)`, among others.
+**2b.** Describe the distribution of our main variable of interest (`prob_q5_q1`). You can provide statistical or graphical descriptions of this variable—try `summary(dataset$variable)` and `hist(dataset$variable)`, among others.
 
 ---
 class: clear
@@ -88,7 +88,7 @@ class: clear
 
 ```r
 # The regression
-some_reg &lt;- lm(y ~ x, data = fake_data)
+some_reg &lt;- felm(y ~ x, data = fake_data)
 # Print the coefficients w/ het-robust standard errors
 summary(some_reg, robust = T)
 ```

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Autocorrelation</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Edward Rubin" />
+    <meta name="date" content="2019-02-05" />
+    <link href="08_autocorrelation_files/remark-css/default.css" rel="stylesheet" />
+    <link href="08_autocorrelation_files/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="08_autocorrelation_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Autocorrelation
+## EC 421, Set 8
+### Edward Rubin
+### 05 February 2019
+
+---
+
+class: inverse, middle
+
+
+
+# Prologue
+
+---
+name: schedule
+
+# Schedule
+
+## Last Time
+
+Introduction to time series
+
+## Today
+
+Autocorrelation
+
+## Upcoming
+
+1. **Survey** due at 11:59pm on Wednesday
+2. **Assignment** *extended* to noon on Saturday (02/09). .pink[Don't wait.]
+3. **Midterm** next Tuesday (02/11)
+---
+layout: true
+# Time series
+## Review
+---
+class: inverse, middle
+---
+name: review
+
+TODO
+
+---
+layout: false
+class: inverse, middle
+
+# Autocorrelation
+---
+layout: false
+name: intro
+# Autocorrelation
+## What is it?
+
+.hi[Autocorrelation] occurs when our disturbances are correlated over time, _i.e._, `\(\mathop{\text{Cov}} \left( u_t,\, u_s \right) \neq 0\)` for `\(t\neq s\)`.
+
+--
+
+Another way to think about: If the *shock* from disturbance `\(t\)` correlates with "nearby" shocks in `\(t-1\)` and `\(t+1\)`.
+
+--
+
+*Note:* **Serial correlation** and **autocorrelation** are the same thing.
+
+--
+
+Why is autocorrelation prevalent in time-series analyses?
+---
+class: clear
+
+.hi-slate[Positive autocorrelation]: Disturbances `\(\left( u_t \right)\)` over time
+&lt;img src="08_autocorrelation_files/figure-html/positive auto u-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+
+.hi-slate[Positive autocorrelation]: Outcomes `\(\left( y_t \right)\)` over time
+&lt;img src="08_autocorrelation_files/figure-html/positive auto y-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+
+.hi-slate[Negative autocorrelation]: Disturbances `\(\left( u_t \right)\)` over time
+&lt;img src="08_autocorrelation_files/figure-html/negative auto u-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+
+.hi-slate[Negative autocorrelation]: Outcomes `\(\left( y_t \right)\)` over time
+&lt;img src="08_autocorrelation_files/figure-html/negative auto y-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: true
+# Autocorrelation
+## In static time-series models
+---
+name: static_models
+
+Let's start with a very common model: a static time-series model whose disturbances exhibit .hi[first-order autocorrelation], *a.k.a.* .pink[AR(1)]:
+
+$$
+`\begin{align}
+  \text{Births}_t &amp;= \beta_0 + \beta_1 \text{Income}_t + u_t
+\end{align}`
+$$
+where
+$$
+`\begin{align}
+  \color{#e64173}{u_t} = \color{#e64173}{\rho \, u_{t-1}} + \varepsilon_t
+\end{align}`
+$$
+and the `\(\varepsilon_t\)` are independently and identically distributed (*i.i.d.*).
+
+--
+
+.hi-purple[Second-order autocorrelation], or .purple[AR(2)], would be
+
+$$
+`\begin{align}
+  \color{#6A5ACD}{u_t} = \color{#6A5ACD}{\rho_1 u_{t-1}} + \color{#6A5ACD}{\rho_2 u_{t-2}} + \varepsilon_t
+\end{align}`
+$$
+---
+
+An .turquoise[AR(p)] model/process has a disturbance structure of
+
+$$
+`\begin{align}
+  u_t = \sum_{j=1}^\color{#20B2AA}{p} \rho_j u_{t-j} + \varepsilon_t
+\end{align}`
+$$
+
+allowing the current disturbance to correlated with up to `\(\color{#20B2AA}{p}\)` of its lags.
+
+---
+layout: false
+name: ols_static
+# Autocorrelation
+## OLS
+
+For **static models** or **dynamic models with lagged explanatory variables**, in the presence of autocorrelation
+
+1. OLS provides .pink[**unbiased** estimates for the coefficients.]
+
+1. OLS creates .pink[**biased** estimates for the standard errors.]
+
+1. OLS is .pink[**inefficient**.]
+
+*Recall:* Same implications as heteroskedasticity.
+
+Autocorrelation get trickier with lagged dependent variables.
+---
+layout: true
+# Autocorrelation
+## OLS and lagged dependent variables
+---
+name: ols_adl
+
+Consider a model with one lag of the dependent variable—ADL(1, 0)—model with AR(1) disturbances
+
+$$
+`\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + u_t
+\end{align}`
+$$
+where
+$$
+`\begin{align}
+  u_t = \rho u_{t-1} + \varepsilon_t
+\end{align}`
+$$
+
+--
+
+**Problem:**
+--
+ Both `\(\text{Births}_{t-1}\)` (a regressor in the model for time `\(t\)`) and `\(u_{t}\)` (the disturbance for time `\(t\)`) depend upon `\(u_{t-1}\)`. *I.e.*, a regressor is correlated with its contemporaneous disturbance.
+
+--
+
+**Q:** Why is this a problem?
+--
+&lt;br&gt;
+**A:** It violates .pink[contemporaneous exogeneity]
+--
+, *i.e.*, `\(\mathop{\text{Cov}} \left( x_t,\,u_t \right) = 0\)`.
+---
+
+To see this problem, first write out the model for `\(t\)` and `\(t-1\)`:
+$$
+`\begin{align}
+  \text{Births}_t &amp;= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + u_t \\
+  \text{Births}_{t-1} &amp;= \beta_0 + \beta_1 \text{Income}_{t-1} + \beta_2 \text{Births}_{t-2} + u_{t-1}
+\end{align}`
+$$
+and now note that `\(u_t = \rho u_{t-1} + \varepsilon_t\)`. Substituting...
+$$
+`\begin{align}
+  \text{Births}_t &amp;= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \color{#6A5ACD}{\text{Births}_{t-1}} + \overbrace{\left( \rho \color{#e64173}{u_{t-1}} + \varepsilon_t \right)}^{u_t} \tag{1} \\
+  \color{#6A5ACD}{\text{Births}_{t-1}} &amp;= \beta_0 + \beta_1 \text{Income}_{t-1} + \beta_2 \text{Births}_{t-2} + \color{#e64173}{u_{t-1}} \tag{2}
+\end{align}`
+$$
+
+In `\((1)\)`, we can see that `\(u_t\)` depends upon (covaries with) `\(\color{#e64173}{u_{t-1}}\)`.
+&lt;br&gt; In `\((2)\)`, we can see that `\(\color{#6A5ACD}{\text{Births}_{t-1}}\)`, a regressor in `\((1)\)`, also covaries with `\(u_{t-1}\)`.
+
+--
+
+∴ This model violates our contemporaneous exogeneity requirement.
+---
+
+*Implications:* For models with **lagged dependent variables** and **autocorrelated disturbances**
+
+1. The models .pink[**violate contemporaneous exogeneity**.]
+
+1. OLS is .pink[**biased and inconsistent** for the coefficients.]
+
+---
+
+*Intuition?* Why is OLS inconsistent and biased when we violate exogeneity?
+
+Think back to omitted-variable bias...
+
+$$
+`\begin{align}
+  y_t &amp;= \beta_0 + \beta_1 x_t + u_t
+\end{align}`
+$$
+
+When `\(\mathop{\text{Cov}} \left( x_t,\, u_t \right)\neq0\)`, we cannot separate the effect of `\(u_t\)` on `\(y_t\)` from the effect of `\(x_t\)` on `\(y_t\)`. Thus, we get inconsistent estimates for `\(\beta_1\)`.
+--
+ Similarly,
+
+$$
+`\begin{align}
+  \text{Births}_t &amp;= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + \overbrace{\left( \rho u_{t-1} + \varepsilon_t \right)}^{u_t} \tag{1}
+\end{align}`
+$$
+
+we cannot separate the effects of `\(u_t\)` on `\(\text{Births}_t\)` from `\(\text{Births}_{t-1}\)` on `\(\text{Births}_{t}\)`, because both `\(u_t\)` and `\(\text{Births}_{t-1}\)` depend upon `\(u_{t-1}\)`.
+--
+ `\(\color{#e64173}{\hat{\beta}_2}\)` .pink[is **biased** (w/ OLS).]
+---
+layout: true
+# Autocorrelation and bias
+## Simulation
+---
+name: ar2_simulation
+
+To see how this bias can look, let's run a simulation.
+
+$$
+`\begin{align}
+  y_t &amp;= 1 + 10 x_t + 100 y_{t-1} + u_t \\
+  u_t &amp;= 0.9 u_{t-1} + \varepsilon_t
+\end{align}`
+$$
+
+
+To generate 100 disturbances from AR(1), with `\(\rho = 0.9\)`:
+&lt;br&gt;
+`arima.sim(model = list(ar = c(0.9)), n = 100)`
+
+--
+
+We are going to run 1,000 iterations with `\(T=100\)`.
+
+--
+
+**Q:**  Will this simulation tell us about *bias* or *consistency*?
+
+--
+
+**A:** Bias. We would need to let `\(T\rightarrow\infty\)` to consider consistency.
+---
+
+Outline of our simulation:
+
+.pseudocode-small[
+1. Generate T=100 values of x
+
+1. Generate T=100 values of u
+
+1. Use x and u to calculate T=100 values of y
+
+1. Regress y on x; record estimates
+
+Repeat 1–4 10,000 times
+]
+---
+exclude: true
+
+
+
+---
+layout: false
+class: clear
+
+.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_2\)` in `\(y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t\)`
+
+&lt;img src="08_autocorrelation_files/figure-html/sim_density_b2-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+layout: false
+class: clear
+
+.hi-slate[Distribution of OLS estimates,] `\(\hat{\beta}_1\)` in `\(y_t = 1 + 2 x_t + 0.5 y_{t-1} + u_t\)`
+
+&lt;img src="08_autocorrelation_files/figure-html/sim_density_b1-1.svg" style="display: block; margin: auto;" /&gt;
+---
+
+**TODO:**
+
+- Fix simulation description
+- Remove sim.arima function
+- Review of time series
+
+---
+layout: false
+# Table of contents
+
+.pull-left[
+### Admin
+
+1. [Schedule](#schedule)
+1. [Review: Time series](#review)
+]
+
+.pull-right[
+### Autocorrelation
+
+1. [Introduction](#intro)
+1. [In static models](#static_models)
+1. [OLS, unbiased](#ols_static)
+1. [OLS, biased](#ols_adl)
+1. [Simulation: Bias](#ar2_simulation)
+]
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
