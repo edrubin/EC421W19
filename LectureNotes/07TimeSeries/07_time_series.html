@@ -4,7 +4,7 @@
     <title>Time series</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-02-04" />
+    <meta name="date" content="2019-02-13" />
     <link href="07_time_series_files/remark-css/default.css" rel="stylesheet" />
     <link href="07_time_series_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="07_time_series_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Time series
 ## EC 421, Set 7
 ### Edward Rubin
-### 04 February 2019
+### 13 February 2019
 
 ---
 
@@ -288,7 +288,7 @@ Here, income .hi[immediately] affects the number of births *and* affects .hi-pur
 
 --
 
-Estimate long-run effects by summing lags, _e.g._, `\(\beta_1 + \beta_2 + \beta_3 + \beta_4\)`.
+Estimate *total* effects by summing lags' coefficients, _e.g._, `\(\beta_1 + \beta_2 + \beta_3 + \beta_4\)`.
 
 --
 
@@ -345,7 +345,7 @@ $$
 `\begin{aligned}
  \text{Births}_t =
  &amp;\beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Income}_{\color{#e64173}{t-1}} + \beta_3 \text{Income}_{\color{#e64173}{t-2}} \\
- &amp; + \beta_4 \text{Births}_{\color{#FFA500}{t-2}} + \beta_5 \text{Births}_{\color{#FFA500}{t-2}} + u_t
+ &amp; + \beta_4 \text{Births}_{\color{#FFA500}{t-1}} + \beta_5 \text{Births}_{\color{#FFA500}{t-2}} + u_t
 \end{aligned}`
 $$
 ---
@@ -483,6 +483,61 @@ $$
 \text{Births}^\star = \dfrac{\beta_0}{\left(1 - \beta_2\right)} + \color{#6A5ACD}{\dfrac{\beta_1}{\left(1 - \beta_2\right)}} \text{Income}^\star
 \end{align}`
 $$
+
+---
+
+Another way to see this result:
+
+We already showed
+$$
+`\begin{align}
+  \text{Births}_t =&amp; \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1}
+\end{align}`
+$$
+
+gives us
+
+$$
+`\begin{align}
+  \text{Births}_t =
+  &amp;\beta_0 \left( 1 + \beta_2 + \beta_2^2 + \beta_2^3 + \cdots \right) + \\
+  &amp;\beta_1 \left( \text{Income}_t + \beta_2 \text{Income}_{t-1} + \beta_2^2 \text{Income}_{t-2} + \cdots \right) +\\
+  &amp; u_t + \beta_2 u_{t-1} + \beta_2^2 u_{t-2} + \cdots
+\end{align}`
+$$
+
+--
+In equilibrium: `\(\text{Income}_t=\text{Income}_{t-k}=\text{Income}^\star\)` for all `\(k\)`.
+---
+
+Substituting `\(\text{Income}_{t}=\text{Income}^\star\)` for all `\(k\)`&lt;br&gt;(and assuming no disturbances in equilibrium):
+--
+$$
+`\begin{align}
+  \text{Births}_t =
+  &amp;\beta_0 \left( 1 + \beta_2 + \beta_2^2 + \beta_2^3 + \cdots \right) + \\
+  &amp;\beta_1 \left( \text{Income}^\star + \beta_2 \text{Income}^\star + \beta_2^2 \text{Income}^\star + \cdots \right) +\\
+\end{align}`
+$$
+---
+count: false
+
+Substituting `\(\text{Income}_{t}=\text{Income}^\star\)` for all `\(k\)`&lt;br&gt;(and assuming no disturbances in equilibrium):
+$$
+`\begin{align}
+  \text{Births}_t =
+  &amp;\beta_0 \left( 1 + \beta_2 + \beta_2^2 + \beta_2^3 + \cdots \right) + \\
+  &amp;\beta_1 \left( \text{Income}^\star + \beta_2 \text{Income}^\star + \beta_2^2 \text{Income}^\star + \cdots \right) +\\
+  = &amp;\beta_0 \left( \dfrac{1}{\beta_2} \right) + \\
+  &amp;\beta_1 \left( \dfrac{1}{\beta_2} \right) \text{Income}^\star
+\end{align}`
+$$
+
+So long as `\(-1&lt;\beta_2&lt;1\)`.&lt;sup&gt;.pink[†]&lt;/sup&gt;
+
+.footnote[
+.pink[†] This simplification comes from `\(\sum_{k=0}^\infty p^k = \dfrac{1}{p}\)` for `\(-1&lt;k&lt;1\)`.
+]
 ---
 layout: true
 # Autoregressive distributed-lag models
@@ -632,7 +687,7 @@ All is not lost.
 
 --
 
-For OLS to be consistent, we only need .hi[contemporaneous exogeneity].
+For OLS to be **consistent**, we only need .hi[contemporaneous exogeneity].
 
 .hi[Contemporaneous exogeneity:] each disturbance is uncorrelated with the explanatory variables .pink[in the same period], _i.e._,
 
@@ -668,23 +723,23 @@ $$
 
 $$
 `\begin{align}
-  \hat{\beta}_1
-  &amp;= \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2} \\[0.3em]
-  &amp;= \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t/T}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2/T} \\[0.3em]
+  \mathop{\text{plim}} \hat{\beta}_1
+  &amp;= \mathop{\text{plim}} \left( \beta_1 + \dfrac{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t}{\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2} \right) \\[0.3em]
+  &amp;= \beta_1 + \dfrac{\mathop{\text{plim}} \left[\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)u_t/T\right]}{\mathop{\text{plim}} \left[\sum_t \left( \text{Births}_{t-1} - \overline{\text{Births} } \right)^2/T\right]} \\[0.3em]
   &amp;= \beta_1 + \dfrac{\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)}}{\mathop{\text{Var}} \left( \text{Births}_{t} \right)}
 \end{align}`
 $$
 
 --
 
-`\(\hspace{8.3em}=\beta_1\hspace{1em}\)` **if** `\(\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)=0}\)`
+`\(\hspace{8em}=\beta_1\hspace{1em}\)` **if** `\(\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)=0}\)`
 
 --
 
 .hi[Contemporaneous exogeneity] gives us `\(\color{#e64173}{\mathop{\text{Cov}} \left( \text{Births}_{t-1},\, u_t \right)=0}\)`.
 ---
 
-Thus, if we assume .hi[contemporaneous exogeneity], OLS is consistent for the coefficients, *even for models with lagged dependent variables*.
+Thus, if we assume .hi[contemporaneous exogeneity], **OLS is consistent** for the coefficients, *even for models with lagged dependent variables*.
 ---
 layout: false
 class: inverse, middle

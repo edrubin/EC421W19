@@ -4,7 +4,7 @@
     <title>Autocorrelation</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-02-05" />
+    <meta name="date" content="2019-02-14" />
     <link href="08_autocorrelation_files/remark-css/default.css" rel="stylesheet" />
     <link href="08_autocorrelation_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="08_autocorrelation_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Autocorrelation
 ## EC 421, Set 8
 ### Edward Rubin
-### 05 February 2019
+### 14 February 2019
 
 ---
 
@@ -34,17 +34,17 @@ name: schedule
 
 ## Last Time
 
-Introduction to time series
+Midterm `+` Introduction to time series
 
 ## Today
 
-Autocorrelation
+Review midterm `+` Autocorrelation
 
 ## Upcoming
 
-1. **Survey** due at 11:59pm on Wednesday (02/06).
-2. **Assignment** *extended* to noon on Saturday (02/09). .pink[Don't wait.]
-3. **Midterm** next Tuesday (02/11).
+- **Assignment** Next week
+
+- No lab this week.
 ---
 layout: true
 # .mono[R] showcase
@@ -127,7 +127,7 @@ Add labels
 ```r
 ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_point() +
-  xlab("Time") + ylab("Births per 10,000")
+  xlab("Time") + ylab("Births (10,000s)")
 ```
 
 &lt;img src="08_autocorrelation_files/figure-html/gg6-1.svg" style="display: block; margin: auto;" /&gt;
@@ -140,7 +140,7 @@ Change the theme...
 ```r
 ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_point() +
-  xlab("Time") + ylab("Births per 10,000") +
+  xlab("Time") + ylab("Births (10,000s)") +
   theme_pander(base_size = 20)
 ```
 
@@ -156,12 +156,27 @@ ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_line(color = "grey85") +
   geom_point() +
   geom_smooth(se = F, method = lm) +
-  xlab("Time") + ylab("Births per 10,000") +
+  xlab("Time") + ylab("Births (10,000s)") +
   theme_pander(base_size = 20)
 ```
 
 &lt;img src="08_autocorrelation_files/figure-html/gg8-1.svg" style="display: block; margin: auto;" /&gt;
+---
+count: false
 
+Compare births and its 9-month lag...
+
+
+```r
+ggplot(data = birth_df, aes(x = lag(births, 9)/10000, y = births/10000)) +
+  geom_line(color = "grey85") +
+  geom_point() +
+  geom_smooth(se = F) +
+  xlab("Births 9 months ago (10,000s)") + ylab("Births (10,000s)") +
+  theme_pander(base_size = 20)
+```
+
+&lt;img src="08_autocorrelation_files/figure-html/gg9-1.svg" style="display: block; margin: auto;" /&gt;
 ---
 layout: true
 # Time series
@@ -179,7 +194,7 @@ Changes to our model/framework.
 
 - We changed our **exogeneity** assumption to .hi[contemporaneous exogeneity], _i.e._, `\(\mathop{\boldsymbol{E}}\left[ u_t \middle| X_t \right] = 0\)`
 
-- Including .hi-orange[lags of outcome variables] causes .hi[biased/inconsistent coefficient estimates] for OLS.
+- Including .hi-orange[lags of outcome variables] can lead to .hi[biased coefficient estimates] from OLS.
 
 - .hi-orange[Lagged explanatory variables] make .hi[OLS inefficient].
 

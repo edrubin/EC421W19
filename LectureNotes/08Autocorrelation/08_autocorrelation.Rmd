@@ -118,17 +118,17 @@ name: schedule
 
 ## Last Time
 
-Introduction to time series
+Midterm `+` Introduction to time series
 
 ## Today
 
-Autocorrelation
+Review midterm `+` Autocorrelation
 
 ## Upcoming
 
-1. **Survey** due at 11:59pm on Wednesday (02/06).
-2. **Assignment** *extended* to noon on Saturday (02/09). .pink[Don't wait.]
-3. **Midterm** next Tuesday (02/11).
+- **Assignment** Next week
+
+- No lab this week.
 ---
 layout: true
 # .mono[R] showcase
@@ -222,7 +222,7 @@ Add labels
 ```{R, gg6, fig.height = 4.75}
 ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_point() +
-  xlab("Time") + ylab("Births per 10,000")
+  xlab("Time") + ylab("Births (10,000s)")
 ```
 ---
 count: false
@@ -232,7 +232,7 @@ Change the theme...
 ```{R, gg7, fig.height = 4.5}
 ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_point() +
-  xlab("Time") + ylab("Births per 10,000") +
+  xlab("Time") + ylab("Births (10,000s)") +
   theme_pander(base_size = 20)
 ```
 ---
@@ -245,10 +245,22 @@ ggplot(data = birth_df, aes(x = time, y = births/10000)) +
   geom_line(color = "grey85") +
   geom_point() +
   geom_smooth(se = F, method = lm) +
-  xlab("Time") + ylab("Births per 10,000") +
+  xlab("Time") + ylab("Births (10,000s)") +
   theme_pander(base_size = 20)
 ```
+---
+count: false
 
+Compare births and its 9-month lag...
+
+```{R, gg9, fig.height = 4}
+ggplot(data = birth_df, aes(x = lag(births, 9)/10000, y = births/10000)) +
+  geom_line(color = "grey85") +
+  geom_point() +
+  geom_smooth(se = F) +
+  xlab("Births 9 months ago (10,000s)") + ylab("Births (10,000s)") +
+  theme_pander(base_size = 20)
+```
 ---
 layout: true
 # Time series
@@ -266,7 +278,7 @@ Changes to our model/framework.
 
 - We changed our **exogeneity** assumption to .hi[contemporaneous exogeneity], _i.e._, $\mathop{\boldsymbol{E}}\left[ u_t \middle| X_t \right] = 0$
 
-- Including .hi-orange[lags of outcome variables] causes .hi[biased/inconsistent coefficient estimates] for OLS.
+- Including .hi-orange[lags of outcome variables] can lead to .hi[biased coefficient estimates] from OLS.
 
 - .hi-orange[Lagged explanatory variables] make .hi[OLS inefficient].
 
