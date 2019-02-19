@@ -60,8 +60,16 @@
 
 .remark-code-line-highlighted     { background-color: rgba(249, 39, 114, 0.5); }
 
+.bigger {
+  font-size: 125%;
+}
+
 .smaller {
   font-size: 95%;
+}
+
+.smallest {
+  font-size: 85%;
 }
 
 .remark-slide-content {
