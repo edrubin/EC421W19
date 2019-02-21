@@ -3,10 +3,10 @@
   <head>
     <title>Problem Set 1: OLS Review</title>
     <meta charset="utf-8">
-    <link href="ps01_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="ps01_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
-    <link href="ps01_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
-    <script src="ps01_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="ps01Solutions_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="ps01Solutions_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="ps01Solutions_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="ps01Solutions_files/kePrint-0.0.1/kePrint.js"></script>
     <link rel="stylesheet" href="my-css.css" type="text/css" />
   </head>
   <body>
@@ -53,19 +53,107 @@ p_load(tidyverse)
 
 **1d.** Read the data into .mono[R]. What are the dimensions of the dataset (numbers of rows and columns)?
 
-
-
 *Note:* Let each row in this dataset represent a different résumé sent to a job posting. The table on the last page explains each of the variables.
+
+.hi[Answer:]
+
+.pink[Setup
+
+
+```r
+# The datasets's directory
+dir_data &lt;- "/Users/edwardarubin/Dropbox/UO/Teaching/EC421W19/Data/"
+# Read in the data
+ps1_df &lt;- read_csv(file = paste0(dir_data, "dataPS01.csv"))
+# Dimensions of the dataset with dim
+dim(ps1_df)
+```
+
+```
+## [1] 4870   12
+```
+
+]
+
+---
+class: clear
 
 **1e.** What are the names of the first three variables? *Hint:* `names(your_df)`
 
+.hi[Answer:]
 
+.pink[Two options
+
+
+```r
+# Using head
+names(ps1_df) %&gt;% head(3)
+```
+
+```
+## [1] "i_callback" "n_jobs"     "n_expr"
+```
+
+```r
+# Using indexes
+ps1_df[, 1:3] %&gt;% names()
+```
+
+```
+## [1] "i_callback" "n_jobs"     "n_expr"
+```
+
+]
 
 **1f.** What are the first four *first names* in the dataset (`first_name` variable)?
 
 *Hint:* `head(your_df$var_name, 10)` gives the first 10 observations of the variable `var_name` in dataset `your_df`.
 
+.hi[Answer:]
 
+.pink[Three ways to do it:
+
+
+```r
+# Using head
+head(ps1_df$first_name, 4)
+```
+
+```
+## [1] "Allison" "Kristen" "Lakisha" "Latonya"
+```
+
+```r
+# Using indexes
+ps1_df[1:4,"first_name"]
+```
+
+```
+## # A tibble: 4 x 1
+##   first_name
+##   &lt;chr&gt;     
+## 1 Allison   
+## 2 Kristen   
+## 3 Lakisha   
+## 4 Latonya
+```
+
+```r
+# Using head and select
+ps1_df %&gt;% head(4) %&gt;% select(first_name)
+```
+
+```
+## # A tibble: 4 x 1
+##   first_name
+##   &lt;chr&gt;     
+## 1 Allison   
+## 2 Kristen   
+## 3 Lakisha   
+## 4 Latonya
+```
+
+]
 
 .footnote[
 [†]: The data that we use in the problem set contain a subset of the variables from the original paper.
@@ -85,40 +173,211 @@ Reviewing the basic analysis tools of econometrics.
 
 *Hint:* The mean of a binary indicator variable (_i.e._, `mean(binary_variable)`) gives the percentage of times the variable equals one.
 
+.hi[Answer:] .pink[
 
+
+```r
+mean(ps1_df$i_callback)
+```
+
+```
+## [1] 0.08049281
+```
+
+Thus, approximately 8 percent of résumés received callbacks.
+]
 
 **2b.** Calculate percentage of callbacks (_i.e._, the mean of `i_callback`) for each racial group (`race`). Does it appear as though employers considered an applicant's race when making callbacks? Explain.
 
-*Hint:* `filter(your_df, race == "b")` will select all observations (from the dataset `your_df`) where the variable `race` takes the value `"b"`. Similarly `filter(your_df, race == "b")$i_callback` will give you the values of `i_callback` for obsevations whose value of `race` is `"b"`.
+*Hint:* `filter(your_df, race == "b")` will select all observations (from the dataset `your_df`) where the variable `race` takes the value `"b"`. Similarly `filter(your_df, race == "b")$i_callback` will give you the values of `i_callback` for observations whose value of `race` is `"b"`.
+
+.hi[Answer:]
+
+.pink[
+
+One method:
 
 
+```r
+# Percentage for Black
+filter(ps1_df, race == "b")$i_callback %&gt;% mean()
+```
+
+```
+## [1] 0.06447639
+```
+
+```r
+# Percentage for White
+filter(ps1_df, race == "w")$i_callback %&gt;% mean()
+```
+
+```
+## [1] 0.09650924
+```
+
+Alternative method:
+
+
+```r
+ps1_df %&gt;% group_by(race) %&gt;% summarize(mean(i_callback))
+```
+
+```
+## # A tibble: 2 x 2
+##   race  `mean(i_callback)`
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 b                 0.0645
+## 2 w                 0.0965
+```
+]
+---
+class: clear
+
+Approximately 6.4 percent of résumés with implicitly black names received callbacks, while 9.7 percent of résumés with white-sounding names received callbacks.
+
+This difference is consistent with racial discrimination (employers considering race in hiring), but we do not know if this difference is statistically significant.
 
 **2c.** What is the difference in the groups' mean callback rate?
 
+.hi[Answer:]
 
+.pink[
+
+
+```r
+# Percentage for Black
+mean_b &lt;- filter(ps1_df, race == "b")$i_callback %&gt;% mean()
+# Percentage for White
+mean_w &lt;- filter(ps1_df, race == "w")$i_callback %&gt;% mean()
+# Difference:
+mean_b - mean_w
+```
+
+```
+## [1] -0.03203285
+```
+
+White-sounding names had a 3.2-percentage point higher callback rate.
+]
 
 **2d.** Based upon the difference in percentages that we observe in **2b.**, can we conclude that employers consider race in hiring decisions?
 
-&lt;!-- **No.** We have shown a difference in the groups' percentages, but we do not know if this difference is statistically meaningful. --&gt;
+.hi[Answer:] .pink[**No.** We have shown a difference in the groups' percentages, but we do not know if this difference is statistically meaningful (significant).]
 
 **2e.** Without running a regression, conduct a statistical test for the difference in the two groups' average callback rates (_i.e._, test that the proportion of callbacks is equal for the two groups).
 
 *Hint:* Back to your statistics class—difference in proportions (a `\(Z\)` test) or means (a `\(t\)` test).
 
+.hi[Answer:]
 
+.pink[
+
+
+```r
+# Percentage for everyone
+mean_all &lt;- ps1_df$i_callback %&gt;% mean()
+# Number: Black
+n_b &lt;- filter(ps1_df, race == "b") %&gt;% nrow()
+# Number: White
+n_w &lt;- filter(ps1_df, race == "w") %&gt;% nrow()
+# The Z statistic
+z_stat &lt;- (mean_b - mean_w) / sqrt(mean_all * (1 - mean_all) * (1/n_b + 1/n_w))
+# The p value
+2 * pnorm(abs(z_stat), lower.tail = F)
+```
+
+```
+## [1] 3.983887e-05
+```
+]
+
+.pink[
+
+For H.sub[0]: equal callback rates *vs.* H.sub[A]: callback rates were not equal, we reject the null hypothesis at the 5-percent level with a *p*-value less than 0.001. We therefore conclude there is statistically significant evidence that employers responded to black- and white-sounding names at different rates.
+
+*Note:* I opted for a two-sided `\(Z\)` test here, since we are testing unequal proportions. A `\(t\)` test (testing two means) would be fine, though maybe not technically correct. You could also test a one-side hypothesis if your null was that discrimination pointed in a specific direction (which it likely was).
+]
+
+---
+class: clear
 
 **2f.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black` (whether the résumé's name implied a black applicant). Report the coefficient on `i_black`. Does it match the difference that you found in **2c**?
 
+.hi[Answer:]
 
+.pink[Simple linear regression...
+
+
+```r
+# Regression
+reg_2f &lt;- lm(i_callback ~ i_black, data = ps1_df)
+# Results
+reg_2f %&gt;% tidy()
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.0965   0.00550     17.5  8.89e-67
+## 2 i_black      -0.0320   0.00778     -4.11 3.94e- 5
+```
+
+The coefficient on `i_black` does indeed match the difference in callback rate across black- and white-sounding names.
+
+]
 
 **2g.** Conduct a `\(t\)` test for the coefficient on `i_black` in the regression above in **2f**. Write our your hypotheses (both H.sub[0] and H.sub[A]), the test statistic, the result of your test (_i.e._, reject or fail to reject H.sub[0]), and your conclusion.
 
+.hi[Answer:]
+
+.pink[
+
+H.sub[0]: `\(\beta_1 = 0\)` and H.sub[A]: `\(\beta_1 \neq 0\)`, where `\(\beta_1\)` is the coefficient for the effect of race on the probability a résumé received a callback.
+
+The point estimate for this coefficient is -0.032. Its associated `\(t\)` statistic is -4.11, which has a *p*-value less than 0.001.
+
+We reject the null hypothesis at the 5-percent level. We conclude that there is statistically significant evidence that name's races affected callback rates for names with black or white connotations.
+
+]
+
+---
+class: clear
 
 **2h.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black`, `n_expr` (years of experience), and the interaction between `i_black` and `n_expr`. Interpret the estimates for the coefficients (both the meaning of the coefficients and whether they are statistically significant).
 
 *Hint:* In .mono[R], `lm(y ~ x1 + x2 + x1:x2, data = your_df)` regresses `y` on `x1`, `x2`, and the interaction between `x1` and `x2` (all from the dataset `your_df`).
 
+.hi[Answer:]
 
+.pink[
+
+
+```r
+# Regression with interaction
+reg_2h &lt;- lm(i_callback ~ i_black + n_expr + i_black:n_expr, data = ps1_df)
+# Results
+reg_2h %&gt;% tidy()
+```
+
+```
+## # A tibble: 4 x 5
+##   term            estimate std.error statistic  p.value
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)     0.0693     0.0101      6.84  8.79e-12
+## 2 i_black        -0.0294     0.0144     -2.04  4.11e- 2
+## 3 n_expr          0.00347    0.00108     3.20  1.36e- 3
+## 4 i_black:n_expr -0.000330   0.00154    -0.214 8.30e- 1
+```
+
+The coefficient on `i_black` is quite similar to the coefficient previously found—suggesting the a black-sounding name reduced the probability of a callback by approximately 3 percentage points. This effect is still significant at the 5-percent level.
+
+The coefficient on the number of years of experience (`n_expr`) implies that for each additional year of experience on the résumé, the probability of a callback increase by 0.3 percentage points. This effect is statistically significant at the 5-percent level.
+
+The coefficient on the interaction between the black indicator variable and the experience variable tests whether the effect of experience on the callback rate differed between black and white résumés. The point estimate is small and is not statistically significant—meaning we cannot rule out the possibility that the interaction does not exist.
+
+]
 
 ---
 class: clear
@@ -137,11 +396,30 @@ and think about omitted-variable bias.
 $$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{Race}_i + e_i \tag{3.1} $$
 we should be concerned about omitted-variable bias. Explain why this is the case **and** provide at least one example of an omitted variable that could bias our estimates in `\((3.1)\)`.
 
+.hi[Answer:]
+
+.pink[
+
+We should be concerned about omitted-variable bias because there likely many variables that affect whether individuals received callback **and** are correlated with race. If this is the case, then our estimates for `\(\beta_1\)` will be biased.
+
+Several possibilities: social connections, education, college major
+
+]
+
 **3b.** To avoid this potential bias, Bertrand and Mullainathan ran an experiment in which they randomized applicants' names on the résumés—thus randomly assigning the (implied) race of the job applicants. How does this randomization help Bertrand and Mullainathan avoid omitted variables bias?
 
 In other words, why are we less concerned about omitted variable bias in the following estimated model
 $$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{(Randomized Race)}_i + w_i \tag{3.2} $$
 while we were concerned about bias in `\((3.1)\)`?
+
+.hi[Answer:]
+
+.pink[
+
+Because Bertrand and Mullainathan randomize the implied race on each (fake) résumé (along with the other variables), the race variable in their study is uncorrelated with the other variables that affect callbacks. Thus, even if we omit 'important' variables (for predicting callback), they are uncorrelated with our variable of interest (race), and thus they will not cause omitted-variable bias.
+
+]
+
 ---
 class: clear
 

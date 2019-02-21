@@ -1,0 +1,247 @@
+---
+title: "Problem Set 1: OLS Review"
+subtitle: "EC 421: Introduction to Econometrics"
+#author: "Edward Rubin"
+date: "Due *before* midnight on Sunday, 27 January 2019"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
+    nature:
+      ratio: '8.5:11'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: clear
+
+.mono[DUE] Your solutions to this problem set are due *before* midnight on Sunday, 27 January 2019. Your files must be uploaded to [Canvas](https://canvas.uoregon.edu/)—including (1) your responses/answers to the question and (2) the .mono[R] script you used to generate your answers. Each student must turn in her/his own answers.
+
+.mono[README!] The data<sup>†</sup> in this problem set come from the paper ["Are Emily and George More Employable than Lakisha and Jamal? A Field Experiment on Labor Market Discrimination"](https://www.aeaweb.org/articles?id=10.1257/0002828042002561) by Bertrand and Mullainathan (published in the *American Economic Review* (AER) in 2004).<sup>††</sup> In their (very influential) paper, Bertrand and Mullainathan use a clever experiment to study the effects of race in labor-market decisions by sending fake résumés to job listings. To isolate the effect of race on employment decisions, Bertrand and Mullainathan randomize whether the résumé lists a typically African-American name or a typically White name.
+
+.mono[OBJECTIVE] This problem set has three purposes: (1) reinforce the econometrics topics we reviewed in class; (2) build your .mono[R] toolset; (3) start building your intuition about causality within econometrics.
+
+## Problem 1: Getting started
+
+**Start here.** We're going to set up .mono[R] and read in the data
+
+**1a.** Open up RStudio, start a .mono[R] new script (File ➡ New file ➡ R Script). You will hand in this script as part of your assignment.
+
+**1b.** Load the the `pacman` package. Now use its function `p_load` to load the `tidyverse` package, _i.e._,
+
+```{R, example pload, eval = F}
+# Load the 'pacman' package
+library(pacman)
+# Load the packages 'tidyverse' and 'haven'
+p_load(tidyverse)
+```
+
+*Note:* If `pacman` is not already installed on your computer, then you need to install it, _i.e._, `install.packages("pacman")`. If `tidyverse` is not already installed, then `p_load(tidyverse)` will automatically install it for you—which is why we're using `pacman`.
+
+```{R, background setup, include = F}
+library(pacman)
+p_load(tidyverse, haven, ggplot2, viridis, kableExtra)
+dir_teach <- "/Users/edwardarubin/Dropbox/UO/Teaching/"
+dir_old <- paste0(dir_teach, "EC421W18/Homework/Assignment1/")
+dir_data_public <- paste0(dir_teach, "EC421W19/Data/")
+dir_ps1 <- paste0(dir_teach, "EC421W19p/ProblemSets/PS01/")
+```
+
+```{R, background build data, include = F}
+# Load .dta from prior years
+old_df <- paste0(dir_old, "HW1.dta") %>% read_dta()
+# Create my dataset
+new_df <- old_df %>% transmute(
+  i_callback = call,
+  n_jobs = ofjobs,
+  n_expr = yearsexp,
+  i_military = military,
+  i_computer = computerskills,
+  first_name = firstname,
+  sex = sex,
+  i_female = sex == "f",
+  i_male = sex == "m",
+  race = race,
+  i_black = race == "b",
+  i_white = race == "w"
+)
+# Save the dataset to the (private) problem set folder
+write_csv(
+  x = new_df,
+  path = dir_ps1 %>% paste0("dataPS01.csv")
+)
+# Save the dataset to the public data folder
+write_csv(
+  x = new_df,
+  path = dir_data_public %>% paste0("dataPS01.csv")
+)
+```
+
+**1c.** [Download](https://raw.githack.com/edrubin/EC421W19/master/Data/dataPS01.csv) the dataset (also available on [Canvas](https://canvas.uoregon.edu/)). Save it in a helpful location. Remember this location.
+
+**1d.** Read the data into .mono[R]. What are the dimensions of the dataset (numbers of rows and columns)?
+
+```{R, key 1d, include = F}
+# The datasets's directory
+dir_data <- "/Users/edwardarubin/Dropbox/UO/Teaching/EC421W19/Data/"
+# Read in the data
+ps1_df <- read_csv(file = paste0(dir_data, "dataPS01.csv"))
+# Dimensions of the dataset:
+# 1. Printed to screen (since it's a tibble)
+ps1_df
+# 2. Use dim()
+dim(ps1_df)
+```
+
+*Note:* Let each row in this dataset represent a different résumé sent to a job posting. The table on the last page explains each of the variables.
+
+**1e.** What are the names of the first three variables? *Hint:* `names(your_df)`
+
+```{R, key 1e, include = F}
+names(ps1_df) %>% head(3)
+```
+
+**1f.** What are the first four *first names* in the dataset (`first_name` variable)?
+
+*Hint:* `head(your_df$var_name, 10)` gives the first 10 observations of the variable `var_name` in dataset `your_df`.
+
+```{R, key 1f, include = F}
+head(ps1_df$first_name, 4)
+```
+
+.footnote[
+[†]: The data that we use in the problem set contain a subset of the variables from the original paper.
+
+[††]: [Here's a link](https://medium.com/@brooke.cusmano/are-emily-and-greg-more-employable-than-lakisha-and-jamal-13d11dfac511) to an article on Medium that discussed their paper.
+]
+---
+class: clear
+
+## Problem 2: Analysis
+
+Reviewing the basic analysis tools of econometrics.
+
+**Note:** When you use OLS to regress a binary indicator variable (like `i_callback`) on a set of explanatory variables, your coefficients are telling you how the explanatory variables affect the probability that the indicatory variable equals one. So if we regress `i_callback` on `n_jobs`, the coefficient on `n_jobs` tells us how the probability of a callback changes with each additional job listed on the résumé.
+
+**2a.** What percentage of the résumés generated a callback (`i_callback`)?
+
+*Hint:* The mean of a binary indicator variable (_i.e._, `mean(binary_variable)`) gives the percentage of times the variable equals one.
+
+```{R, key 2a, include = F}
+mean(ps1_df$i_callback)
+```
+
+**2b.** Calculate percentage of callbacks (_i.e._, the mean of `i_callback`) for each racial group (`race`). Does it appear as though employers considered an applicant's race when making callbacks? Explain.
+
+*Hint:* `filter(your_df, race == "b")` will select all observations (from the dataset `your_df`) where the variable `race` takes the value `"b"`. Similarly `filter(your_df, race == "b")$i_callback` will give you the values of `i_callback` for obsevations whose value of `race` is `"b"`.
+
+```{R, key 2b, include = F}
+# Percentage for Black
+filter(ps1_df, race == "b")$i_callback %>% mean()
+# Percentage for White
+filter(ps1_df, race == "w")$i_callback %>% mean()
+```
+
+**2c.** What is the difference in the groups' mean callback rate?
+
+```{R, key 2c, include = F}
+# Percentage for Black
+mean_b <- filter(ps1_df, race == "b")$i_callback %>% mean()
+# Percentage for White
+mean_w <- filter(ps1_df, race == "w")$i_callback %>% mean()
+# Difference:
+mean_b - mean_w
+```
+
+**2d.** Based upon the difference in percentages that we observe in **2b.**, can we conclude that employers consider race in hiring decisions?
+
+<!-- **No.** We have shown a difference in the groups' percentages, but we do not know if this difference is statistically meaningful. -->
+
+**2e.** Without running a regression, conduct a statistical test for the difference in the two groups' average callback rates (_i.e._, test that the proportion of callbacks is equal for the two groups).
+
+*Hint:* Back to your statistics class—difference in proportions (a $Z$ test) or means (a $t$ test).
+
+```{R, key 2e, include = F}
+# Percentage for everyone
+mean_all <- ps1_df$i_callback %>% mean()
+# Number: Black
+n_b <- filter(ps1_df, race == "b") %>% nrow()
+# Number: White
+n_w <- filter(ps1_df, race == "w") %>% nrow()
+# The Z statistic
+z_stat <- (mean_b - mean_w) / sqrt(mean_all * (1 - mean_all) * (1/n_b + 1/n_w))
+# The p value
+2 * pnorm(abs(z_stat), lower.tail = F)
+```
+
+**2f.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black` (whether the résumé's name implied a black applicant). Report the coefficient on `i_black`. Does it match the difference that you found in **2c**?
+
+```{R, key 2f, include = F}
+lm(i_callback ~ i_black, data = ps1_df) %>% summary()
+```
+
+**2g.** Conduct a $t$ test for the coefficient on `i_black` in the regression above in **2f**. Write our your hypotheses (both H.sub[0] and H.sub[A]), the test statistic, the result of your test (_i.e._, reject or fail to reject H.sub[0]), and your conclusion.
+
+
+**2h.** Now regress `i_callback` (whether the résumé generated a callback) on `i_black`, `n_expr` (years of experience), and the interaction between `i_black` and `n_expr`. Interpret the estimates for the coefficients (both the meaning of the coefficients and whether they are statistically significant).
+
+*Hint:* In .mono[R], `lm(y ~ x1 + x2 + x1:x2, data = your_df)` regresses `y` on `x1`, `x2`, and the interaction between `x1` and `x2` (all from the dataset `your_df`).
+
+```{R, key 2h, include = F}
+lm(i_callback ~ i_black + n_expr + i_black:n_expr, data = ps1_df) %>% summary()
+```
+
+---
+class: clear
+
+## Problem 3: Thinking about causality
+
+Now for the big picture.
+
+This project by Bertrand and Mullainathan took a decent amount of time and effort—finding job listings, generating fake résumés, responding to the listings, *etc.* It probably would have been much quicker/cheaper/easier to just go out and get data from job applicants—whether they received callbacks and their races. So why didn't they take the easier, cheaper, and quicker route?
+
+To answer this question, we are going to consider the model
+$$ \text{Callback}_i = \beta_0 + \beta_1 \text{Race}_i + u_i \tag{3.0} $$
+and think about omitted-variable bias.
+
+**3a.** If we go out, collect data on job applicants, and estimate the model in $(3.0)$ using OLS, _i.e._,
+$$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{Race}_i + e_i \tag{3.1} $$
+we should be concerned about omitted-variable bias. Explain why this is the case **and** provide at least one example of an omitted variable that could bias our estimates in $(3.1)$.
+
+**3b.** To avoid this potential bias, Bertrand and Mullainathan ran an experiment in which they randomized applicants' names on the résumés—thus randomly assigning the (implied) race of the job applicants. How does this randomization help Bertrand and Mullainathan avoid omitted variables bias?
+
+In other words, why are we less concerned about omitted variable bias in the following estimated model
+$$ \text{Callback}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{(Randomized Race)}_i + w_i \tag{3.2} $$
+while we were concerned about bias in $(3.1)$?
+---
+class: clear
+
+### Description of variables and names
+<br>
+```{R, background variables, echo = F}
+var_tbl <- data.frame(
+  Variable = names(ps1_df) %>% paste0(".mono-small[", ., "]"),
+  Description = c(
+    "Binary variable (0,1) for whether the resume received a callback.",
+    "Number of previous jobs listed on the application.",
+    "Number of years of experience listed on the application.",
+    "Binary variable for whether the application included military status.",
+    "Binary variable for whether the application included computer skills.",
+    "The first name listed on the application.",
+    "The implied sex of the first name on the application (.mono-small['f'] or .mono-small['m']).",
+    "Binary indicator for whether the implied sex was female.",
+    "Binary indicator for whether the implied sex was male.",
+    "The implied race of the first name on the application (.mono-small['b'] or .mono-small['w']).",
+    "Binary indicator for whether the implied race was African American.",
+    "Binary indicator for whether the implied race was White."
+  )
+)
+kable(var_tbl) %>%
+  kable_styling(full_width = F)
+```
+
+In general, I've tried to stick with a naming convention. Variables that begin with .mono-small[i\\_] denote binary indicatory variables (taking on the value of .mono-small[0] or .mono-small[1]). Variables that begin with .mono-small[n_] are numeric variables.
+
+```{R, generate pdfs, include = F}
+system("decktape remark ps01.html ps01.pdf --chrome-arg=--allow-file-access-from-files")
+```

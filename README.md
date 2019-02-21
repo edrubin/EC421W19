@@ -19,5 +19,12 @@ The slides below (linked by their topic) are .html files that will only work pro
 
 ## Problem sets
 
-1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/dataPS01.csv)
-2. [Problem set 2: Heteroskedasticity, consistency, and time series](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/dataPS02.csv)
+1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/dataPS01.csv) | [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01Solutions/ps01Solutions.pdf)
+2. [Problem set 2: Heteroskedasticity, consistency, and time series](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/dataPS02.csv) | [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02Solutions/ps02Solutions.pdf)
+
+## Midterm
+
+- [Topics](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_topics.pdf)
+- [Review questions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_review.pdf)
+- [Midterm](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm.pdf) (the actual exam)
+- [Solutions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_key.pdf) (Short solutions to the midterm)
