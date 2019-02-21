@@ -538,7 +538,7 @@ layout: false
 1. [Random walks](#walks)
 1. [The actual problem](#problem)
 1. [A potential solution](#solution)
-1. [Dicker-Fuller tests](#test)
+1. [Dickey-Fuller tests](#test)
 ]
 ]
 ---
