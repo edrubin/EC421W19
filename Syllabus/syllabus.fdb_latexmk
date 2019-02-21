@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1548883275 "syllabus.tex" "syllabus.pdf" "syllabus" 1548883278
+["pdflatex"] 1550770334 "syllabus.tex" "syllabus.pdf" "syllabus" 1550770337
   "/Users/edwardarubin/Library/texlive/2016/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1487171524 135607 ee7ff4a99c9a855ae442bf272e57e27e ""
   "/Users/edwardarubin/Library/texlive/2016/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc" 1487171524 136338 91869899c8f4bfcd000e090a1d821f9c ""
   "/Users/edwardarubin/Library/texlive/2016/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-regular.luc" 1487171523 134520 487a866a060ca33d46b0230ee15db4cd ""
@@ -141,17 +141,17 @@
   "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-lookup-cache.luc" 1547935675 374 aa3cab977b0211dcafa7dfc6496f0bf7 ""
   "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.luc" 1547935674 1195725 fc3da3509f6b39dbe7c7ad23cf27cddb ""
   "/usr/local/texlive/2016/texmf-var/web2c/luatex/lualatex.fmt" 1463979171 1200794 cf331090119301b64fcdce27114c5f16 ""
-  "syllabus.aux" 1548883278 1164 99189b36d1e8e945b7e01826670f53fd ""
-  "syllabus.out" 1548883278 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "syllabus.tex" 1548883275 12278 68bbd2131948f4727063629aedb8add5 ""
+  "syllabus.aux" 1550770337 1164 99189b36d1e8e945b7e01826670f53fd ""
+  "syllabus.out" 1550770336 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "syllabus.tex" 1550770334 12250 24d6c01f67c94dd054fcea0fd269ade7 ""
   (generated)
-  "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.luc"
   "syllabus.out"
-  "syllabus.pdf"
-  "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.lua.gz"
-  "syllabus.log"
-  "/usr/local/texlive/2016/texmf-var/m_t_x_t_e_s_t.tmp"
+  "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.luc"
   "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-lookup-cache.luc"
+  "syllabus.pdf"
+  "/usr/local/texlive/2016/texmf-var/m_t_x_t_e_s_t.tmp"
   "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-lookup-cache.lua"
+  "syllabus.log"
   "syllabus.aux"
+  "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.lua.gz"
   "/usr/local/texlive/2016/texmf-var/luatex-cache/generic/names/luaotfload-names.lua"

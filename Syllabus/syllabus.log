@@ -1,4 +1,4 @@
-This is LuaTeX, Version 0.95.0 (TeX Live 2016)  (format=lualatex 2016.5.22)  30 JAN 2019 13:21
+This is LuaTeX, Version 0.95.0 (TeX Live 2016)  (format=lualatex 2016.5.22)  21 FEB 2019 09:32
  restricted system commands enabled.
 **syllabus.tex
 (./syllabus.tex
@@ -285,7 +285,7 @@ Inserting `luaotfload.aux.set_capheight' at position 3 in `luaotfload.patch_font
 '.
 Inserting `luaotfload.rewrite_fontname' at position 4 in `luaotfload.patch_font'
 .
-luaotfload | main : initialization completed in 0.195 seconds)
+luaotfload | main : initialization completed in 0.140 seconds)
 Lua module: fontspec 2016/02/01 2.5a Advanced font selection for LuaLaTeX.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/fontspec/fontspec-luatex.sty
 Package: fontspec-luatex 2016/02/01 v2.5a Font selection for XeLaTeX and LuaLaTe
@@ -1182,15 +1182,11 @@ LaTeX Font Info:    External font `lmex10' loaded for size
  [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
-
-Overfull \hbox (2.68346pt too wide) in paragraph at lines 197--223
-[][] 
- []
-
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 226.
-[4] [5]
+ [4] [5]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 226.
- (./syllabus.aux)
+
+(./syllabus.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 226.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 226.
 Package rerunfilecheck Info: File `syllabus.out' has not changed.
@@ -1201,10 +1197,10 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 226.
 Here is how much of LuaTeX's memory you used:
  25636 strings out of 495119
  100000,552014 words of node,token memory allocated
- 1629 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 129 glue, 1 kern, 70 attribute, 56 glue_spec, 70 at
+ 1618 words of node memory still in use:
+   6 hlist, 2 vlist, 2 rule, 128 glue, 1 kern, 69 attribute, 56 glue_spec, 69 at
 tribute_list, 1 write, 1 pdf_action nodes
-   avail lists: 2:627,3:79,4:37,5:588,6:2759,7:851,8:51,9:181,10:9,11:233
+   avail lists: 2:627,3:79,4:37,5:588,6:2759,7:849,8:51,9:181,10:9,11:233
  28491 multiletter control sequences out of 65536+600000
  86 fonts using 12368415 bytes
  50i,12n,65p,790b,799s stack positions out of 5000i,500n,10000p,200000b,100000s
@@ -1214,7 +1210,7 @@ opentype/public/fontawesome/FontAwesome.otf></Users/edwardarubin/Library/Fonts/F
 iraSans-SemiBold.otf></Users/edwardarubin/Library/Fonts/FiraSans-Regular.otf></U
 sers/edwardarubin/Library/Fonts/FiraCode-Regular.otf></Users/edwardarubin/Librar
 y/Fonts/FiraCode-Bold.otf>
-Output written on syllabus.pdf (5 pages, 37784 bytes).
+Output written on syllabus.pdf (5 pages, 37789 bytes).
 
 PDF statistics: 126 PDF objects out of 1000 (max. 8388607)
  97 compressed objects within 1 object stream
