@@ -1408,7 +1408,7 @@ Omitting variables that are correlated through time will cause your disturbances
 **Example:** Suppose births depend upon income and previous births
 $$
 \begin{align}
-  \text{Births}_t = \beta_0 + \beta_1 \text{Births}_{t-1} \beta_2 \text{Income}_t + u_t
+  \text{Births}_t = \beta_0 + \beta_1 \text{Births}_{t-1} + \beta_2 \text{Income}_t + u_t
 \end{align}
 $$
 --
@@ -1475,7 +1475,7 @@ $$
 
 --
 
-And now subtract $(4)$ from $(2)$…
+And now subtract $(4)$ from $(1)$…
 ---
 
 $$
@@ -1577,6 +1577,6 @@ layout: false
 ---
 exclude: true
 
-```{R, generate pdfs, include = F}
+```{R, generate pdfs, include = F, eval = F}
 system("decktape remark 08_autocorrelation.html 08_autocorrelation.pdf --chrome-arg=--allow-file-access-from-files")
 ```

@@ -4,7 +4,7 @@
     <title>Non-Stationary Time Series</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-02-21" />
+    <meta name="date" content="2019-02-25" />
     <link href="09_nonstationarity_files/remark-css/default.css" rel="stylesheet" />
     <link href="09_nonstationarity_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="09_nonstationarity_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Non-Stationary Time Series
 ## EC 421, Set 9
 ### Edward Rubin
-### 21 February 2019
+### 25 February 2019
 
 ---
 
@@ -87,7 +87,7 @@ Requirements for .hi[stationarity] (a *stationary* time-series process):
 
 1. The .hi[mean] of the distribution is independent of time, _i.e._,
 .center[
-`\(\mathop{\boldsymbol{E}}\left[ x_t \right]  = \mathop{\boldsymbol{E}}\left[ e_{t-k} \right]\)` for all `\(k\)`
+`\(\mathop{\boldsymbol{E}}\left[ x_t \right]  = \mathop{\boldsymbol{E}}\left[ x_{t-k} \right]\)` for all `\(k\)`
 ]
 --
 
@@ -284,16 +284,16 @@ layout: false
 
 .hi[Dickey-Fuller tests] compare
 
-H.sub[o]: `\(y_t = \beta_0 + \beta_1 y_{t-1} + u_t\)` with `\(|\beta_2|&lt;1\)` (.hi[stationarity])
+H.sub[o]: `\(y_t = \beta_0 + \beta_1 y_{t-1} + u_t\)` with `\(|\beta_1|&lt;1\)` (.hi[stationarity])
 &lt;br&gt;
 H.sub[a]: `\(y_t = y_{t-1} + \varepsilon_t\)` (.hi[random walk])
 
 --
 
-using a *t* test that `\(|\beta_2|&lt;1\)`.&lt;sup&gt;.pink[†]&lt;/sup&gt;
+using a *t* test that `\(|\beta_1|&lt;1\)`.&lt;sup&gt;.pink[†]&lt;/sup&gt;
 
 .footnote[
-.pink[†] People often just test `\(\beta_2&lt;1\)`.
+.pink[†] People often just test `\(\beta_1&lt;1\)`.
 ]
 
 ---

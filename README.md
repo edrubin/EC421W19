@@ -16,11 +16,13 @@ The slides below (linked by their topic) are .html files that will only work pro
 6. [Consistency and OLS in asymptopia](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/06Consistency/06_consistency.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/06Consistency/06_consistency.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/06Consistency/06_consistency.Rmd)
 7. [Introduction to time series](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/07TimeSeries/07_time_series.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/07TimeSeries/07_time_series.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/07TimeSeries/07_time_series.Rmd)
 8. [Autocorrelated disturbances](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/08Autocorrelation/08_autocorrelation.html): Implications, testing, and estimation. Also: introduction `ggplot2` and user-defined functions. | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/08Autocorrelation/08_autocorrelation.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/08Autocorrelation/08_autocorrelation.Rmd)
+9. [Nonstationarity](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/09Nonstationarity/09_nonstationarity.html): Introduciton, implications for OLS, testing, and estimation. Also: in-class exercise for model selection. | [PDF](https://raw.githack.com/edrubin/EC421W19/master/LectureNotes/09Nonstationarity/09_nonstationarity.pdf) | [.Rmd](https://github.com/edrubin/EC421W19/blob/master/LectureNotes/09Nonstationarity/09_nonstationarity.Rmd)
 
 ## Problem sets
 
 1. [Problem set 1: Review of OLS](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/ps01.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01/dataPS01.csv) | [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS01Solutions/ps01Solutions.pdf)
 2. [Problem set 2: Heteroskedasticity, consistency, and time series](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/ps02.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02/dataPS02.csv) | [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS02Solutions/ps02Solutions.pdf)
+3. [Problem set 3: Time series and autocorrelation](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS03/ps03.html) | [PDF](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS03/ps03.pdf) | [Data](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS03/gas_oil.csv) | [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ProblemSets/PS03Solutions/ps03Solutions.pdf)
 
 ## Midterm
 
@@ -28,3 +30,7 @@ The slides below (linked by their topic) are .html files that will only work pro
 - [Review questions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_review.pdf): no solutions; just review questions
 - [Midterm](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm.pdf): the actual exam
 - [Solutions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_key.pdf): short solutions to the midterm
+
+## Final
+
+...

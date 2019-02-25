@@ -174,7 +174,7 @@ Requirements for .hi[stationarity] (a *stationary* time-series process):
 
 1. The .hi[mean] of the distribution is independent of time, _i.e._,
 .center[
-$\mathop{\boldsymbol{E}}\left[ x_t \right]  = \mathop{\boldsymbol{E}}\left[ e_{t-k} \right]$ for all $k$
+$\mathop{\boldsymbol{E}}\left[ x_t \right]  = \mathop{\boldsymbol{E}}\left[ x_{t-k} \right]$ for all $k$
 ]
 --
 
@@ -454,16 +454,16 @@ layout: false
 
 .hi[Dickey-Fuller tests] compare
 
-H.sub[o]: $y_t = \beta_0 + \beta_1 y_{t-1} + u_t$ with $|\beta_2|<1$ (.hi[stationarity])
+H.sub[o]: $y_t = \beta_0 + \beta_1 y_{t-1} + u_t$ with $|\beta_1|<1$ (.hi[stationarity])
 <br>
 H.sub[a]: $y_t = y_{t-1} + \varepsilon_t$ (.hi[random walk])
 
 --
 
-using a *t* test that $|\beta_2|<1$.<sup>.pink[†]</sup>
+using a *t* test that $|\beta_1|<1$.<sup>.pink[†]</sup>
 
 .footnote[
-.pink[†] People often just test $\beta_2<1$.
+.pink[†] People often just test $\beta_1<1$.
 ]
 
 ---

@@ -4,7 +4,7 @@
     <title>Autocorrelation</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-02-19" />
+    <meta name="date" content="2019-02-25" />
     <link href="08_autocorrelation_files/remark-css/default.css" rel="stylesheet" />
     <link href="08_autocorrelation_files/remark-css/metropolis.css" rel="stylesheet" />
     <link href="08_autocorrelation_files/remark-css/metropolis-fonts.css" rel="stylesheet" />
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Autocorrelation
 ## EC 421, Set 8
 ### Edward Rubin
-### 19 February 2019
+### 25 February 2019
 
 ---
 
@@ -1152,7 +1152,7 @@ Omitting variables that are correlated through time will cause your disturbances
 **Example:** Suppose births depend upon income and previous births
 $$
 `\begin{align}
-  \text{Births}_t = \beta_0 + \beta_1 \text{Births}_{t-1} \beta_2 \text{Income}_t + u_t
+  \text{Births}_t = \beta_0 + \beta_1 \text{Births}_{t-1} + \beta_2 \text{Income}_t + u_t
 \end{align}`
 $$
 --
@@ -1219,7 +1219,7 @@ $$
 
 --
 
-And now subtract `\((4)\)` from `\((2)\)`…
+And now subtract `\((4)\)` from `\((1)\)`…
 ---
 
 $$
