@@ -20,11 +20,6 @@
   font-weight: 600;
   color: #FFA500 !important;
 }
-/* Mono-spaced font */
-.mono {
-  font-family: monospace;
-}
-
 /* Pink text */
 .pink {
   color: #e64173 !important;
@@ -57,8 +52,19 @@
 .white {
   color: #ffffff !important;
 }
+.black {
+  color: #000000 !important;
+}
 
-.remark-code-line-highlighted     { background-color: rgba(249, 39, 114, 0.5); }
+/* Mono-spaced font */
+.mono {
+  font-family: monospace;
+}
+
+
+.remark-code-line-highlighted {
+  background-color: rgba(249, 39, 114, 0.5);
+}
 
 .bigger {
   font-size: 125%;
@@ -113,7 +119,6 @@
 
 .mjx-chtml{
   font-size: 105% !important;
-  /* line-height: 105% !important; */
 }
 
 /* Mono-spaced font, smaller */
@@ -165,4 +170,11 @@
   font-style: normal;
   text-align: left;
   margin-left: 15px;
+}
+
+.remark-inline-code {
+  background: #F5F5F5; /* lighter */
+  /* background: #e7e8e2; /* darker */
+  border-radius: 3px;
+  padding: 4px;
 }
