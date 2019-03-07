@@ -24,6 +24,18 @@
   font-weight: 600;
   color: #FFA500 !important;
 }
+.hi-green {
+  font-weight: 600;
+  color: #8bb174 !important;
+}
+.hi-blue {
+  font-weight: 600;
+  color: #2b59c3 !important;
+}
+.hi-red {
+  font-weight: 600;
+  color: #fb6107 !important;
+}
 /* Pink text */
 .pink {
   color: #e64173 !important;
@@ -44,6 +56,16 @@
 .orange {
   color: #FFA500 !important;
 }
+.green {
+  color: #8bb174 !important;
+}
+.blue {
+  color: #2b59c3 !important;
+}
+.red {
+  color: #fb6107 !important;
+}
+
 /* Grey text */
 .grey-mid {
   color: #7f7f7f !important;
@@ -71,6 +93,9 @@
 /* Overline */
 .ol {
   text-decoration: overline;
+}
+.st {
+  text-decoration: line-through;
 }
 /* Fraction */
 .top{
@@ -138,7 +163,7 @@
 }
 
 .mjx-chtml{
-  font-size: 105% !important;
+  font-size: 103% !important;
 }
 
 /* Mono-spaced font, smaller */
@@ -147,7 +172,7 @@
   font-size: 20px;
 }
 .mono-small .mjx-chtml {
-  font-size: 105% !important;
+  font-size: 103% !important;
 }
 
 .pseudocode, .pseudocode-small {

@@ -19,11 +19,10 @@ class: inverse, middle
 library(pacman)
 p_load(
   broom, here, tidyverse,
-  emoGG, latex2exp, ggplot2, ggthemes, viridis, extrafont, gridExtra,
+  emoGG, latex2exp, ggplot2, ggthemes, ggforce, viridis, extrafont, gridExtra,
   wooldridge,
-  kableExtra,
-  data.table,
-  dplyr,
+  kableExtra, snakecase,
+  data.table, dplyr, estimatr,
   lubridate,
   magrittr, knitr, parallel
 )
@@ -48,6 +47,8 @@ opts_chunk$set(dev = "svg")
 options(device = function(file, width, height) {
   svg(tempfile(), width = width, height = height)
 })
+options(crayon.enabled = F)
+options(knitr.table.format = "html")
 # A blank theme for ggplot
 theme_empty <- theme_bw() + theme(
   line = element_blank(),
@@ -112,6 +113,35 @@ theme_axes <- theme_void() + theme(
   legend.position = "none"
 )
 theme_set(theme_gray(base_size = 20))
+# Column names for regression results
+reg_columns <- c("Term", "Est.", "S.E.", "t stat.", "p-Value")
+# Function for formatting p values
+format_pvi <- function(pv) {
+  return(ifelse(
+    pv < 0.0001,
+    "<0.0001",
+    round(pv, 4) %>% format(scientific = F)
+  ))
+}
+format_pv <- function(pvs) lapply(X = pvs, FUN = format_pvi) %>% unlist()
+# Tidy regression results table
+tidy_table <- function(x, terms, highlight_row = 1, highlight_color = "black", highlight_bold = T, digits = c(NA, 3, 3, 2, 5)) {
+  x %>%
+    tidy() %>%
+    select(1:5) %>%
+    mutate(
+      term = terms,
+      p.value = p.value %>% format_pv()
+    ) %>%
+    kable(
+      col.names = reg_columns,
+      escape = F,
+      digits = digits
+    ) %>%
+    kable_styling(font_size = 20) %>%
+    row_spec(1:nrow(tidy(x)), background = "white") %>%
+    row_spec(highlight_row, bold = highlight_bold, color = highlight_color)
+}
 ```
 
 # Prologue
@@ -416,6 +446,7 @@ Imagine that we can split veteran status into an exogenous part and an endogenou
 $$
 \begin{align}
   \text{Earnings}_i
+  &= \beta_0 + \beta_1 \text{Veteran}_i + u_i \tag{1} \\
   &= \beta_0 + \beta_1 \left(\text{Veteran}_i^{\text{Exog.}} + \text{Veteran}_i^{\text{Endog.}}\right) + u_i \\
   &= \beta_0 + \beta_1 \text{Veteran}_i^{\text{Exog.}} + \underbrace{\beta_1 \text{Veteran}_i^{\text{Endog.}} + u_i}_{w_i} \\
   &= \beta_0 + \beta_1 \text{Veteran}_i^{\text{Exog.}} + w_i
@@ -737,6 +768,95 @@ we can estimate our desired effect:
 
 (Effect of .hi-purple[veteran status] on .hi-orange[earnings]) = $\dfrac{\pi_1}{\gamma_1}$
 ---
+
+So with instrumental variables, we estimate $\beta_1$ using
+$$
+\begin{align}
+  \hat{\beta}_1^\text{IV} = \dfrac{\hat{\pi}_1}{\hat{\gamma}_1}
+\end{align}
+$$
+where $\hat{\pi}_1$ and $\hat{\gamma}_1$ come from the two equations we just discussed.
+
+--
+
+**Q:** Can we trust $\hat{\beta}_1^\text{IV}$?
+--
+<br>**A:** Yes... **if we have a valid instrument.**
+
+--
+$$
+\begin{align}
+  \mathop{\text{plim}}\left( \hat{\beta}_1^\text{IV} \right) = \beta_1 + \dfrac{\mathop{\text{Cov}} \left( \color{#e64173}{\text{Instrument}},\, u \right)}{\mathop{\text{Cov}} \left( \color{#e64173}{\text{Instrument}},\, \color{#6A5ACD}{\text{Endog. variable}} \right)}
+\end{align}
+$$
+--
+which equals $\beta_1$ as long as our instrument is .hi-pink[exogenous] (numerator) and .hi-purple[relevant] (denominator).
+---
+layout: false
+class:clear
+name: venn
+
+```{R, venn_iv, echo = F, fig.height = 7.5}
+# Locations of circles
+venn1_df <- tibble(
+  x = c(0.0,   -0.5,    1.5,   -1.0, -2.5),
+  y = c(0.0,   -2.5,   -1.8,    2.0, -2.5),
+  r = c(1.9,    1.5,    1.5,    1.3,  1.3),
+  l = c("Y", "X[1]", "X[2]", "X[3]",  "Z")
+)
+# Venn
+ggplot(data = venn1_df, aes(x0 = x, y0 = y, r = r, fill = l, color = l)) +
+geom_circle(alpha = 0.3, size = 0.75) +
+theme_void() +
+theme(legend.position = "none") +
+scale_fill_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+scale_color_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+geom_text(aes(x = x, y = y, label = l), size = 9, family = "Fira Sans Book", parse = T) +
+coord_equal()
+```
+---
+class: clear
+
+```{R, venn_iv_endog, echo = F, fig.height = 7.5}
+# Locations of circles
+venn2_df <- tibble(
+  x = c(0.0,   -0.5,    1.5,   -1.0, -2.5),
+  y = c(0.0,   -2.5,   -1.8,    2.0, -1.3),
+  r = c(1.9,    1.5,    1.5,    1.3,  1.3),
+  l = c("Y", "X[1]", "X[2]", "X[3]",  "Z")
+)
+# Venn
+ggplot(data = venn2_df, aes(x0 = x, y0 = y, r = r, fill = l, color = l)) +
+geom_circle(alpha = 0.3, size = 0.75) +
+theme_void() +
+theme(legend.position = "none") +
+scale_fill_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+scale_color_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+geom_text(aes(x = x, y = y, label = l), size = 9, family = "Fira Sans Book", parse = T) +
+coord_equal()
+```
+---
+class: clear
+
+```{R, venn_iv_irrelevant, echo = F, fig.height = 7.5}
+# Locations of circles
+venn3_df <- tibble(
+  x = c(0.0,   -0.5,    1.5,   -1.0, -2.5),
+  y = c(0.0,   -2.5,   -1.8,    2.0,  0.5),
+  r = c(1.9,    1.5,    1.5,    1.3,  1.3),
+  l = c("Y", "X[1]", "X[2]", "X[3]",  "Z")
+)
+# Venn
+ggplot(data = venn3_df, aes(x0 = x, y0 = y, r = r, fill = l, color = l)) +
+geom_circle(alpha = 0.3, size = 0.75) +
+theme_void() +
+theme(legend.position = "none") +
+scale_fill_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+scale_color_viridis(discrete = T, option = "C", begin = 0.1, end = 0.95) +
+geom_text(aes(x = x, y = y, label = l), size = 9, family = "Fira Sans Book", parse = T) +
+coord_equal()
+```
+---
 layout: false
 class: clear, middle
 
@@ -752,28 +872,456 @@ Back to our age-old battle to estimate the returns to education.
 
 ```{R, wooldridge_data, echo = F}
 # Grab desired variables
-wage_df <- wage2 %>% transmute(wage, educ, educ_dad = feduc, educ_mom = meduc) %>% na.omit() %>% as_tibble()
+wage_df <- wage2 %>% transmute(wage, education = educ, education_dad = feduc, education_mom = meduc) %>% na.omit() %>% as_tibble()
 # Print to screen
 wage_df
 ```
 ---
 
-OLS for the returns to education is likely (definitely) biased...
-
-```{R, ols, echo = F}
-lm(wage ~ educ, wage_df) %>% tidy()
-```
-
-but what if father's or mother's education provide a valid instrument?
+OLS for the returns to education with will likely (definitely) be biased...
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \beta_0 + \beta_1 \color{#6A5ACD}{\text{Education}}_i + u_i
+\end{align}
+$$
 
 --
 
-**Q:** Why/why not?
+.hi-slate[(Likely biased) OLS results:]
+```{R, ols, echo = F}
+reg_ols <- lm(wage ~ education, wage_df)
+reg_ols %>%
+  tidy_table(
+    terms = c("Intercept", "Education"),
+    highlight_row = 2,
+    highlight_color = purple
+  )
+```
+
+--
+
+but what if mother's education provides a valid instrument?
+---
+
+We can check/test the *relevance* of .hi-pink[mother's education] for .hi-purple[education].
+
+--
+
+This regression is known as the .hi-slate[*first stage*:]
+<br> The effect of the .pink[instrument] on our .purple[endogenous explanatory variable].
+
+$$
+\begin{align}
+  \color{#6A5ACD}{\text{Education}_i} = \gamma_0 + \gamma_1 \color{#e64173}{\left( \text{Mother's Education} \right)_i} + v_i
+\end{align}
+$$
+
+--
+
+.hi-slate[First-stage results:]
+```{R, first_stage, echo = F}
+reg_iv1 <- lm(education ~ education_mom, wage_df)
+reg_iv1 %>%
+  tidy_table(
+    terms = c("Intercept", "Mother's Education"),
+    highlight_row = 2,
+    highlight_color = red_pink
+  )
+```
+--
+
+The *p*-value suggests a very strong relationship (very *relevant*).
 ---
 layout: false
-class: clear, middle
 
-.mono[Live coding here.]
+# Instrumental variables
+## Visualizing the first stage
+
+```{R, first_stage_plot, echo = F, fig.height = 5.75}
+ggplot(data = wage_df, aes(x = education_mom, y = education)) +
+geom_point(alpha = 0.15, size = 3.5) +
+labs(x = "Mother's education (years)", y = "Education (years)") +
+theme_pander(base_size = 20, base_family = "Fira Sans Book")
+```
+---
+count: false
+
+# Instrumental variables
+## Visualizing the first stage
+
+```{R, first_stage_plot2, echo = F, fig.height = 5.75}
+ggplot(data = wage_df, aes(x = education_mom, y = education)) +
+geom_point(alpha = 0.15, size = 3.5) +
+geom_smooth(method = lm, se = F, color = red_pink) +
+labs(x = "Mother's education (years)", y = "Education (years)") +
+theme_pander(base_size = 20, base_family = "Fira Sans Book")
+```
+---
+# Instrumental variables
+## Exogeneity
+
+**Q:** What does .hi[exogeneity] mean in this case?
+--
+<br>**A:** We need two things
+
+1. .pink[Mother's education (our instrument)] must only affect earnings through .purple[education (our endogenous explanatory variable)].
+2. .pink[Mother's education] must be uncorrelated with other factors that affect .orange[wages (our outcome variable)].
+
+--
+
+We want to be able to compare two people (*A* and *B*) whose mothers have different levels of education and say that the only differences between the two people (*A* and *B*) are due to their mothers' educational levels.
+
+--
+
+**Q:** Does *mother's education* seem likely to satisfy exogeneity?
+---
+layout: true
+# Instrumental variables
+## Example in .mono[R]
+---
+
+Now, let's estimate the .hi-turquoise[*reduced form*]:
+<br> The effect of the .pink[instrument] on our .orange[outcome variable].
+
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \pi_0 + \pi_1 \color{#e64173}{\left( \text{Mother's Education} \right)_i} + w_i
+\end{align}
+$$
+
+--
+
+.hi-turquoise[Reduced-form results:]
+```{R, reduced_form, echo = F}
+reg_rf <- lm(wage ~ education_mom, wage_df)
+reg_rf %>%
+  tidy_table(
+    terms = c("Intercept", "Mother's Education"),
+    highlight_row = 2,
+    highlight_color = red_pink,
+    digits = c(NA, 2, 2, 2, 5)
+  )
+```
+
+--
+
+**Q.sub[1]:** How do we interpret this estimated coefficient $\left( \hat{\pi}_1 \right)$?
+--
+<br>**Q.sub[2]:** If our instrument is *valid*, can we interpret these estimates as .hi[causal]?
+---
+
+So what is our IV-based estimate for the returns to education?
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \beta_0 + \beta_1 \color{#6A5ACD}{\text{Education}}_i + u_i
+\end{align}
+$$
+
+--
+
+We know that the IV estimate for $\beta_1$ is
+
+$$
+\begin{align}
+  \hat{\beta}_1^\text{IV} = \dfrac{\color{#20B2AA}{\hat{\pi}_1}}{\color{#314f4f}{\hat{\gamma}_1}}
+\end{align}
+$$
+
+--
+
+1. In the .hi-turquoise[reduced-form equation], we estimated $\color{#20B2AA}{\hat{\pi}_1 \approx `r reg_rf$coef[2] %>% round(2)`}$.
+2. In the .hi-slate[first-stage equation], we estimated $\color{#314f4f}{\hat{\gamma}_1 \approx `r reg_iv1$coef[2] %>% round(3)`}$.
+
+--
+
+$$
+\begin{align}
+  \implies\hat{\beta}_1^\text{IV} = \dfrac{\color{#20B2AA}{\hat{\pi}_1}}{\color{#314f4f}{\hat{\gamma}_1}} = \dfrac{\color{#20B2AA}{`r reg_rf$coef[2] %>% round(2)`}}{\color{#314f4f}{`r reg_iv1$coef[2] %>% round(3)`}} \approx `r ((reg_rf$coef[2] %>% round(2))/(reg_iv1$coef[2] %>% round(3))) %>% round(1)`
+\end{align}
+$$
+---
+
+**Alternative:** Use the function `iv_robust()` from the `estimatr` package.
+
+This new function `iv_robust` works very similar to our good friend `lm`:
+
+`iv_robust(y ~ x | z, data = dataset)`
+
+- `formula` Specify the regression followed by `|` and your instrument (`z`).
+- `data` You still need a dataset.
+
+***Note:*** As you might guess by its name, `iv_robust` calculates heteroskedasticity-robust standard errors by default.
+
+---
+
+In practice...
+
+```{R, iv_reg}
+# Estimate our IV regression
+iv_est <- iv_robust(wage ~ education | education_mom, data = wage_df)
+```
+
+```{R, iv_reg_results, echo = F}
+iv_est %>%
+  tidy_table(
+    terms = c("Intercept", "Education"),
+    highlight_row = 2,
+    highlight_color = purple
+  )
+```
+---
+layout: true
+# Instrumental variables
+## More
+---
+
+So now we know how to "do" instrumental variables
+--
+ *when we have one endogenous variable and one exogenous variable.*
+
+--
+
+1. Estimate the reduced form (regress .orange[outcome var.] on .pink[instrument]).
+2. Estimate the first stage (regress .purple[expl. var.] on .pink[instrument]).
+3. Calculate the IV estimate using the estimates from (1) and (2).
+
+Our magical .pink[instrument] isolates the exogenous variation in our .purple[endogenous variable].
+
+--
+
+**Q:** What if we want more?
+--
+ (_E.g._, more instruments or endog. variables)
+--
+<br>**A:** Too bad.
+---
+count: false
+
+So now we know how to "do" instrumental variables *when we have one endogenous variable and one exogenous variable.*
+
+1. Estimate the reduced form (regress .orange[outcome var.] on .pink[instrument]).
+2. Estimate the first stage (regress .purple[expl. var.] on .pink[instrument]).
+3. Calculate the IV estimate using the estimates from (1) and (2).
+
+Our magical .pink[instrument] isolates the exogenous variation in our .purple[endogenous variable].
+
+**Q:** What if we want more? (_E.g._, more instruments or endog. variables)
+<br>**A:** .st[Too bad.] Extend IV to .hi[two-stage least squares (2SLS)].
+---
+layout: false
+class: inverse, middle
+# Two-stage least squares
+---
+layout: true
+# Two-stage least squares
+## Intro
+---
+name: 2sls_intro
+
+The intuition and insights of IV carry over into two-stage least squares.
+
+--
+
+**Plus:** The *first stage* that we've been discussing is actually the *first* of the *two stages* in two-stage least squares.
+
+--
+
+$$
+\begin{align}
+  {\color{#c5c5c5}{\text{Endogenous model}}}& &\color{#FFA500}{\text{Outcome}_i} &= \beta_0 + \beta_1 \color{#6A5ACD}{\left( \text{Endog. var.} \right)_i} + u_i\\[0.5em]
+  {\text{First stage}}& &\color{#6A5ACD}{\left( \text{Endog. var.} \right)_i} &= \pi_0 + \pi_1 \color{#e64173}{\text{Instrument}_i} + v_i\\[0.25em]
+  {\text{Second stage}}& &\color{#FFA500}{\text{Outcome}_i} &= \delta_0 + \delta_1 \color{#6A5ACD}{\widehat{\left( \text{Endog. var.} \right)}_i} + \varepsilon_i\\[0.5em]
+  {\color{#c5c5c5}{\text{Reduced form}}}& &\color{#FFA500}{\text{Outcome}_i} &= \pi_0 + \pi_1 \color{#e64173}{\text{Instrument}_i} + w_i\\[0.25em]
+\end{align}
+$$
+
+where $\color{#6A5ACD}{\widehat{\left( \text{Endog. var.} \right)}_i}$ denotes the predicted values (*fitted values*) from the first-stage regression.
+---
+
+Two-stage least squares is very flexible—we include other controls, additional endogenous variables, *and* have multiple instruments.
+
+**But** don't get too distracted by this fancy flexiblity.
+
+We still need .hi[valid] instruments.
+---
+layout: true
+# Two-stage least squares
+## In .mono[R]
+---
+name: 2sls_r
+
+Back to our *returns to education* example.
+
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \beta_0 + \beta_1 \color{#6A5ACD}{\text{Education}}_i + u_i
+\end{align}
+$$
+
+Imagine that mother's *and* father's education are both valid instruments.
+
+Then our .hi-slate[first-stage regression] is
+$$
+\begin{align}
+  \color{#6A5ACD}{\text{Education}}_i = \gamma_0 + \gamma_1 \color{#e64173}{\left( \text{Mother's education} \right)}_i + \gamma_2 \color{#e64173}{\left( \text{Father's education} \right)}_i + v_i
+\end{align}
+$$
+which we can estimate via OLS.
+
+--
+
+**Q:** Why?
+---
+
+$$
+\begin{align}
+  \color{#6A5ACD}{\text{Education}}_i = \gamma_0 + \gamma_1 \color{#e64173}{\left( \text{Mother's education} \right)}_i + \gamma_2 \color{#e64173}{\left( \text{Father's education} \right)}_i + v_i
+\end{align}
+$$
+
+```{R, stage1_code}
+stage1 <- lm(education ~ education_mom + education_dad, wage_df)
+```
+
+.hi-slate[First-stage results:]
+```{R, stage1_table, echo = F}
+stage1 %>%
+  tidy_table(
+    terms = c("Intercept", "Mother's Education", "Father's Education"),
+    highlight_row = 2:3,
+    highlight_color = red_pink
+  )
+```
+
+--
+
+Our instruments each appear to be *relevant*.
+--
+<br>Formally, we should jointly test them (_e.g._, $F$ test).
+---
+
+Using our .slate[estimated first stage], we grab the *fitted* .purple[endogenous variable]
+$$
+\begin{align}
+  \color{#6A5ACD}{\widehat{\text{Education}}}_i = \widehat{\gamma}_0 + \widehat{\gamma}_1 \color{#e64173}{\left( \text{Mother's education} \right)}_i + \widehat{\gamma}_2 \color{#e64173}{\left( \text{Father's education} \right)}_i
+\end{align}
+$$
+
+--
+
+```{R, add_predications}
+# Add fitted values from first stage
+wage_df$education_hat <- stage1$fitted.values
+```
+
+--
+
+Now we use OLS (again) to estimate the .hi-green[second-stage regression]
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \delta_0 + \delta_1 \color{#6A5ACD}{\widehat{\text{Education}}}_i + \varepsilon_i
+\end{align}
+$$
+---
+
+$$
+\begin{align}
+  \color{#FFA500}{\text{Wage}_i} = \delta_0 + \delta_1 \color{#6A5ACD}{\widehat{\text{Education}}}_i + \varepsilon_i
+\end{align}
+$$
+
+```{R, stage2_code}
+stage2 <- lm(wage ~ education_hat, wage_df)
+```
+
+.hi-green[Second-stage results:]
+```{R, stage2_table, echo = F}
+stage2 %>%
+  tidy_table(
+    terms = c("Intercept", "Fitted Education"),
+    highlight_row = 2,
+    highlight_color = purple
+  )
+```
+---
+layout: false
+class: clear
+
+.purple[Ordinary least squares]
+```{R, results_ols, echo = F}
+reg_ols %>%
+  tidy_table(
+    terms = c("Intercept", "Education"),
+    highlight_row = 2,
+    highlight_color = purple
+  )
+```
+<br>.slate[Instrumental variables]
+```{R, results_iv, echo = F}
+iv_est %>%
+  tidy_table(
+    terms = c("Intercept", "Education"),
+    highlight_row = 2,
+    highlight_color = "darkslategrey"
+  )
+```
+<br>.green[Two-stage least squares w/ two instruments]
+```{R, results_2sls, echo = F}
+stage2 %>%
+  tidy_table(
+    terms = c("Intercept", "Education"),
+    highlight_row = 2,
+    highlight_color = "#8bb174"
+  )
+```
+---
+layout: false
+
+# Two-stage least squares
+## In .mono[R]
+
+As you probably guessed, .mono[R] will do both of the stages for you.
+
+--
+
+`iv_robust(y ~ x1 + x2 + ⋯ | z1 + z2 + ⋯, data)`
+
+--
+
+In our case, we have
+- one explanatory variable (`x`) (.purple[education])
+- two instruments (`z`) (.pink[parents' educations])
+
+```{R, iv_robust_2sls, eval = F}
+iv_robust(wage ~ education | education_mom + education_dad, data = wage_df)
+```
+
+```{R, iv_robus_2sls_table, echo = F}
+iv_robust(wage ~ education | education_mom + education_dad, data = wage_df) %>%
+  tidy_table(
+    terms = c("Intercept", "Education, fitted"),
+    highlight_row = 2,
+    highlight_color = purple
+  )
+```
+---
+name: more
+
+# Two-stage least squares
+## There's more!
+
+Because 2SLS .hi[isolates exogenous variation in an endogenous variable], we apply it in other settings that are biased from *endogenous* relationships.
+
+--
+
+.hi[Common applications]
+
+- **General causal inference** for observational data (as we've seen).
+- **Experiments:** Randomize a treatment that affects an endog. variable.
+- **Measurement error:** Regress noisy $x_1$ on noisy $x_2$ to capture signal.
+- **Simultaneous relationships** (_e.g._, $p$ and $q$ from supply and demand).
+
+However, in any 2SLS/IV setting, you need to mind the requirements for .hi[valid instruments]—.pink[exogeneity] and .pink[relevance].
 
 ---
 layout: false
@@ -798,7 +1346,12 @@ layout: false
   - [Relevant](#relevant)
   - [Exogenous](#exogenous)
 1. [IV Estimation](#iv_estimation)
-1. [.mono[R] example](#r_example)
+1. [Venn diagrams](#venn)
+1. [Example in .mono[R]](#r_example)
+1. [Two-stage least squares](#2sls_intro)
+  - [Introduction](#2sls_intro)
+  - [Back to .mono[R]](#2sls_r)
+1. [More applications](#more)
 ]
 ]
 ---
