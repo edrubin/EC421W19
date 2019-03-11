@@ -233,7 +233,7 @@ pchisq(q = lm_2g, df = 2, lower.tail = F)
 
 **Hypotheses** Our White test in this question tests the hypotheses H.sub[o] $\alpha_1 = \alpha_2 = 0$ *vs.* H.sub[a] $\alpha_1 \neq 0$ *or* $\alpha_2 \neq 0$, where $e_i^2 = \alpha_0 + \alpha_1 x_i + \alpha_2 x_i^2 + v_i$ (where, again, we are using $e_i^2$ to estimate $u_i^2$, which gives us an estimate for $\sigma_i^2$.) If we reject H.sub[o], then we have evidence of heteroskedasticity.
 
-**Test statistic** We calculate a White test statistic of approximately `r round(lm_2f, 2)`.
+**Test statistic** We calculate a White test statistic of approximately `r round(lm_2g, 2)`.
 
 ** *p*-value** Under the distribution of a $\chi^2_2$, the implied *p*-value for our LM statistic (the probability of seeing this test statistic or greater) is approximately `r format(pchisq(q = lm_2g, df = 2, lower.tail = F), digits = 2, scientific = F)`.
 
@@ -261,7 +261,7 @@ summary(some_reg, robust = T)
 
 .pink[
 
-```{R, key 2h, include = T, eval = F, results = 'hide'}
+```{R, key 2h, include = T, eval = T, results = 'hide'}
 # Load the 'lfe' package
 p_load(lfe)
 # Same regression as in (2c)—but with 'felm'

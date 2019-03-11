@@ -4,7 +4,7 @@
     <title>Instrumental Variables</title>
     <meta charset="utf-8">
     <meta name="author" content="Edward Rubin" />
-    <meta name="date" content="2019-03-07" />
+    <meta name="date" content="2019-03-08" />
     <link href="11_instrumental_variables_files/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="11_instrumental_variables_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
     <link href="11_instrumental_variables_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
@@ -18,7 +18,7 @@ class: center, middle, inverse, title-slide
 # Instrumental Variables
 ## EC 421, Set 11
 ### Edward Rubin
-### 07 March 2019
+### 08 March 2019
 
 ---
 
@@ -681,12 +681,36 @@ name: venn
 &lt;img src="11_instrumental_variables_files/figure-html/venn_iv-1.svg" style="display: block; margin: auto;" /&gt;
 ---
 class: clear
+count: false
 
 &lt;img src="11_instrumental_variables_files/figure-html/venn_iv_endog-1.svg" style="display: block; margin: auto;" /&gt;
 ---
 class: clear
+count: false
 
 &lt;img src="11_instrumental_variables_files/figure-html/venn_iv_irrelevant-1.svg" style="display: block; margin: auto;" /&gt;
+---
+class: clear
+count: false
+
+&lt;img src="11_instrumental_variables_files/figure-html/venn_iv_endog2-1.svg" style="display: block; margin: auto;" /&gt;
+---
+layout: false
+# Venn diagram explanation
+
+In these figures (Venn diagrams)
+
+- Each circle illustrates a variable.
+- Overlap gives the share of correlatation between two variables.
+- Dotted borders denote *omitted* variables.
+
+Take-aways
+
+- Figure 1: .hi-pink[Valid instrument] (relevant; exogenous)
+- Figure 2: .hi-slate[Invalid instrument] (relevant; not exogenous)
+- Figure 3: .hi-slate[Invalid instrument] (not relevant; not exogenous)
+- Figure 4: .hi-slate[Invalid instrument] (relevant; not exogenous)
+
 ---
 layout: false
 class: clear, middle
