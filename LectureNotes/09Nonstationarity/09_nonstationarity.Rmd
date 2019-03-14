@@ -337,7 +337,7 @@ ggplot(data = walk_df, aes(x = t, y = x, color = walk)) +
 
 >**Defintion:** .hi[Spurious]
 >- not being what it purports to be; false or fake
->- apprently but not actually valid
+>- apparently but not actually valid
 
 --
 

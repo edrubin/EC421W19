@@ -1126,7 +1126,7 @@ Difference in groups' means
 
 So our proposed group-difference estimator give us the sum of
 
-1. $\tau$, the .hi-slate[causal, averate treatment effect] that we want
+1. $\tau$, the .hi-slate[causal, average treatment effect] that we want
 2. .hi-orange[Selection bias:] How much trt. and control groups differ (on average).
 ---
 class: clear, middle
