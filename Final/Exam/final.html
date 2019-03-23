@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EC 421</title>
+    <meta charset="utf-8">
+    <meta name="author" content=" 18 March 2019" />
+    <link href="final_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="final_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="final_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <script src="final_files/kePrint-0.0.1/kePrint.js"></script>
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# EC 421
+## Final
+### <br>18 March 2019
+### <br><br><strong>Full Name</strong> <code>&lt;-</code><br><br><strong>UO ID</strong> <code>&lt;-</code><br><br><br>No phones, calculators, or outside materials.
+
+---
+
+class: clear
+
+
+
+
+## True/False
+
+**37.5 points**
+
+**Note:** You do not need to explain to your answers **in this section**.
+
+**01\.** **[T/F]** (**2.5pts**) `\(\text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Births}_{t-1} + u_t\)` describes a static time series model.
+&lt;br&gt;&lt;br&gt;
+
+**02\.** **[T/F]** (**2.5pts**) In the model `\(\text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + u_t\)`, the parameter `\(\beta_1\)` gives the effect of income in **all** previous time periods on births in the current period.
+&lt;br&gt;&lt;br&gt;
+
+**03\.** **[T/F]** (**2.5pts**) From the estimated model
+$$
+`\begin{align}
+  \text{Births}_t = \hat{\beta}_0 + \hat{\beta}_1 \text{Income}_{t} + \hat{\beta}_2 \text{Income}_{t-1} + \hat{\beta}_3 \text{Income}_{t-2} + e_t
+\end{align}`
+$$
+we can estimate the *total* effect of income on births as `\(\hat{\beta}_0 + \hat{\beta}_1 + \hat{\beta}_2 + \hat{\beta}_3\)`.
+&lt;br&gt;&lt;br&gt;
+
+**04\.** **[T/F]** (**2.5pts**) If the disturbances from two time periods `\(t\)` and `\(s\)` (with `\(t\neq s\)`) have non-zero covariance, _i.e._, `\(\mathop{\text{Cov}} \left( u_t,\,u_s \right)\neq 0\)`, then we say that the disturbance is *heteroskedastic*.
+&lt;br&gt;&lt;br&gt;
+
+**05\.** **[T/F]** (**2.5pts**) For dynamic models with lagged explanatory variables and autocorrelated disturbances, OLS we can trust OLS to be unbiased.
+&lt;br&gt;&lt;br&gt;
+
+**06\.** **[T/F]** (**2.5pts**) If `\(\mathop{\text{Var}} \left( u_t \right) = 1\)` for `\(t\)` in {1, …, 10} and `\(\mathop{\text{Var}} \left( u_t \right) = 3\)` for {11, …, T}, then `\(u_t\)` is heteroskedastic.
+&lt;br&gt;&lt;br&gt;
+
+**07\.** **[T/F]** (**2.5pts**) If `\(\mathop{\text{Var}} \left( u_t \right) = 1\)` for `\(t\)` in {1, …, 10} and `\(\mathop{\text{Var}} \left( u_t \right) = 3\)` for {11, …, T}, then `\(u_t\)` is nonstationary.
+&lt;br&gt;&lt;br&gt;
+
+**08\.** **[T/F]** (**2.5pts**) Random walks are stationary.
+&lt;br&gt;&lt;br&gt;
+
+**09\.** **[T/F]** (**2.5pts**) Selection bias refers to including observations with differing variances.
+&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**10\.** **[T/F]** (**2.5pts**) *Prediction* focuses on estimating `\(\hat{\beta}\)`, while *casual inference* focuses on estimating `\(\hat{y}\)`.
+&lt;br&gt;&lt;br&gt;
+
+**11\.** **[T/F]** (**2.5pts**) In the Rubin causal model, `\(y_{1,i}\)` refers to the outcome for individual `\(i\)` when he/she does not receive treatment.
+&lt;br&gt;&lt;br&gt;
+
+**12\.** **[T/F]** (**2.5pts**) Randomized experiment help us avoid selection bias by (approximately) balancing `\(\mathop{Avg}\left( y_{1,i} | D_i = 1 \right)\)` and `\(\mathop{Avg}\left( y_{1,i} | D_i = 0 \right)\)`.
+&lt;br&gt;&lt;br&gt;
+
+**13\.** **[T/F]** (**2.5pts**) An instrumental variable is *exogenous* if it affects `\(y\)` (the outcome) through the endogenous `\(x\)` and through another explanatory variable `\(w\)`.
+&lt;br&gt;&lt;br&gt;
+
+**14\.** **[T/F]** (**2.5pts**) The relevance requirement of instrumental variables is untestable.
+&lt;br&gt;&lt;br&gt;
+
+**15\.** **[T/F]** (**2.5pts**) The exogeneity requirement of instrumental variables is untestable.
+&lt;br&gt;&lt;br&gt;
+
+## Short Answer
+
+**62.5 points**
+
+**Note:** You will typically need to explain/justify your answers in this section.
+
+**16\.** (**2.5pts**) Write down an ADL(1,1) model for the effect of income on births.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**17\.** (**2.5pts**) Explain what negative autocorrelation in our disturbances means.&lt;br&gt;You can focus on an AR(1) process.
+
+---
+class: clear
+
+**18\.** (**3pts**) In the following dynamic time-series model, `\(u_t\)` is first-order autocorrelated, _i.e._,
+$$
+`\begin{align}
+  \text{Health}_t &amp;= \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Health}_{t-1} + u_t &amp;\text{model, }t \\
+  \text{Health}_{t-1} &amp;= \beta_0 + \beta_1 \text{Income}_{t-1} + \beta_2 \text{Health}_{t-2} + u_{t-1} &amp;\text{model, }t-1 \\
+  u_t &amp;= \rho u_{t-1} + \varepsilon_t &amp;\text{AR(1)}
+\end{align}`
+$$
+where `\(\varepsilon_t\)` is "white noise"—independentaly and identically distributed with mean zero and variance `\(\sigma^2_\varepsilon\)`.
+
+Explain why OLS will likely be biased for `\(\beta_2\)`—even if there are no omitted variables.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**19\.** (**3pts**) Suppose we are concerned about first-degree autocorrelation for the model
+$$
+`\begin{align}
+  \text{Crime}_t = \beta_0 + \beta_1 \text{Police}_t + \text{Crime}_{t-1} + u_t
+\end{align}`
+$$
+To test whether `\(u_t\)` has first-degree autocorrelation, we run a Breusch-Pagan test and find an `\(F\)` statistic of 3.98, which has a *p*-value of approximately 0.0488. State the conclusion of this test and interpret the results.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**20\.** (**2.5pts**) If we omit a variable that is autocorrelated, will our error term be autocorrelated?&lt;br&gt;Explain your answer.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**21\.** We have two individuals—Ali and Bob—and would like to use them to estimate the causal effect of college on income. Let `\(\text{Income}_{1,i}\)` denote the income of individual `\(i\)` if she went to college and `\(\text{Income}_{0,i}\)` if she did not.
+$$
+`\begin{align}
+  \text{Income}_{1,\text{Ali}} &amp;= 75,000 &amp; \text{Income}_{0,\text{Ali}} &amp;= 70,000 \\
+  \text{Income}_{1,\text{Bob}} &amp;= 65,000 &amp; \text{Income}_{0,\text{Bob}} &amp;= 50,000
+\end{align}`
+$$
+
+**i.** (**3pts**) Calculate the causal effect of education for Ali.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**ii.** (**3pts**) Calculate the causal effect of education for Bob.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**iii.** (**2.5pts**) Is the treatment effect constant? Briefly explain.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**iv.** (**3pts**) Bob went to college; Ali did not. Estimate the effect of college using the difference estimator—the difference in the mean of the treatment group (college) and the mean of the control group (no college).
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**v.** (**4pts**) Do we have selection bias? Briefly explain your answer.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**22\.** (**2.5pts**) What is the fundamental problem of causal inference?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**23\.**  (**4pts**) What problem does instrumental variables attempt to solve? How does it do it?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**24\.** (**3pts**) What does it mean for an instrumental variable to be *relevant*?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**25\.**The probability limit of the instrumental variables estimator is
+$$
+`\begin{align}
+  \mathop{\text{plim}}\left( \hat{\beta}_1^{\text{IV}} \right) = \beta_1 + \dfrac{\mathop{\text{Cov}} \left( z,\,u \right)}{\mathop{\text{Cov}} \left( z,\,x \right)}
+\end{align}`
+$$
+where `\(z\)` is our instrument, `\(u\)` is the disturbance, and `\(x\)` is our endogenous variable.
+
+**i.** (**4pts**) How do the two requirements of a valid instrument enter into this equation?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**ii.** **T/F** (**2.5pts**) If we have a valid instrument, then `\(\hat{\beta}_1^{\text{IV}}\)` is a consistent estimator for `\(\beta_1\)`.
+
+---
+class: clear
+
+**26\.** (**2.5pts**) Consider the random walk
+$$
+`\begin{align}
+  u_t = u_{t-1} + \varepsilon_t
+\end{align}`
+$$
+where `\(\varepsilon_t\)` is stationary.
+
+Take the difference between `\(u_t\)` and its lag. Is this difference stationary?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**27\.** Imagine we've estimated the model
+$$
+`\begin{align}
+  \text{Income}_{i} = \beta_{0} + \beta_{1} \left( \text{Military service} \right)_{i} + u_{i}
+\end{align}`
+$$
+using two-stage least squares.
+
+`\(\text{Income}_i\)` gives the income of individual `\(i\)`, and `\(\text{Military service}_{i}\)` is a binary indicator variable for whether individual `\(i\)` served in the military.
+
+Our instrument for military service is `\(\text{Male}_i\)`, an indicator variable for whether or not the individual is male.
+
+The following two tables give the results of the first and second stage.
+
+&lt;table&gt;
+&lt;caption&gt;.bold[First-stage results] (Outcome variable: Military service)&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Coef. estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Standard error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .italic[t] stat. &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; .italic[p] Value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; Intercept &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 0.014 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 0.008 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 1.75 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 0.0801 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; Is Male &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 0.120 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 0.046 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 2.61 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 0.0091 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.white[space]
+
+&lt;table&gt;
+&lt;caption&gt;.bold[Second-stage results] (Outcome variable: Income)&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Term &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Coef. estimate &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Standard error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; .italic[t] stat. &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; .italic[p] Value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; Intercept &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 31,153.71 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 7,829.2 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 3.98 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; &amp;lt;0.0001 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; Military service &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 1,104.85 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 329.10 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: white;color: black;"&gt; 3.36 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: white;color: black;"&gt; 0.0008 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+**Questions on the next page...**
+
+---
+class: clear
+
+**i.** (**3pts**) Write out the first-stage model that we estimated.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**ii.** (**3pts**) Interpret the first-stage results. (What do they say about gender differences in military service?)
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**iii.** (**3pts**) Does it appear as though we have a *relevant* instrument? Explain your answer.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**iv.** (**3pts**) Does it seem likely that our instrument is *exogenous*? Explain your answer.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**v.** (**3pts**) Assuming that we have a valid instrument, interpret the second-stage results.
+
+---
+class: clear
+
+## Extra credit: Venn diagrams(!)
+
+- Each circle illustrates a variable.
+- Overlap refers to the (share of) correlatation between two variables.
+- Dotted borders denote *omitted* variables.
+
+
+
+
+
+
+
+
+
+&lt;img src="final_files/figure-html/plot_venns-1.svg" style="display: block; margin: auto;" /&gt;
+**Note:** You do not need to explain to your answers **in this section**.
+
+**EC.sub[1].**  (**2pts**) Label the area(s) in **Figure A** that make us concerned about omitted-variable bias.
+
+**EC.sub[2].**  (**2pts**) In which figures is Z a valid instrument for X.sub[1]?
+
+**EC.sub[3].**  (**2pts**) In which figures is Z *relevant* for X.sub[1]?
+
+**EC.sub[4].**  (**2pts**) In which figures is Z *exogenous* (with respect to X.sub[1])?
+
+**EC.sub[5].**  (**2pts**) On the back of this page, draw a Venn diagram that has two valid instruments for an endogenous variable.
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "8.5:11",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

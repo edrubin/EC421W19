@@ -30,11 +30,14 @@ The slides below (linked by their topic) are .html files that will only work pro
 
 ## Midterm
 
-- [Topics](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_topics.pdf): topics that were fair game for the exam
-- [Review questions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_review.pdf): no solutions; just review questions
-- [Midterm](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm.pdf): the actual exam
+- [Topics](https://raw.githack.com/edrubin/EC421W19/master/Midterm/Topics/midterm_topics.pdf): topics that were fair game for the exam
+- [Review questions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/Review/midterm_review.pdf): no solutions; just review questions
+- [Midterm](https://raw.githack.com/edrubin/EC421W19/master/Midterm/Exam/midterm.pdf): the actual exam
 - [Solutions](https://raw.githack.com/edrubin/EC421W19/master/Midterm/midterm_key.pdf): short solutions to the midterm
 
 ## Final
 
-...
+- [Topics](https://raw.githack.com/edrubin/EC421W19/master/Final/Topics/final_topics.pdf): topics that were fair game for the exam
+- [Review questions](https://raw.githack.com/edrubin/EC421W19/master/Final/Review/final_review.pdf): no solutions; just review questions
+- [Final](https://raw.githack.com/edrubin/EC421W19/master/Final/Exam/final.pdf): the actual exam
+- [Solutions](https://raw.githack.com/edrubin/EC421W19/master/ExamKey/final_key.pdf): solution key to the final

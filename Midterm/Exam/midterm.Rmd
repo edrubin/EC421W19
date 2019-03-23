@@ -1,0 +1,455 @@
+---
+title: "EC 421"
+subtitle: "Midterm"
+author: "<br>12 February 2019"
+date: "<br><br>**Full Name** `<-`<br><br>**UO ID** `<-`<br><br><br>No phones, calculators, or outside materials."
+output:
+  xaringan::moon_reader:
+    css: ['default', 'metropolis', 'metropolis-fonts', 'my-css.css']
+    # self_contained: true
+    nature:
+      ratio: '8.5:11'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: clear
+
+```{R, setup, include = F}
+# Packages
+library(pacman)
+p_load(ggplot2, gridExtra, ggthemes, latex2exp, dplyr, broom, knitr, magrittr)
+# Colors
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+# Themes
+theme_axes_y <- theme_void() + theme(
+  text = element_text(family = "sans"),
+  axis.title = element_text(size = 11),
+  plot.title = element_text(size = 11, hjust = 0.5),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, -0.2, 0, 0, unit = "lines")),
+  axis.text.y = element_text(
+    size = 10, angle = 0, hjust = 0.9, vjust = 0.5,
+    margin = margin(0, 0.4, 0, 0, unit = "lines")
+  ),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.07, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_x <- theme_void() + theme(
+  text = element_text(family = "sans"),
+  axis.title = element_text(size = 11),
+  plot.title = element_text(size = 11, hjust = 0.5),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, -0.2, 0, 0, unit = "lines")),
+  axis.text.x = element_text(
+    size = 10, angle = 0, hjust = 0.9, vjust = 0.5,
+    margin = margin(0, 0.4, 0, 0, unit = "lines")
+  ),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.07, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_set(theme_gray(base_size = 11))
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  warning = F,
+  message = F
+)
+```
+
+
+## A. True/False, Multiple Choice, and Fill in the Blank
+
+**40 points**
+
+**Note:** You do not need to explain to your answers **in this section**.
+
+**01.** **[T/F]** (**2pts**) For the model $\log(y_i)=\beta_0 + \beta_1 x_i + u_i$, we interpret $\beta_1$ as the percentage change in $y$ due to a one-unit increase in $x$.
+<br><br>
+
+**02.** **[T/F]** (**2pts**) For the model $\log(y_i)=\beta_0 + \beta_1 \log(x_i) + u_i$, we interpret $\beta_1$ as the percentage change in $y$ due to a one-unit increase in $x$.
+<br><br>
+
+**03.** **[T/F]** (**2pts**) The model $y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i$ violates are linearity assumption by allowing $y$ and $x$ to have a *nonlinear* relationship.
+<br><br>
+
+**04.** **[T/F]** (**2pts**) When we use heteroskedasticity-robust standard errors, we still use OLS to estimate the coefficients (the $\beta$'s).
+<br><br>
+
+**05.** **[T/F]** (**2pts**) Omitted-variable bias occurs whenever we omit a variable from a regression.
+<br><br>
+
+**06.** **[T/F]** (**2pts**) Heteroskedasticity is a violation of our exogeneity assumption.
+<br><br>
+
+**07.** **[T/F]** (**2pts**) In the presence of heteroskedasticity, OLS provides unbiased standard errors.
+<br><br>
+
+**08.** **[T/F]** (**2pts**) Measurement error biases the OLS estimates for the coefficients toward zero.
+<br><br>
+
+**09.** **[T/F]** (**2pts**) Omitted-variable bias causes OLS estimates for the coefficients to be biased, but OLS is a consistent estimator for the coefficients.
+<br><br>
+
+**10.** **[T/F]** (**2pts**) OLS is biased for models with lagged explanatory variables.
+<br><br>
+
+**11.** **[T/F]** (**2pts**) If an estimator is unbiased, then it must be consistent.
+<br><br>
+
+---
+class: clear
+
+**12.** **[T/F]** (**2pts**) For random variables $X$ and $Y$: $\mathop{\text{plim}}\left( X \times Y \right) = \mathop{\text{plim}}\left( X \right) \times \mathop{\text{plim}}\left( Y \right)$.
+<br><br>
+
+**13.** **[T/F]** (**2pts**) For random variables $X$ and $Y$: $\mathop{\boldsymbol{E}}\left[ X \times Y \right] = \mathop{\boldsymbol{E}}\left[ X \right] \times \mathop{\boldsymbol{E}}\left[ Y \right]$.
+<br><br>
+
+**14.** **[Multiple choice]** (**2pts**) In the presence of heteroskedasticity, which of the following is true?
+<br>
+
+.move-right-short[**A.** OLS and WLS are biased, but OLS is less biased.]
+.move-right-short[**B.** OLS is biased. WLS is unbiased.]
+.move-right-short[**C.** OLS is unbiased. WLS is biased.]
+.move-right-short[**D.** OLS and WLS are unbiased, but OLS is more efficient.]
+.move-right-short[**E.** OLS and WLS are unbiased, but WLS is more efficient.]
+
+**15.** **[Multiple choice]** (**2pts**) Which of the following can lead to heteroskedasticity?
+<br>
+
+.move-right-short[**A.** Adding a lagged outcome variable]
+.move-right-short[**B.** Misspecification]
+.move-right-short[**C.** Measurement error]
+.move-right-short[**D.** Disturbances with different variances]
+
+**16.** **[Fill in the blanks]** (**4pts**) The **expected value** of an estimator is the $\underline{\color{#ffffff}{aaaaaaaaaaaaa}}$ of the estimator's distribution (for a set sample size $n$), whereas the estimator's **probability limit** describes how the estimator behaves as $n$ approaches $\underline{\color{#ffffff}{aaaaaaaaaaaaa}}$.
+<br><br>
+
+**17.** **[Fill in the blank]** (**2pts**) If the estimator $\hat{\beta}_1$ is unbiased for $\beta_1$, then $\mathop{\boldsymbol{E}}\left[ \hat{\beta}_1 \right] = \underline{\color{#ffffff}{aaaaaaaaaa}}$.
+<br><br>
+
+**18.** **[Fill in the blank]** (**4pts**) If our significance level is 0.05, and our *p*-value is 0.07, then we $\underline{\color{#ffffff}{aaaaaaaaaaaaaaaaaaaaaaaaaa}}$ the null hypothesis.
+
+---
+class: clear
+
+## B. Short Answer
+
+**60 points**
+
+**Note:** You will typically need to explain/justify your answers in this section.
+
+**19.** (**3pts**) What is the difference between $u_i$ and $e_i$?
+<br><br><br><br><br><br>
+
+**20.** (**3pts**) **Briefly explain** what we mean by "the standard error of an estimator"?
+<br><br><br><br><br><br>
+
+**21.** One of our assumptions is that the errors are homoskedastic.
+
+.move-right[**i.** (**2pts**) Formally write down this assumption. *In other words:* Write out this assumption using expected values and/or variances of random variables (_i.e._, *use 'math'*).]
+<br><br><br><br><br><br>
+
+.move-right[**ii.** (**3pts**) Informally (in words): What does this assumption mean?]
+<br><br><br><br><br><br><br><br>
+
+.move-right[**iii.** (**2pts**) What does rejecting H.sub[o] in a Goldfeld-Quandt test tell us about this assumption?]
+
+
+---
+class: clear
+
+**22.** For each of the four figures below (depicting $x_i$ and $u_i$), answer whether the figure suggests a violation of homoskedasticity. **Briefly explain** each of your answers.
+```{R, echo = F, dev = "svg", fig.height = 5.5}
+set.seed(123)
+n <- 101
+# No violations
+p1 <- ggplot(data = tibble(x = 1:n, u = rnorm(n)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure A") +
+theme_axes_y
+# Violates exogeneity
+p2 <- ggplot(data = tibble(x = 1:n, u = rnorm(n, mean = x/10 - n/21)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure B") +
+theme_axes_y
+# Violates homoskedasticity
+p3 <- ggplot(data = tibble(x = 1:n, u = rnorm(n, sd = abs(sin(x/(100))) + 0.1)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure C") +
+theme_axes_y
+# Violates both
+p4 <- ggplot(data = tibble(x = 1:n, u = runif(n, min = -250, max = (x-50.5)^2)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure D") +
+theme_axes_y
+# Put it all together
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+.move-right[**Figure A:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure B:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure C:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure D:** (**1pt**)]
+
+---
+class: clear
+
+**23.** The figure below shows the distributions of three estimators for $\beta_1$: A, B, and C.
+
+```{R, eval = T, echo = F, dev = "svg", fig.height = 4.5, message = F, warning = F}
+# Three distributions
+ggplot(data = tibble(x = c(-5, 45)), aes(x)) +
+stat_function(
+  fun = dchisq, args = list(df = 2.5), n = 1e4,
+  geom = "area", fill = "grey10", color = "black", alpha = 0.4, size = 0.3
+) +
+stat_function(
+  fun = dnorm, args = list(mean = 20, sd = 3), n = 5e3,
+  geom = "area", fill = "grey50", color = "black", alpha = 0.3, size = 0.3
+) +
+stat_function(
+  fun = dnorm, args = list(mean = 20, sd = 7), n = 5e3,
+  geom = "area", fill = "grey70", color = "black", alpha = 0.3, size = 0.3
+) +
+geom_vline(xintercept = 20, linetype = "dotted", alpha = 0.5) +
+annotate(geom = "text", x = 20, y = -0.015, label = TeX("$\\beta_{1}$"), hjust = 0.5, size = 5) +
+annotate(geom = "text", x = 2.75, y = 0.2, label = "A") +
+annotate(geom = "text", x = 16.8, y = 0.1, label = "B") +
+annotate(geom = "text", x = 32, y = 0.02, label = "C") +
+theme_void()
+```
+
+.move-right[**i.** (**4pts**) Which estimators, if any, are unbiased? ** *Briefly* explain** your answer.]
+<br><br><br><br><br>
+
+.move-right[**ii.** (**2pts**) Which estimator is the most efficient? ** *Briefly* explain** your answer.]
+<br><br><br><br><br><br>
+
+.move-right[**iii.** (**2pts**) Does this figure tell us anything about the consistency of estimator **A**? **Explain.**]
+<br><br><br><br>
+
+---
+class: clear
+
+**24.** We want test for heteroskedasticity using a Breusch-Pagan test. We start by estimating the model
+$$
+\begin{align}
+  \text{Crime}_i = \beta_0 + \beta_1 \text{Police}_i + \beta_2 \text{Wages}_i + u_i
+\end{align}
+$$
+.move-right[**i.** (**4pts**) Walk me through the necessary steps for completing the Breusch-Pagan test. Do not estimate anything—just outline the procedure, step by step.]
+<br><br><br><br><br><br><br><br><br><br><br><br>
+
+.move-right[**ii.** (**3pts**)
+Suppose we calculate a Breusch-Pagan test statistic of $\text{LM} = 12.3$, which has a *p*-value of approximately 0.031. Complete the Breusch-Pagan test (with conclusions).
+]
+
+<br><br><br><br><br><br><br><br><br><br><br>
+
+.move-right[**iii.** (**2pts**) How would a White test differ from the Breusch-Pagan test?]
+
+---
+class: clear
+
+
+**25.** Consider the model
+$$
+\begin{align}
+  \text{Wage}_i = \beta_0 + \beta_1 \text{Experience}_i + \beta_2 \text{Female}_i + u_i
+\end{align}
+$$
+where $\text{Experience}_i$ measures individual $i$'s experience in the workforce (in years), and $\text{Female}_i$ is a binary variable for whether individual $i$ is female.
+
+.move-right[
+**i.** (**4pts**) What is the interpretation of $\beta_1$?
+]
+
+<br><br><br><br><br><br><br>
+
+.move-right[
+**ii.** (**3pts**) What is the interpretation of $\beta_2$?
+]
+
+<br><br><br><br><br><br><br>
+
+  .move-right[
+  **iii.** (**2pts**) Suppose you think the effect of *experience* changes depending upon whether the individual is female. Write down (**1**) a model that could test this hypothesis and (**2**) the null and alternative hypotheses that you would test.
+  ]
+  <br><br><br><br>
+
+---
+class: clear
+
+**26.** (**2pts**) Give an example of a variable that would likely produce measurement error. Briefly explain your answer.
+<br><br><br><br><br><br>
+
+**27.** Consider the time-series model
+$$
+\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Income}_{t-1} + \beta_3 \text{Income}_{t-2} + u_t
+\end{align}
+$$
+
+
+.move-right[
+**i.** (**2pts**) What are the interpretations of $\beta_1$ and $\beta_2$ and how do they differ?
+]
+
+<br><br><br><br><br><br><br><br><br>
+
+
+.move-right[
+**ii.** (**2pts**) What is the _total_ effect of income on births?
+]
+
+<br><br><br><br><br>
+
+**28.** Suppose that we take a sample. Our observations in this sample come from two groups: **Group A** has very little noise/variation in its disturbances; **Group B** has _a lot_ of noise/variation in its disturbances.
+
+.move-right[**i.** (**2pts**) **[T/F]** OLS ignores these differences in the variances of the disturbances.]
+<br><br>
+
+.move-right[**ii.** (**2pts**) **Explain the intuition** for how WLS takes advantage of differences in these disturbances' variances.]
+<br><br><br><br><br>
+
+
+
+---
+class: clear
+
+**29.** We have in mind the model
+$$
+\begin{align}
+  \text{Income}_i = \beta_0 + \beta_1 \text{Education}_i + \beta_2 \text{Ability}_i + u_i
+\end{align}
+$$
+but we cannot observe *Ability*. Instead, we run the regression
+$$
+\begin{align}
+  \text{Income}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{Education}_i + e_i
+\end{align}
+$$
+
+.move-right[**i.** (**3pts**) What two conditions are required for omitted-variable bias to bias our estimate of the effect of education on income?]
+
+<br><br><br><br><br><br><br><br><br>
+
+.move-right[
+**ii.** (**2pts**) If we assume that ability positively affects income, and ability is positively correlated with education, then will our estimate of $\beta_1$ be biased upward or downward?
+]
+
+<br><br><br><br><br><br><br><br><br><br><br>
+
+.move-right[**iii.** (**2pts**) How does your answer to (ii.) change if ability positively affects income but is negatively correlated with education?]
+
+---
+class: clear
+
+## C. Extra Credit
+
+**10 points**
+
+**EC.sub[1]** **[T/F]** (**2pts**) If you fail to reject the null hypothesis in a Goldfeld-Quandt test, then you can conclude your disturbances are homoskedastic.
+
+<br><br><br>
+
+**EC.sub[2]** For the .mono[R] code and output below,
+
+```{R, echo = F}
+extra_credit <- tibble(
+  money = runif(n = 100, min = 0, max = 100) %>% round(0),
+  problems = 22 + 3 * money + rnorm(100)
+)
+```
+```{R}
+# The regression
+ec_reg <- lm(problems ~ money, data = extra_credit)
+# The results
+tidy(ec_reg)
+```
+
+.move-right[**i.** (**2pts**) Write down the model that we are estimating.]
+
+<br><br><br><br><br>
+
+.move-right[**ii.** (**2pts**) Interpret the output for the intercept—including its statistical significance.]
+
+---
+class: clear
+
+**EC.sub[3]** For each of the four figures below (depicting $x_i$ and $u_i$), answer whether the figure suggests a violation of exogeneity. **Briefly explain** each of your answers.
+```{R, echo = F, dev = "svg", fig.height = 5.5}
+set.seed(123)
+n <- 101
+# No violations
+p1 <- ggplot(data = tibble(x = 1:n, u = rnorm(n)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure A") +
+theme_axes_y
+# Violates exogeneity
+p2 <- ggplot(data = tibble(x = 1:n, u = rnorm(n, mean = x/10 - n/21)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure B") +
+theme_axes_y
+# Violates homoskedasticity
+p3 <- ggplot(data = tibble(x = 1:n, u = rnorm(n, sd = abs(sin(x/(100))) + 0.1)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure C") +
+theme_axes_y
+# Violates both
+p4 <- ggplot(data = tibble(x = 1:n, u = runif(n, min = -250, max = (x-50.5)^2)), aes(x = x, y = u)) +
+geom_hline(yintercept = 0) +
+scale_y_continuous(breaks = 0) +
+geom_point() +
+ggtitle("Figure D") +
+theme_axes_y
+# Put it all together
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+.move-right[**Figure A:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure B:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure C:** (**1pt**)]<br><br><br>
+
+.move-right[**Figure D:** (**1pt**)]
+
+
+```{R, generate pdfs, eval = T, include = F}
+system("decktape remark midterm.html midterm.pdf --chrome-arg=--allow-file-access-from-files")
+```

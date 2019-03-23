@@ -1,0 +1,3 @@
+**q.** **T/F** By including a lagged dependent variable, we implicitly include many lags of the explanatory variable.
+
+**q.** **T/F** If we say our disturbance is AR(3), it means that the *true* model has three lags of the explanatory variable.

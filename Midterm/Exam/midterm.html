@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EC 421</title>
+    <meta charset="utf-8">
+    <meta name="author" content=" 12 February 2019" />
+    <link href="midterm_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="midterm_files/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="midterm_files/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# EC 421
+## Midterm
+### <br>12 February 2019
+### <br><br><strong>Full Name</strong> <code>&lt;-</code><br><br><strong>UO ID</strong> <code>&lt;-</code><br><br><br>No phones, calculators, or outside materials.
+
+---
+
+class: clear
+
+
+
+
+## A. True/False, Multiple Choice, and Fill in the Blank
+
+**40 points**
+
+**Note:** You do not need to explain to your answers **in this section**.
+
+**01.** **[T/F]** (**2pts**) For the model `\(\log(y_i)=\beta_0 + \beta_1 x_i + u_i\)`, we interpret `\(\beta_1\)` as the percentage change in `\(y\)` due to a one-unit increase in `\(x\)`.
+&lt;br&gt;&lt;br&gt;
+
+**02.** **[T/F]** (**2pts**) For the model `\(\log(y_i)=\beta_0 + \beta_1 \log(x_i) + u_i\)`, we interpret `\(\beta_1\)` as the percentage change in `\(y\)` due to a one-unit increase in `\(x\)`.
+&lt;br&gt;&lt;br&gt;
+
+**03.** **[T/F]** (**2pts**) The model `\(y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + u_i\)` violates are linearity assumption by allowing `\(y\)` and `\(x\)` to have a *nonlinear* relationship.
+&lt;br&gt;&lt;br&gt;
+
+**04.** **[T/F]** (**2pts**) When we use heteroskedasticity-robust standard errors, we still use OLS to estimate the coefficients (the `\(\beta\)`'s).
+&lt;br&gt;&lt;br&gt;
+
+**05.** **[T/F]** (**2pts**) Omitted-variable bias occurs whenever we omit a variable from a regression.
+&lt;br&gt;&lt;br&gt;
+
+**06.** **[T/F]** (**2pts**) Heteroskedasticity is a violation of our exogeneity assumption.
+&lt;br&gt;&lt;br&gt;
+
+**07.** **[T/F]** (**2pts**) In the presence of heteroskedasticity, OLS provides unbiased standard errors.
+&lt;br&gt;&lt;br&gt;
+
+**08.** **[T/F]** (**2pts**) Measurement error biases the OLS estimates for the coefficients toward zero.
+&lt;br&gt;&lt;br&gt;
+
+**09.** **[T/F]** (**2pts**) Omitted-variable bias causes OLS estimates for the coefficients to be biased, but OLS is a consistent estimator for the coefficients.
+&lt;br&gt;&lt;br&gt;
+
+**10.** **[T/F]** (**2pts**) OLS is biased for models with lagged explanatory variables.
+&lt;br&gt;&lt;br&gt;
+
+**11.** **[T/F]** (**2pts**) If an estimator is unbiased, then it must be consistent.
+&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**12.** **[T/F]** (**2pts**) For random variables `\(X\)` and `\(Y\)`: `\(\mathop{\text{plim}}\left( X \times Y \right) = \mathop{\text{plim}}\left( X \right) \times \mathop{\text{plim}}\left( Y \right)\)`.
+&lt;br&gt;&lt;br&gt;
+
+**13.** **[T/F]** (**2pts**) For random variables `\(X\)` and `\(Y\)`: `\(\mathop{\boldsymbol{E}}\left[ X \times Y \right] = \mathop{\boldsymbol{E}}\left[ X \right] \times \mathop{\boldsymbol{E}}\left[ Y \right]\)`.
+&lt;br&gt;&lt;br&gt;
+
+**14.** **[Multiple choice]** (**2pts**) In the presence of heteroskedasticity, which of the following is true?
+&lt;br&gt;
+
+.move-right-short[**A.** OLS and WLS are biased, but OLS is less biased.]
+.move-right-short[**B.** OLS is biased. WLS is unbiased.]
+.move-right-short[**C.** OLS is unbiased. WLS is biased.]
+.move-right-short[**D.** OLS and WLS are unbiased, but OLS is more efficient.]
+.move-right-short[**E.** OLS and WLS are unbiased, but WLS is more efficient.]
+
+**15.** **[Multiple choice]** (**2pts**) Which of the following can lead to heteroskedasticity?
+&lt;br&gt;
+
+.move-right-short[**A.** Adding a lagged outcome variable]
+.move-right-short[**B.** Misspecification]
+.move-right-short[**C.** Measurement error]
+.move-right-short[**D.** Disturbances with different variances]
+
+**16.** **[Fill in the blanks]** (**4pts**) The **expected value** of an estimator is the `\(\underline{\color{#ffffff}{aaaaaaaaaaaaa}}\)` of the estimator's distribution (for a set sample size `\(n\)`), whereas the estimator's **probability limit** describes how the estimator behaves as `\(n\)` approaches `\(\underline{\color{#ffffff}{aaaaaaaaaaaaa}}\)`.
+&lt;br&gt;&lt;br&gt;
+
+**17.** **[Fill in the blank]** (**2pts**) If the estimator `\(\hat{\beta}_1\)` is unbiased for `\(\beta_1\)`, then `\(\mathop{\boldsymbol{E}}\left[ \hat{\beta}_1 \right] = \underline{\color{#ffffff}{aaaaaaaaaa}}\)`.
+&lt;br&gt;&lt;br&gt;
+
+**18.** **[Fill in the blank]** (**4pts**) If our significance level is 0.05, and our *p*-value is 0.07, then we `\(\underline{\color{#ffffff}{aaaaaaaaaaaaaaaaaaaaaaaaaa}}\)` the null hypothesis.
+
+---
+class: clear
+
+## B. Short Answer
+
+**60 points**
+
+**Note:** You will typically need to explain/justify your answers in this section.
+
+**19.** (**3pts**) What is the difference between `\(u_i\)` and `\(e_i\)`?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**20.** (**3pts**) **Briefly explain** what we mean by "the standard error of an estimator"?
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**21.** One of our assumptions is that the errors are homoskedastic.
+
+.move-right[**i.** (**2pts**) Formally write down this assumption. *In other words:* Write out this assumption using expected values and/or variances of random variables (_i.e._, *use 'math'*).]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**ii.** (**3pts**) Informally (in words): What does this assumption mean?]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**iii.** (**2pts**) What does rejecting H.sub[o] in a Goldfeld-Quandt test tell us about this assumption?]
+
+
+---
+class: clear
+
+**22.** For each of the four figures below (depicting `\(x_i\)` and `\(u_i\)`), answer whether the figure suggests a violation of homoskedasticity. **Briefly explain** each of your answers.
+&lt;img src="midterm_files/figure-html/unnamed-chunk-1-1.svg" style="display: block; margin: auto;" /&gt;
+
+.move-right[**Figure A:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure B:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure C:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure D:** (**1pt**)]
+
+---
+class: clear
+
+**23.** The figure below shows the distributions of three estimators for `\(\beta_1\)`: A, B, and C.
+
+&lt;img src="midterm_files/figure-html/unnamed-chunk-2-1.svg" style="display: block; margin: auto;" /&gt;
+
+.move-right[**i.** (**4pts**) Which estimators, if any, are unbiased? ** *Briefly* explain** your answer.]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**ii.** (**2pts**) Which estimator is the most efficient? ** *Briefly* explain** your answer.]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**iii.** (**2pts**) Does this figure tell us anything about the consistency of estimator **A**? **Explain.**]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**24.** We want test for heteroskedasticity using a Breusch-Pagan test. We start by estimating the model
+$$
+`\begin{align}
+  \text{Crime}_i = \beta_0 + \beta_1 \text{Police}_i + \beta_2 \text{Wages}_i + u_i
+\end{align}`
+$$
+.move-right[**i.** (**4pts**) Walk me through the necessary steps for completing the Breusch-Pagan test. Do not estimate anything—just outline the procedure, step by step.]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**ii.** (**3pts**)
+Suppose we calculate a Breusch-Pagan test statistic of `\(\text{LM} = 12.3\)`, which has a *p*-value of approximately 0.031. Complete the Breusch-Pagan test (with conclusions).
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**iii.** (**2pts**) How would a White test differ from the Breusch-Pagan test?]
+
+---
+class: clear
+
+
+**25.** Consider the model
+$$
+`\begin{align}
+  \text{Wage}_i = \beta_0 + \beta_1 \text{Experience}_i + \beta_2 \text{Female}_i + u_i
+\end{align}`
+$$
+where `\(\text{Experience}_i\)` measures individual `\(i\)`'s experience in the workforce (in years), and `\(\text{Female}_i\)` is a binary variable for whether individual `\(i\)` is female.
+
+.move-right[
+**i.** (**4pts**) What is the interpretation of `\(\beta_1\)`?
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[
+**ii.** (**3pts**) What is the interpretation of `\(\beta_2\)`?
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+  .move-right[
+  **iii.** (**2pts**) Suppose you think the effect of *experience* changes depending upon whether the individual is female. Write down (**1**) a model that could test this hypothesis and (**2**) the null and alternative hypotheses that you would test.
+  ]
+  &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+---
+class: clear
+
+**26.** (**2pts**) Give an example of a variable that would likely produce measurement error. Briefly explain your answer.
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**27.** Consider the time-series model
+$$
+`\begin{align}
+  \text{Births}_t = \beta_0 + \beta_1 \text{Income}_t + \beta_2 \text{Income}_{t-1} + \beta_3 \text{Income}_{t-2} + u_t
+\end{align}`
+$$
+
+
+.move-right[
+**i.** (**2pts**) What are the interpretations of `\(\beta_1\)` and `\(\beta_2\)` and how do they differ?
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+
+.move-right[
+**ii.** (**2pts**) What is the _total_ effect of income on births?
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**28.** Suppose that we take a sample. Our observations in this sample come from two groups: **Group A** has very little noise/variation in its disturbances; **Group B** has _a lot_ of noise/variation in its disturbances.
+
+.move-right[**i.** (**2pts**) **[T/F]** OLS ignores these differences in the variances of the disturbances.]
+&lt;br&gt;&lt;br&gt;
+
+.move-right[**ii.** (**2pts**) **Explain the intuition** for how WLS takes advantage of differences in these disturbances' variances.]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+
+
+---
+class: clear
+
+**29.** We have in mind the model
+$$
+`\begin{align}
+  \text{Income}_i = \beta_0 + \beta_1 \text{Education}_i + \beta_2 \text{Ability}_i + u_i
+\end{align}`
+$$
+but we cannot observe *Ability*. Instead, we run the regression
+$$
+`\begin{align}
+  \text{Income}_i = \hat{\beta}_0 + \hat{\beta}_1 \text{Education}_i + e_i
+\end{align}`
+$$
+
+.move-right[**i.** (**3pts**) What two conditions are required for omitted-variable bias to bias our estimate of the effect of education on income?]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[
+**ii.** (**2pts**) If we assume that ability positively affects income, and ability is positively correlated with education, then will our estimate of `\(\beta_1\)` be biased upward or downward?
+]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**iii.** (**2pts**) How does your answer to (ii.) change if ability positively affects income but is negatively correlated with education?]
+
+---
+class: clear
+
+## C. Extra Credit
+
+**10 points**
+
+**EC.sub[1]** **[T/F]** (**2pts**) If you fail to reject the null hypothesis in a Goldfeld-Quandt test, then you can conclude your disturbances are homoskedastic.
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+**EC.sub[2]** For the .mono[R] code and output below,
+
+
+
+```r
+# The regression
+ec_reg &lt;- lm(problems ~ money, data = extra_credit)
+# The results
+tidy(ec_reg)
+```
+
+```
+#&gt; # A tibble: 2 x 5
+#&gt;   term        estimate std.error statistic   p.value
+#&gt;   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1 (Intercept)    21.7    0.187        116. 1.12e-106
+#&gt; 2 money           3.00   0.00335      896. 1.45e-193
+```
+
+.move-right[**i.** (**2pts**) Write down the model that we are estimating.]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**ii.** (**2pts**) Interpret the output for the intercept—including its statistical significance.]
+
+---
+class: clear
+
+**EC.sub[3]** For each of the four figures below (depicting `\(x_i\)` and `\(u_i\)`), answer whether the figure suggests a violation of exogeneity. **Briefly explain** each of your answers.
+&lt;img src="midterm_files/figure-html/unnamed-chunk-5-1.svg" style="display: block; margin: auto;" /&gt;
+
+.move-right[**Figure A:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure B:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure C:** (**1pt**)]&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+.move-right[**Figure D:** (**1pt**)]
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "8.5:11",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
